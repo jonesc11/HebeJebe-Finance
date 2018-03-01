@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Account {
 	
-	private List<Transaction> transactions;
+	private List<SubBalance> subBalances;
 	
 	public Account() {
 		
