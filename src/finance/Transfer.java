@@ -1,5 +1,5 @@
 package finance;
 
-public class SingleExpense extends Expense {
+public class Transfer extends Transaction {
 
 }
