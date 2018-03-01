@@ -1,0 +1,17 @@
+{
+  "name": "hebejebe-finance",
+  "version": "1.0.0",
+  "description": "A finance application designed around college students",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Hannah Deen, Elizabeth Dinella, Collin Jones, Chris Lipscomb",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "request": "^2.83.0"
+  }
+}
