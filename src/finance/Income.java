@@ -6,5 +6,8 @@ import org.junit.Test;
 
 public class Income extends Transaction{
 	
-
+	public Income()
+	{
+		
+	}
 }
