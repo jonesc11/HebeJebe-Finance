@@ -39,4 +39,29 @@ public class User {
 	public void createIncome(Account a, boolean isRecurring, Period period) {
 		
 	}
+	
+	
+	/*
+	 * @requires none
+	 * @throws none
+	 * @modifies none 
+	 * @effects Provides a list of sub-balances from all accounts
+	 * @returns none
+	 * @param none 
+	 */
+	public void displayTransactionHistory() {
+	}
+	
+	/*
+	 * @requires none
+	 * @throws none
+	 * @modifies none 
+	 * @effects Provides a list of sub-balances from the specified account a
+	 * @returns none
+	 * @param Account a - An Account a, to display the sub-balances from
+	 */
+	public void displayTransactionHistory(Account a) {
+		
+	}
+
 }
