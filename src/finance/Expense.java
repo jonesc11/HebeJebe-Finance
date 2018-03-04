@@ -1,5 +1,15 @@
 package finance;
 
-public class Expense extends Transaction{
-
+public abstract class Expense extends Transaction{
+	
+	protected String name;
+	protected double amount;
+	
+	public String getName() {
+		return name;
+	}
+	
+	public double getAmount() {
+		return amount;
+	}
 }
