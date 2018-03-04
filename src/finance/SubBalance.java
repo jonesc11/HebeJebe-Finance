@@ -6,8 +6,7 @@ public class SubBalance {
 	
 	private List<Transaction> transactions;
 	
-	public SubBalance()
-	{
+	public SubBalance() {
 		
 	}
 

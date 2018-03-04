@@ -1,5 +1,7 @@
 package finance;
 
+import finance.FinanceUtilities.Period;
+
 public abstract class Expense extends Transaction{
 	
 	protected String name;
@@ -12,4 +14,5 @@ public abstract class Expense extends Transaction{
 	public double getAmount() {
 		return amount;
 	}
+
 }
