@@ -6,13 +6,11 @@ var bodyParser = require ('body-parser');
 var server = require ('http').Server (app);
 var fs = require ('fs');
 
-var app = express ();
+app.listen (80);
 
-server.listen (80);
-
-app.use (express.static (__dirname + 'public'));
+app.use (express.static (__dirname + '/public'));
 app.use (bodyParser.json());
 
-app.use ('/', function (req, res) {
-  res.sendFile (__dirname + 'pages/index.html');
+app.get ('/', function (req, res) {
+  res.sendFile (__dirname + '/pages/index.html');
 });
