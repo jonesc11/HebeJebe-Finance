@@ -12,6 +12,7 @@ $(document).ready (function () {
   				"TransactionType": null, 
   				"Category": null,
   				"NextToken": null 
+			      }
 			}).
 			success(function(data, status, headers, config) {
 				$scope.transactions = data;
