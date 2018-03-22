@@ -21,7 +21,8 @@
     
     <title>HebeJebe Finance</title>
   </head>
-  <body>
+  <body ng-app="MyApp">
+  <div ng-controller="PostsCtrl">
 	<table class="table">
   	<thead>
     		<tr>
@@ -33,29 +34,13 @@
 			<th scope="col">Action Button</th>
     			</tr>
   	</thead>
-  	<tbody>
+  	<tbody ng-repeat="transaction in transactions">
     		<tr>
-      			<td>3/22/18</td>
-			<td>A cat</td>
-			<td>$20</td>
-      			<td>myAccount</td>
-      			<td>$960</td>
-			<td>ACTION</td>
-    		</tr>
-    		<tr>
-      			<td>3/21/18</td>
-			<td>Tacos</td>
-      			<td>$20</td>
-      			<td>myAccount</td>
-			<td>$980</td>
-			<td>ACTION</td>
-    		</tr>
-    		<tr>
-      			<td>3/21/18</td>
-			<td>rent</td>
-      			<td>$500</td>
-      			<td>myAccount</td>
-			<td>$1,000</td>
+      			<td>{{transaction.DateTime}}</td>
+			<td>{{transaction.ResourceIdentifier}}</td>
+			<td>{{transaction.Amount}}</td>
+      			<td>{{transaction.account.name}}</td>
+      			<td>{{transaction.account.total}}</td>
 			<td>ACTION</td>
     		</tr>
   	</tbody>
