@@ -14,11 +14,11 @@ $(document).ready (function () {
   				"NextToken": null 
 			      }
 			}).
-			success(function(data, status, headers, config) {
+			then(function(success) {
 				$scope.transactions = data;
 				}).
-			error(function(data, status, headers, config) {
+			then(function(error) {
 				// log error
 		});
 	});  
-});
+}());
