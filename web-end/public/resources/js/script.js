@@ -7,11 +7,7 @@ $(document).ready (function () {
   			url: 'request/transaction.json',
   			data: {
   				"Limit": 30,
-  				"ResourceIdentifier": "tr",
   				"GetFrom": "User",
-  				"TransactionType": null, 
-  				"Category": null,
-  				"NextToken": null 
 			      }
 			}).
 			success(function(data, status, headers, config) {
