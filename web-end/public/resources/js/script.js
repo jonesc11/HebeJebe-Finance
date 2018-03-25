@@ -4,7 +4,7 @@ $(document).ready (function () {
 	app.controller("PostsCtrl", function($scope, $http) {
 		$http({
   			method: 'GET',
-  			url: 'request/transaction.json',
+  			url: 'request/transactions',
   			data: {
   				"Limit": 30,
   				"ResourceIdentifier": "tr",
@@ -16,7 +16,7 @@ $(document).ready (function () {
 			}).
 			then(function(success) {
 				$scope.transactions = data;
-				}).
+			}).
 			then(function(error) {
 				// log error
 		});
