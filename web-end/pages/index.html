@@ -44,7 +44,7 @@
   		</tbody>
 		</table>    
 	</div>
-	<div class="col-4">
+	<div class="col-4" ng-controller="NewPanel">
 		<button type="button" class="btn btn-primary">Add Account</button>
 		</br>
 		<button type="button" class="btn btn-primary">Budgets</button>
@@ -77,8 +77,8 @@
     					label what is selected
   				</button>
   				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    					<a class="dropdown-item" href="#">Expense</a>
-    					<a class="dropdown-item" href="#">Income</a>
+    					<button type="button" class="dropdown-item" ng-click="setTransactionType(Expense)">Expense</button>
+    					<button type="button" class="dropdown-item" ng-click="setTransactionType(Income)">Income</button>
   				</div>
 				 </div>	
 			</div>
@@ -99,7 +99,7 @@
 				 </div>	
 			</div>
 
-  			<button type="submit" class="btn btn-primary">Submit</button>
+  			<button type="submit" class="btn btn-primary" ng-click="createTransaction()">Submit</button>
 		</form>
 	</div>	<!-- end col div --!>
 	</div> <!-- end row div --!>
