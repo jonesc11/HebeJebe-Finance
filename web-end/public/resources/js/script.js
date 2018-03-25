@@ -7,7 +7,6 @@ $(document).ready (function () {
   			url: 'request/transactions',
   			data: {
   				"Limit": 30,
-  				"GetFrom": "User",
 			      }
 			}).
 			then(function(success) {
