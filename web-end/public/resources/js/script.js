@@ -12,15 +12,15 @@ $(document).ready (function () {
   			url: 'request/create/transactions',
   			data: {
   				"Limit": 30,
-				"TransactionType": "Income|Expense|Transfer",
-  				"Amount": <float>,
+				"TransactionType": $scope.transactionType, 
+  				"Amount": $scope.amount,
   				"To": {"S": "<string>", "I": "<string>"},
   				"From": {"S": "<string>", "I": "<string>"},
   				"Description": "<string>"
   				"DateTime": <datetime>,
   				"Category": "<string>",
   				"AssociatedWith": "<string>",
-  				"Recurring": <boolean>,
+  				"Recurring": $scope.recurring,
   				"RecurringUntil": <datetime>,
   				"RecurringFrequency": <dayinterval>	
 			      }
