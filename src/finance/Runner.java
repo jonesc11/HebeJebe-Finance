@@ -3,9 +3,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.HashMap;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.*;
-
 /*
 Main function for initializing the server client and site.
  */
@@ -31,17 +28,9 @@ public class Runner {
         }
 
         startServer();
-        startClient();
     }
 
-    public static void startClient(){
-        (new Thread() {
-            @Override
-            public void run() {
-                new Client().clientrun();
-            }
-        }).start();
-    }
+   
 
     public static void startServer(){
         (new Thread() {
