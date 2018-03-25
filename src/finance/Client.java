@@ -43,7 +43,7 @@ public class Client{
               //NODE ENTRIES
         }
         //Send to server aka api
-        Message msg = site.sendmsg(twt, key);
+        Message msg = /// SET UP MSG STRUCTURE;
         ObjectMapper mapper = new ObjectMapper();
         String jsonString = "";
         try {
