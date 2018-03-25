@@ -14,39 +14,30 @@ import java.util.HashMap;
 TwitterClient is used to send messages from over processes
  */
 
-public class Client
-{
+public class Client{
     PrintWriter outt;
     private int id;
 
-    public static void clientrun(int id, HashMap<Integer,String> ips, Site s)
-    {
-        try
-        {
-            client client = new client(id, ips, s);
+    public static void clientrun(){
+        try{
+            client client = new client();
             client.run();  
         }
-        catch (IOException e) 
-        {
+        catch (IOException e) {
             System.out.println(e);
         }   
     }
-    public client(int id)
-    {
-        this.id = id;
+    public client(){
     }
 
-    public void run() throws IOException 
-    {
+    public void run() throws IOException  {
 
         //RUN APPLICATION
 
-        String serverAddress = ips.get(id)//IP Address;
-        int socketNumber = 9100 + id;
+        int socketNumber = 9235;
         Socket socket = new Socket("localhost", socketNumber);
         outt = new PrintWriter(socket.getOutputStream(), true);
-        while(true) 
-        {
+        while(true) {
             
                 socket = sender(socket, outt, tweet);   //send message processed here
                 outt = new PrintWriter(socket.getOutputStream(), true);
@@ -72,16 +63,13 @@ public class Client
     }
 
 
-    public void closeSocket(Socket socket, PrintWriter out)
-    {
+    public void closeSocket(Socket socket, PrintWriter out){
         //closes all streams out and socket
-        try
-        {
+        try{
             out.close();
             socket.close();
         }
-        catch (IOException e) 
-        {
+        catch (IOException e) {
             System.out.println(e);
         }        
     } 

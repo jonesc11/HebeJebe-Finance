@@ -15,31 +15,23 @@ public class Server {
 
     private int id;
 
-    public server(int id)
-    {
-        this.id = id;   
+    public server(){   
     }
 
-    public void run()
-    {
-        try
-        {
-            int socketNumber = 9100 + id;
+    public void run(){
+        try{
+            int socketNumber = 9235;
             ServerSocket listener = new ServerSocket(socketNumber);            
-            try 
-            {
-                while (true) 
-                {
+            try {
+                while (true) {
                     new Handler(listener.accept()).start();
                 }
             } 
-            finally 
-            {
+            finally {
                 listener.close();
             }
         }
-        catch (IOException e) 
-        {
+        catch (IOException e) {
             System.out.println(e);
         }
     }
@@ -50,15 +42,12 @@ public class Server {
         private PrintWriter out;
         private Socket socket;
         
-        public Handler(Socket socket) 
-        {
+        public Handler(Socket socket) {
             this.socket = socket;
         }
 
-        public void run() 
-        {
-            try 
-            {
+        public void run() {
+            try {
                 String clientMsg;
                 String json = "";
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -74,8 +63,7 @@ public class Server {
                 Message msg = mapper.readValue(json, Message.class);
                 	//ADD FUNCTIONALITY TO API
             }
-            catch (IOException e) 
-            {
+            catch (IOException e) {
                 System.out.println(e);
             }
         }
