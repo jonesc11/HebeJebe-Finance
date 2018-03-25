@@ -18,28 +18,76 @@
     <title>HebeJebe Finance</title>
   </head>
   <body ng-app="MyApp">
-  <div ng-controller="PostsCtrl">
-	<table class="table">
-  	<thead>
-    		<tr>
-      			<th scope="col">Date</th>
-      			<th scope="col">Transaction name</th>
-      			<th scope="col">Amount (colored)</th>
-      			<th scope="col">Account</th>
-      			<th scope="col">Account Total</th>
-			<th scope="col">Action Button</th>
+  <div class="container">
+	<div class="col-8" ng-controller="PostsCtrl">	
+		<table class="table">
+  		<thead>
+    			<tr>
+      				<th scope="col">Date</th>
+      				<th scope="col">Transaction name</th>
+      				<th scope="col">Amount (colored)</th>
+      				<th scope="col">Account</th>
+      				<th scope="col">Account Total</th>
+				<th scope="col">Action Button</th>
     			</tr>
-  	</thead>
-  	<tbody ng-repeat="transaction in transactions">
-    		<tr>
-      			<td>{{transaction.DateTime}}</td>
-			<td>{{transaction.ResourceIdentifier}}</td>
-			<td>{{transaction.Amount}}</td>
-      			<td>{{transaction.account.name}}</td>
-      			<td>{{transaction.account.total}}</td>
-			<td>ACTION</td>
-    		</tr>
-  	</tbody>
-	</table>    
+  		</thead>
+  		<tbody ng-repeat="transaction in transactions">
+    			<tr>
+      				<td>{{transaction.DateTime}}</td>
+				<td>{{transaction.ResourceIdentifier}}</td>
+				<td>{{transaction.Amount}}</td>
+      				<td>{{transaction.account.name}}</td>
+      				<td>{{transaction.account.total}}</td>
+				<td>ACTION</td>
+    			</tr>
+  		</tbody>
+		</table>    
+	</div>
+	<div class="col">
+		<button type="button" class="btn btn-primary">Add Account</button>
+		<button type="button" class="btn btn-primary">Budgets</button>
+		<label> Create Transaction </label>
+		<form>
+  			<div class="form-group">
+				<div class="dropdown">
+  				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    					Account	
+  				</button>
+  				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    					<a class="dropdown-item" href="#">Account1</a>
+    					<a class="dropdown-item" href="#">Account2</a>
+
+  				</div>
+			</div>	
+  			<div class="form-group">
+    				<label for="transactionName">Transaction Name</label>
+    				<input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Name">
+  			</div>
+  			<div class="form-group">
+				<label for="exampleInputEmail1">Transaction Amount</label>
+    				<input type="text" class="form-control" id="name1" aria-describedby="transactionAmount" placeholder="Amount">
+  			</div>
+			<div class="form-group">
+				<div class="dropdown">
+  				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    					label what is selected
+  				</button>
+  				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    					<a class="dropdown-item" href="#">Expense</a>
+    					<a class="dropdown-item" href="#">Income</a>
+  				</div>
+			 </div>	
+			 <div class="custom-control custom-checkbox">
+  				<input type="checkbox" class="custom-control-input" id="customCheck1">
+  				<label class="custom-control-label" for="customCheck1">Recurring Expense</label>
+			</div>
+
+  			 <div class="form-check">
+    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+  </div>
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+		
   </body>
 </html>
