@@ -36,8 +36,7 @@ public class Server {
         }
     }
 
-    public class Handler extends Thread
-    {
+    public class Handler extends Thread{
         private BufferedReader in;
         private PrintWriter out;
         private Socket socket;
@@ -52,8 +51,7 @@ public class Server {
                 String json = "";
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
-                while((clientMsg = in.readLine()) != null)
-                {
+                while((clientMsg = in.readLine()) != null){
                     writer.append(clientMsg);
                     json += clientMsg;
                 }

@@ -32,8 +32,6 @@ public class Client{
 
     public void run() throws IOException  {
 
-        //RUN APPLICATION
-
         int socketNumber = 9235;
         Socket socket = new Socket("localhost", socketNumber);
         outt = new PrintWriter(socket.getOutputStream(), true);
