@@ -13,21 +13,6 @@ public class Runner {
 	private static Map<String, User> users = new HashMap<String, User>();
 
     public static void main(String[] args) throws IOException{
-        
-        ObjectMapper mapper = new ObjectMapper();
-        File from = new File("config.txt");
-        TypeReference<HashMap<Integer,String>> typeRef
-                = new TypeReference<HashMap<Integer,String>>() {};
-
-        HashMap<Integer,String> ips = mapper.readValue(from, typeRef);
-
-        File f = new File("database.json");
-        if(f.exists() && !f.isDirectory()) {
-            System.out.println("file already exists, recovering data!");
-            ObjectMapper siteMapper = new ObjectMapper();
-            mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        }else{
-        }
 
         startServer();
     }
