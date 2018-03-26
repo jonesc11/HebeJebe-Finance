@@ -41,15 +41,15 @@ $(document).ready (function (app) {
   				"Limit": 30,
 				"TransactionType": $scope.transactionType, 
   				"Amount": $scope.amount,
-  				"To": {"S": "<string>", "I": "<string>"},
-  				"From": {"S": "<string>", "I": "<string>"},
+  				"To": null,
+  				"From": null,
   				"Description": $scope.transactionDescription,
-  				"DateTime": "<datetime>",
+  				"DateTime": $scope.transactionDate,
   				"Category": "<string>",
   				"AssociatedWith": $scope.transactionAccount,
   				"Recurring": $scope.recurring,
-  				"RecurringUntil": "<datetime>",
-  				"RecurringFrequency": "<dayinterval>",
+  				"RecurringUntil": null,
+  				"RecurringFrequency": $scope.transactionRecurInterval,
 			      }
 			}).
 			then(function(success) {
