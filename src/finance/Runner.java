@@ -1,7 +1,6 @@
-import java.io.File;
+package finance;
+
 import java.io.IOException;
-import java.util.*;
-import java.util.HashMap;
 
 /*
 Main function for initializing the server client and site.

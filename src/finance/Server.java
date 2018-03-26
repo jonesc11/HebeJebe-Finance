@@ -1,9 +1,8 @@
-
+package finance;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 
 /*
 Server is used to receive messages from over processes
@@ -13,7 +12,7 @@ public class Server {
 
     private int id;
 
-    public server(){   
+    public Server(){   
     }
 
     public void run(){
