@@ -47,10 +47,11 @@ public class Server {
                 String clientMsg;
                 String json = "";
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                System.out.println(in);//json = in.readLine();
+                json = in.readLine();
+                System.out.println("Read: " + json);//json = in.readLine();
                 out = new PrintWriter(socket.getOutputStream(), true); 
                 //PARSER
-                out.append(in.toString());
+                out.append(json);
             }
             catch (IOException e) {
                 System.out.println(e);
