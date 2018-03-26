@@ -44,14 +44,16 @@ public class Server {
 
         public void run() {
             try {
-                String clientMsg;
-                String json = "";
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                json = in.readLine();
-                System.out.println("Read: " + json);//json = in.readLine();
-                out = new PrintWriter(socket.getOutputStream(), true); 
-                //PARSER
-                out.append(json);
+            	while(true) {
+            		String clientMsg;
+                    String json = "";
+                    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    System.out.println("Read: " + in.toString());//json = in.readLine();
+                    out = new PrintWriter(socket.getOutputStream(), true); 
+                    //PARSER
+                    out.append("dumbshit");
+            	}
+                
             }
             catch (IOException e) {
                 System.out.println(e);
