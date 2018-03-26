@@ -5,23 +5,87 @@
     <link rel="stylesheet" href="/resources/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/resources/css/bootstrap-grid.min.css" />
     <link rel="stylesheet" href="/resources/css/bootstrap-reboot.min.css" />
-    <link rel="stylesheet" href="/resources/css/datatables.min.css" />
     <link rel="stylesheet" href="/resources/css/style.css" />
     
     <!-- Load JavaScript, including AngularJS, jQuery, Bootstrap, Socket.io and Popper -->
     <script type="text/javascript" src="/resources/js/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="/resources/js/popper.min.js"></script>
     <script type="text/javascript" src="/resources/js/angular.min.js"></script>
-    <script type="text/javascript" src="/resources/js/angular-route.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/resources/js/datatables.min.js"></script>
-    <script type="text/javascript" src="/resources/js/socket.io.js"></script>
     <script type="text/javascript" src="/resources/js/script.js"></script>
     
     <title>HebeJebe Finance</title>
   </head>
-  <body>
-    
+  <body ng-app="MyApp">
+  <div class="container">
+	<div class = "row">
+	<div class="col-8" ng-controller="PostsCtrl">	
+		<table class="table">
+  		<thead>
+    			<tr>
+      				<th scope="col">Date</th>
+      				<th scope="col">Transaction name</th>
+      				<th scope="col">Amount (colored)</th>
+      				<th scope="col">Account</th>
+      				<th scope="col">Account Total</th>
+				<th scope="col">Action Button</th>
+    			</tr>
+  		</thead>
+  		<tbody ng-repeat="transaction in transactions">
+    			<tr>
+      				<td>{{transaction.DateTime}}</td>
+				<td>{{transaction.ResourceIdentifier}}</td>
+				<td>{{transaction.Amount}}</td>
+      				<td>{{transaction.account.name}}</td>
+      				<td>{{transaction.account.total}}</td>
+				<td>ACTION</td>
+    			</tr>
+  		</tbody>
+		</table>    
+	</div>
+	<div class="col-4" ng-controller="NewPanel">
+		<button type="button" class="btn btn-primary">Add Account</button>
+		</br>
+		<button type="button" class="btn btn-primary">Budgets</button>
+		</br>
+		<label> Create Transaction </label>
+		<form>
+			<div class="form-group">
+				<select class="custom-select custom-select-lg mb-3" ng-model="transactionAccount">
+					<option ng-repeat="account in accounts" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
+				</select>
+			</div>
+  			<div class="form-group">
+    				<label for="transactionName">Description</label>
+    				<input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Description" ng-model="transactionDescription">
+  			</div>
+  			<div class="form-group">
+				<label for="exampleInputEmail1">Transaction Amount</label>
+    				<input type="text" class="form-control" id="name1" aria-describedby="transactionAmount" placeholder="Amount" ng-model="amount">
+  			</div>
+			<div class="form-group">
+				<select class="custom-select custom-select-lg mb-3" ng-model=transactionType>
+  					<option selected value="Expense">Expense</option>
+  					<option value="Income">Income</option>
+				</select>
+			</div>
+			 <div class="form-check">
+  				<input type="checkbox" class="form-check-input" id="customCheck1"  ng-model="recurring">
+  				<label class="custom-control-label" for="customCheck1">Recurring Expense</label>
+			</div>
+			<div class="form-group">
+				<select class="custom-select custom-select-lg mb-3" ng-show="recurring">
+					<option value="Daily">Daily</option>
+					<option value="Weekly">Weekly</option>
+					<option selected value="Monthly">Monthly</option>
+				</select>
+			</div>
+
+  			<button type="submit" class="btn btn-primary" ng-click="createTransaction()">Submit</button>
+		</form>
+	</div>	<!-- end col div --!>
+	</div> <!-- end row div --!>
+	</div> <!-- end container div --!>
   </body>
 </html>
