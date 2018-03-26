@@ -35,7 +35,7 @@ public class Server {
 
     public class Handler extends Thread{
         private BufferedReader in;
-        private PrintWriter out;
+        private DataOutputStream out;
         private Socket socket;
         
         public Handler(Socket socket) {
@@ -44,15 +44,14 @@ public class Server {
 
         public void run() {
             try {
-            	while(true) {
-            		String clientMsg;
-                    String json = "";
-                    in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    System.out.println("Read: " + in.toString());//json = in.readLine();
-                    out = new PrintWriter(socket.getOutputStream(), true); 
-                    //PARSER
-                    out.append("dumbshit");
-            	}
+            	System.out.println("Connected to client...");
+        		String clientMsg;
+                String json = "";
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                System.out.println("Read: " + in.readLine());
+                out = new DataOutputStream(socket.getOutputStream()); 
+                //PARSER
+                out.writeBytes("dumbshit");
                 
             }
             catch (IOException e) {
