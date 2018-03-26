@@ -8,14 +8,24 @@ public class Account {
 	private double balance;
 	private List<SubBalance> subBalances;
 	private List<Transaction> transactions;
+	private String type;
 	
-	public Account(double initialBalance) {
-		balance = initialBalance;
+	public Account(double b, String t) {
+		balance = b;
+		type = t;
 		transactions = new ArrayList<Transaction>();
 	}
 	
+	public String getType() {
+		return type;
+	}
+	
 	public double getBalance() {
-		return balance;
+		double b = balance;
+		for (int i = 0; i < subBalances.size(); i++) {
+			b += subBalances.get(i).getBalance();
+		}
+		return b;
 	}
 	
 	public List<Transaction> getTransactionHistory() {

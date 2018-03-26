@@ -9,7 +9,12 @@ public abstract class Transaction {
 	double getAmount() { 
 		return amount; 
 	}
+	
 	String getName() { 
 		return name; 
+	}
+	
+	Date getDate() {
+		return getDate();
 	}
 }

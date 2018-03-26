@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public abstract class Income extends Transaction{
-	
+public abstract class Income extends Transaction {
 
 }

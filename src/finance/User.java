@@ -21,7 +21,7 @@ public class User {
 	 * @effects Creates an Expense on the specified account. If isRecurring is true, the expense is a RecurringExpense. 
 	 * @returns none
 	 * @param a - An Account a, to add the expense to. 
-	 * @param name - a name used to refer to the exepnse
+	 * @param name - a name used to refer to the expense
 	 * @param amount - the amount of the expense
 	 * @param isRecurring - T/F value to specify if the expense is recurring
 	 * @param period - The period in which the expense recurs
@@ -40,10 +40,21 @@ public class User {
 	 * @param isRecurring - T/F value to specify if the income is recurring
 	 * @param period - The period in which the income recurs
 	 */
-	public void createIncome(Account a, boolean isRecurring, Period period) {
+	public void createIncome(Account a, String name, double amount, boolean isRecurring, Period period) {
 		
 	}
 	
+	/*
+	 * @requires none
+	 * @throws none
+	 * @modifies none 
+	 * @effects Provides a list of the current User's accounts
+	 * @returns A list of Account objects
+	 * @param none 
+	 */
+	public List<Account> getAccounts() {
+		return accounts;
+	}
 	
 	/*
 	 * @requires none

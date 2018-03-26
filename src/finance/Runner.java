@@ -9,6 +9,8 @@ Main function for initializing the server client and site.
 
 
 public class Runner {
+	
+	private static Map<String, User> users = new HashMap<String, User>();
 
     public static void main(String[] args) throws IOException{
         
