@@ -25,7 +25,6 @@ $(document).ready (function (app) {
 			url: 'request/get/accounts',
 			data: {
 		  		"Limit": 30,
-
 			      }
 			}).then(function(success) {
 				$scope.accounts = success.accounts;
@@ -44,10 +43,10 @@ $(document).ready (function (app) {
   				"Amount": $scope.amount,
   				"To": {"S": "<string>", "I": "<string>"},
   				"From": {"S": "<string>", "I": "<string>"},
-  				"Description": "<string>",
+  				"Description": $scope.transactionDescription,
   				"DateTime": "<datetime>",
   				"Category": "<string>",
-  				"AssociatedWith": "<string>",
+  				"AssociatedWith": $scope.transactionAccount,
   				"Recurring": $scope.recurring,
   				"RecurringUntil": "<datetime>",
   				"RecurringFrequency": "<dayinterval>",

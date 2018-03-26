@@ -53,12 +53,12 @@
 		<form>
 			<div class="form-group">
 				<select class="custom-select custom-select-lg mb-3" ng-model=transactionAccount>
-					<option ng-repeat="account in accounts" value="{{account.AccountName}}">{{account.AccountName}}</option>
+					<option ng-repeat="account in accounts" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
 				</select>
 			</div>
   			<div class="form-group">
-    				<label for="transactionName">Transaction Name</label>
-    				<input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Name">
+    				<label for="transactionName">Description</label>
+    				<input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Name" ng-model="transactionDescription">
   			</div>
   			<div class="form-group">
 				<label for="exampleInputEmail1">Transaction Amount</label>
