@@ -42,8 +42,8 @@ public class Server {
 
         public void run() {
             try {
+            	System.out.println("Connected to client...");
             	while (true) {
-	            	System.out.println("Connected to client...");
 	        		String clientMsg;
 	                String json = "";
 	                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
