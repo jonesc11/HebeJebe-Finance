@@ -19,6 +19,20 @@ $(document).ready (function (app) {
 	}); 
 
 	app.controller("NewPanel", function($scope, $http) {
+		
+		$http({
+			method: 'GET',
+			url: 'request/get/accounts',
+			data: {
+		  		"Limit": 30,
+
+			      }
+			}).then(function(success) {
+				$scope.accounts = success.accounts;
+			}).
+			then(function(error) {
+				// log error
+		});
 
 		$scope.createTransaction = function(){
 	    	 $http({
