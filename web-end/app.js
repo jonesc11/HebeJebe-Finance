@@ -7,21 +7,12 @@ var server = require ('http').Server (app);
 var fs = require ('fs');
 var request = require ('request');
 var cookieParser = require ('cookie-parser');
-var net = require ('net');
+//var net = require ('net');
 
 var keysObject = require ('./keys.json');
 var accessKey = keysObject.AccessKey;
 var secretKey = keysObject.SecretKey;
 
-var socketClient = new net.Socket();
-
-socketClient.connect (9235, '127.0.0.1', function () {
-  console.log ('Connected to Java server.');
-});
-
-socketClient.on ('close', function () {
-  console.log ('Connection to Java server closed.');
-});
 
 app.listen (80);
 
@@ -117,19 +108,36 @@ app.post ('/request/:reqType/:resType', function (req, res) {
   res.send (javaResponse);
 });
 
+var net = require ('net');
+var response = null;
+var socketClient = new net.Socket();
+socketClient.connect (9235, '127.0.0.1', function () {
+  console.log ('Connected to Java server.');
+});
+
+socketClient.on ('data', function (data) {
+  console.log(data.toString());
+  response = data.toString();
+});
+
+socketClient.on ('close', function () {
+  console.log ('Connection to Java server closed.');
+});
+
+
 /* Sends a message to the Java API and returns the result.
     If there was a failure, null is returned */
 function sendMessage (message) {
+  message += '\n';
   socketClient.write (message);
-  var response = null;
-
-  socketClient.on ('data', function (data) {
-    response = JSON.parse(data);
-  });
+  console.log ("Sending...");
 
   while (response == null) {}
+  console.log("Received: " + response);
 
-  return response;
+  var ret = response;
+  response = null;
+  return ret;
 }
 
 function createError (message) {
