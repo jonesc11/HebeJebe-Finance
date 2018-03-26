@@ -10,8 +10,6 @@ Server is used to receive messages from over processes
 
 public class Server {
 
-    private int id;
-
     public Server(){   
     }
 
@@ -44,15 +42,17 @@ public class Server {
 
         public void run() {
             try {
-            	System.out.println("Connected to client...");
-        		String clientMsg;
-                String json = "";
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                System.out.println("Read: " + in.readLine());
-                out = new DataOutputStream(socket.getOutputStream()); 
-                //PARSER
-                out.writeBytes("dumbshit");
-                
+            	while (true) {
+	            	System.out.println("Connected to client...");
+	        		String clientMsg;
+	                String json = "";
+	                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	                json = in.readLine();
+	                System.out.println("Read: " + json);
+	                out = new DataOutputStream(socket.getOutputStream()); 
+	                //PARSER
+	                out.writeBytes(json);
+            	}
             }
             catch (IOException e) {
                 System.out.println(e);
