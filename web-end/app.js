@@ -7,7 +7,7 @@ var server = require ('http').Server (app);
 var fs = require ('fs');
 var request = require ('request');
 var cookieParser = require ('cookie-parser');
-//var net = require ('net');
+var net = require ('net');
 
 var keysObject = require ('./keys.json');
 var accessKey = keysObject.AccessKey;
@@ -60,8 +60,7 @@ app.get ('/request/:reqType/:resType', function (req, res) {
     };
   }
 
-  var javaResponse = sendMessage (JSON.stringify (data));
-  res.send (javaResponse);
+  var javaResponse = sendMessage (JSON.stringify (data)).then(function (data) { console.log(data); res.send (data); });
 });
 
 app.post ('/request/:reqType/:resType', function (req, res) {
@@ -104,40 +103,30 @@ app.post ('/request/:reqType/:resType', function (req, res) {
     };
   }
 
-  var javaResponse = sendMessage (JSON.stringify (data));
+  var javaResponse = sendMessage (JSON.stringify (data)).then(function (data) { console.log(data); return data; });
   res.send (javaResponse);
 });
 
-var net = require ('net');
-var response = null;
 var socketClient = new net.Socket();
 socketClient.connect (9235, '127.0.0.1', function () {
   console.log ('Connected to Java server.');
 });
 
-socketClient.on ('data', function (data) {
-  console.log(data.toString());
-  response = data.toString();
-});
-
-socketClient.on ('close', function () {
-  console.log ('Connection to Java server closed.');
-});
-
-
 /* Sends a message to the Java API and returns the result.
     If there was a failure, null is returned */
 function sendMessage (message) {
   message += '\n';
-  socketClient.write (message);
-  console.log ("Sending...");
+  return new Promise (function (resolve, reject) {
+    console.log ('Sending message');
+    socketClient.write (message);
+    socketClient.on('data', function (data) {
+      resolve(data.toString());
+    });
 
-  while (response == null) {}
-  console.log("Received: " + response);
-
-  var ret = response;
-  response = null;
-  return ret;
+    socketClient.on('error', function (data ) {
+      reject(err);
+    });
+  });
 }
 
 function createError (message) {
