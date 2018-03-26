@@ -4,9 +4,10 @@
   border: 0;
 }
 
-col-4 {
-	margin: 0.5;
-	padding: 0.5;
-	border: 0.5;
+.col-4 * {
+  margin-bottom: 8px;
 }
 
+.row {
+  margin-top: 16px;
+}
