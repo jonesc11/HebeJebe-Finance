@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import org.json.JSONException;
+
 /*
 Server is used to receive messages from over processes
  */
@@ -44,14 +46,18 @@ public class Server {
             try {
             	System.out.println("Connected to client...");
             	while (true) {
-	        		String clientMsg;
-	                String json = "";
+	        		String request;
+	                String response;
+	                
 	                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	                json = in.readLine();
-	                System.out.println("Read: " + json);
+	                request = in.readLine();
 	                out = new DataOutputStream(socket.getOutputStream()); 
-	                //PARSER
-	                out.writeBytes(json);
+	                try {
+	                	response = Runner.processRequest (request);
+	                	out.writeBytes (response);
+	                } catch (JSONException e) {
+	                	out.writeBytes ("{\"ErrorMessage\":\"Processing failure.\"}");
+	                }
             	}
             }
             catch (IOException e) {

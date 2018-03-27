@@ -19,10 +19,10 @@ Main function for initializing the server client and site.
 public class Runner {
 	
 	private static Map<String, User> users = new HashMap<String, User>();
-	private DateFactory dateFactory = new DateFactory();
+	private static DateFactory dateFactory = new DateFactory();
 	
 	//Helper function to make a JSONArray into a Java List object.
-	public List<String> JSONArrayToList(JSONArray a) throws JSONException {
+	public static List<String> JSONArrayToList(JSONArray a) throws JSONException {
 		List<String> l = new ArrayList<String>();
 		
 		for (int i = 0; i < a.length(); i++) {
@@ -32,7 +32,7 @@ public class Runner {
 	}
 	
 	//JSON Parser for Requests. Returns a String that is an appropriately formatted JSON string.
-	public String processRequest(String r) throws JSONException {
+	public static String processRequest(String r) throws JSONException {
 		//Take the input string and turn it into a JSONObject. Create an empty JSONObject that will be
 		//returned by the function
 		JSONObject request = new JSONObject(r);
