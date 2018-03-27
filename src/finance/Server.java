@@ -1,9 +1,8 @@
-
+package finance;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.HashMap;
 
 /*
 Server is used to receive messages from over processes
@@ -11,9 +10,7 @@ Server is used to receive messages from over processes
 
 public class Server {
 
-    private int id;
-
-    public server(){   
+    public Server(){   
     }
 
     public void run(){
@@ -36,7 +33,7 @@ public class Server {
 
     public class Handler extends Thread{
         private BufferedReader in;
-        private PrintWriter out;
+        private DataOutputStream out;
         private Socket socket;
         
         public Handler(Socket socket) {
@@ -45,12 +42,17 @@ public class Server {
 
         public void run() {
             try {
-                String clientMsg;
-                String json = "";
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                out = new PrintWriter(socket.getOutputStream(), true); 
-                //PARSER
-                out.append(json);
+            	System.out.println("Connected to client...");
+            	while (true) {
+	        		String clientMsg;
+	                String json = "";
+	                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	                json = in.readLine();
+	                System.out.println("Read: " + json);
+	                out = new DataOutputStream(socket.getOutputStream()); 
+	                //PARSER
+	                out.writeBytes(json);
+            	}
             }
             catch (IOException e) {
                 System.out.println(e);
