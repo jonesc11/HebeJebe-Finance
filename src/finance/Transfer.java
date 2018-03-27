@@ -2,9 +2,9 @@ package finance;
 
 public class Transfer extends Transaction {
 	
-	public Transfer(double tAmount, String tName) {
-		amount = tAmount;
-		name = tName;
+	public Transfer(double a, String n) {
+		amount = a;
+		name = n;
 	}
 
 }

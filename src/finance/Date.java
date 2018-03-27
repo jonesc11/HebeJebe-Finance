@@ -126,7 +126,7 @@ public class Date {
 	 * @returns a string formatted in dd/mm/yyyy
 	 */
 	public String format() {
-		return String.format("%02d", this.day) + "/" + String.format("%02d", this.month) + "/" + String.format("%04d", this.year);
+		return String.format("%04d", this.year) + "-" + String.format("%02d", this.month) + "-" + String.format("%02d", this.day);
 	}
 	
 	/**

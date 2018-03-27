@@ -1,6 +1,4 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -50,16 +48,9 @@ public class Server {
                 String clientMsg;
                 String json = "";
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                BufferedWriter writer = new BufferedWriter(new FileWriter("output.txt"));
-                while((clientMsg = in.readLine()) != null){
-                    writer.append(clientMsg);
-                    json += clientMsg;
-                }
-                writer.close();
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                Message msg = mapper.readValue(json, Message.class);
-                	//ADD FUNCTIONALITY TO API
+                out = new PrintWriter(socket.getOutputStream(), true); 
+                //PARSER
+                out.append(json);
             }
             catch (IOException e) {
                 System.out.println(e);
