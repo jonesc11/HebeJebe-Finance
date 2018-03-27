@@ -2,9 +2,11 @@ package finance;
 
 public class SingleExpense extends Expense {
 	
-	public SingleExpense(double tAmount, String tName) {
-		amount = tAmount;
-		name = tName;
+	public SingleExpense(double a, String n, String c, Date d) {
+		amount = a;
+		name = n;
+		category = c;
+		date = d;
 	}
 	
 }
