@@ -5,16 +5,26 @@ public abstract class Transaction {
 	protected double amount;
 	protected String name;
 	protected Date date;
+	protected String category;
+	protected String resourceIdentifier;
 	
-	double getAmount() { 
+	public double getAmount() { 
 		return amount; 
 	}
 	
-	String getName() { 
+	public String getName() { 
 		return name; 
 	}
 	
-	Date getDate() {
+	public Date getDate() {
 		return getDate();
+	}
+	
+	public String getCategory() {
+		return category;
+	}
+	
+	public String getResourceIdentifier() {
+		return resourceIdentifier;
 	}
 }

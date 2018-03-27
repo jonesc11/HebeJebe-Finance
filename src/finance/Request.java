@@ -132,6 +132,12 @@ public class Request {
 			response.put("Account", o);
 		}
 		else if(actionType == "CreateUser") {
+			String email = action.getString("UserIdentifier");
+			String password = action.getString("Password");
+			String firstName = action.getString("FirstName");
+			String lastName = action.getString("LastName");
+			
+			User newUser = new User(email, password, firstName, lastName);
 			
 		}
 		else if(actionType == "CreateAccount") {
