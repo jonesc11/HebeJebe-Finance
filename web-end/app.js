@@ -107,10 +107,10 @@ app.post ('/request/:reqType/:resType', function (req, res) {
   res.send (javaResponse);
 });
 
-var socketClient = new net.Socket();
+/*var socketClient = new net.Socket();
 socketClient.connect (9235, '127.0.0.1', function () {
   console.log ('Connected to Java server.');
-});
+});*/
 
 /* Sends a message to the Java API and returns the result.
     If there was a failure, null is returned */
@@ -118,8 +118,16 @@ function sendMessage (message) {
   message += '\n';
   return new Promise (function (resolve, reject) {
     console.log ('Sending message');
-    socketClient.write (message);
+
+    var socketClient = new net.Socket();
+
+    socketClient.connect (9235, '127.0.0.1', function () {
+      console.log ('Connected to Java Server.');
+      socketClient.write (message);
+    });
+
     socketClient.on('data', function (data) {
+      console.log ('Read data: ' + data.toString());
       resolve(data.toString());
     });
 

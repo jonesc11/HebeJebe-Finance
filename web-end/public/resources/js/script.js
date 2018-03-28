@@ -11,6 +11,7 @@ $(document).ready (function (app) {
 			      }
 			}).
 			then(function(success) {
+				console.log(success.data);
 				$scope.transactions = success.data;
 			}).
 			then(function(error) {
@@ -27,6 +28,7 @@ $(document).ready (function (app) {
 		  		"Limit": 30,
 			      }
 			}).then(function(success) {
+				console.log (success.data);
 				$scope.accounts = success.accounts;
 			}).
 			then(function(error) {
@@ -53,7 +55,7 @@ $(document).ready (function (app) {
 			      }
 			}).
 			then(function(success) {
-
+				console.log (success.data);
 			}).
 			then(function(error) {
 				// log error
