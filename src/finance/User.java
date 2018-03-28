@@ -13,7 +13,8 @@ public class User {
 	private String password;
 	private String firstName;
 	private String lastName;
-	private Map<String, Account> accounts;	 
+	private Map<String, Account> accounts;
+	private String resourceIdentifier;
 	
 	public User(String e, String pw, String fn, String ln) {
 		accounts = new HashMap<String, Account>();
@@ -21,6 +22,10 @@ public class User {
 		password = pw;
 		firstName = fn;
 		lastName = ln;
+	}
+	
+	public String getResourceIdentifier () {
+		return this.resourceIdentifier;
 	}
 	
 	public String getEmail() {
@@ -33,6 +38,10 @@ public class User {
 	
 	public String getLastName() {
 		return lastName;
+	}
+	
+	public void setResourceIdentifier (String identifier) {
+		this.resourceIdentifier = identifier;
 	}
 	
 	public double getBalance() {
@@ -56,13 +65,17 @@ public class User {
 		Account account = new Account(name, type, balance);
 		
 		//A really poor way of creating a unique ResourceIdentifier for the new Account
-		int i = 1;
-		while(accounts.get("a" + i) != null) {
+		int i = 0;
+		while(accounts.get("a" + i) != null)
 			i++;
-		}
-		accounts.put("a" + i, account);
 		
-		return "a" + i;
+		String newIdentifier = "a" + i;
+		
+		account.setResourceIdentifier(newIdentifier);
+		Runner.addResource(newIdentifier, account);
+		accounts.put(newIdentifier, account);
+		
+		return newIdentifier;
 	}
 	
 	/*
@@ -105,12 +118,10 @@ public class User {
 		Account acc = getAccount(ri);
 		String transactionRI;
 		
-		if(isRecurring) {
+		if(isRecurring)
 			transactionRI = acc.addRecurringIncome(a, n, c, p, d1, d2);
-		}
-		else {
+		else
 			transactionRI = acc.addSingleIncome(a, n, c, d1);
-		}
 		
 		return transactionRI;
 	}
@@ -141,12 +152,9 @@ public class User {
 	 */
 	public List<Transaction> getTransactionHistory() {
 		List<Transaction> allTransactions = new ArrayList<Transaction>();
-		for(int i = 0; i < accounts.size(); i++) {
-			List<Transaction> temp = accounts.get("a" + i).getTransactionHistory();
-			for(int j = 0; j < temp.size(); j++) {
-				allTransactions.add(temp.get(j));
-			}
-		}
+		for (String id : accounts.keySet())
+			allTransactions.addAll(accounts.get(id).getTransactionHistory());
+		
 		return allTransactions;
 	}
 	

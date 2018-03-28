@@ -12,6 +12,7 @@ public class Account {
 	private String name;
 	private String type;
 	private double balance;
+	private String resourceIdentifier;
 	private List<SubBalance> subBalances;
 	private Map<String, Transaction> transactions;
 	
@@ -20,6 +21,15 @@ public class Account {
 		type = t;
 		balance = b;
 		transactions = new HashMap<String, Transaction>();
+		this.subBalances = new ArrayList<SubBalance>();
+	}
+	
+	public String getResourceIdentifier () {
+		return this.resourceIdentifier;
+	}
+	
+	public void setResourceIdentifier (String identifier) {
+		this.resourceIdentifier = identifier;
 	}
 	
 	public String getType() {
@@ -54,26 +64,32 @@ public class Account {
 		balance += a;
 		
 		int i = 0;
-		while(transactions.get("t" + i) != null) {
+		while(transactions.get("t" + i) != null)
 			i++;
-		}
 		
-		transactions.put("t" + i, newIncome);
+		String newIdentifier = "t" + i;
 		
-		return "t" + i;
+		newIncome.setResourceIdentifier(newIdentifier);
+		Runner.addResource(newIdentifier, newIncome);
+		transactions.put(newIdentifier, newIncome);
+		
+		return newIdentifier;
 	}
 	
 	public String addRecurringIncome(double a, String n, String c, Period p, Date d1, Date d2) {
 		RecurringIncome newIncome = new RecurringIncome(a, n, c, p, d1, d2);
 		
 		int i = 0;
-		while(transactions.get("t" + i) != null) {
+		while(transactions.get("t" + i) != null)
 			i++;
-		}
 		
-		transactions.put("t" + i, newIncome);
+		String newIdentifier = "t" + i;
 		
-		return "t" + i;
+		newIncome.setResourceIdentifier(newIdentifier);
+		Runner.addResource(newIdentifier, newIncome);
+		transactions.put(newIdentifier, newIncome);
+		
+		return newIdentifier;
 	}
 	
 	public String addSingleExpense(double a, String n, String c, Date d) {
@@ -81,37 +97,48 @@ public class Account {
 		balance -= a;
 		
 		int i = 0;
-		while(transactions.get("t" + i) != null) {
+		while(transactions.get("t" + i) != null)
 			i++;
-		}
 		
-		transactions.put("t" + i, newExpense);
+		String newIdentifier = "t" + i;
 		
-		return "t" + i;
+		newExpense.setResourceIdentifier(newIdentifier);
+		Runner.addResource(newIdentifier, newExpense);
+		transactions.put(newIdentifier, newExpense);
+		
+		return newIdentifier;
 	}
 	
 	public String addRecurringExpense(double a, String n, String c, Period p, Date d1, Date d2) {
 		RecurringExpense newExpense = new RecurringExpense(a, n, c, p, d1, d2);
 		
 		int i = 0;
-		while(transactions.get("t" + i) != null) {
+		while(transactions.get("t" + i) != null)
 			i++;
-		}
 		
-		transactions.put("t" + i, newExpense);
+		String newIdentifier = "t" + i;
 		
-		return "t" + i;
+		newExpense.setResourceIdentifier(newIdentifier);
+		Runner.addResource(newIdentifier, newExpense);
+		transactions.put(newIdentifier, newExpense);
+		
+		return newIdentifier;
 	}
 	
-	public void addTransfer(double a, String n) {
+	public String addTransfer(double a, String n) {
 		Transfer newTransfer = new Transfer(a, n);
 
 		int i = 0;
-		while(transactions.get("t" + i) != null) {
+		while(transactions.get("t" + i) != null)
 			i++;
-		}
 		
+		String newIdentifier = "t" + i;
+		
+		newTransfer.setResourceIdentifier(newIdentifier);
+		Runner.addResource(newIdentifier, newTransfer);
 		transactions.put("t" + i, newTransfer);
+		
+		return newIdentifier;
 	}	
 
 }

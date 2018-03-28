@@ -5,14 +5,14 @@ $(document).ready (function (app) {
 	app.controller("PostsCtrl", function($scope, $http) {
 		$http({
   			method: 'GET',
-  			url: 'request/get/transactions',
+  			url: '/request/get/transactions',
   			data: {
   				"Limit": 30,
 			      }
 			}).
 			then(function(success) {
 				console.log(success.data);
-				$scope.transactions = success.data;
+				$scope.transactions = success.data.Transactions;
 			}).
 			then(function(error) {
 				// log error
@@ -20,25 +20,28 @@ $(document).ready (function (app) {
 	}); 
 
 	app.controller("NewPanel", function($scope, $http) {
-		
-		$http({
-			method: 'GET',
-			url: 'request/get/accounts',
-			data: {
-		  		"Limit": 30,
-			      }
-			}).then(function(success) {
-				console.log (success.data);
-				$scope.accounts = success.accounts;
-			}).
-			then(function(error) {
-				// log error
-		});
+        var getAccounts = function () {
+            $http({
+                method: 'GET',
+                url: '/request/get/accounts',
+                data: {
+                    "Limit": 30
+                    }
+                }).then(function(success) {
+                    console.log (success.data);
+                    $scope.accounts = success.data.Account;
+                }).
+                then(function(error) {
+                    // log error
+            });
+        };
+        
+        getAccounts();
 
 		$scope.createTransaction = function(){
 	    	 $http({
   			method: 'POST',
-  			url: 'request/create/transactions',
+  			url: '/request/create/transaction',
   			data: {
   				"Limit": 30,
 				"TransactionType": $scope.transactionType, 
@@ -62,7 +65,24 @@ $(document).ready (function (app) {
 		});
 
 		};
+        
+        $scope.createAccount = function () {
+            $http ({
+                method: 'POST',
+                url: '/request/create/account',
+                data: {
+                    AccountName: $scope.createAccountName,
+                    AccountBalance: $scope.createAccountBalance,
+                    AccountType: $scope.createAccountType
+                }
+            }).then (function (success) {
+                console.log (success.data);
+                getAccounts();
+                $("#createAccountModal").modal();
+            }).then (function (error) {
+                // log error
+            });
+        };
 	});
-
 	 
 }(app));
