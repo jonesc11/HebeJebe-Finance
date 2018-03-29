@@ -78,7 +78,9 @@ $(document).ready (function (app) {
             }).then (function (success) {
                 console.log (success.data);
                 getAccounts();
-                $("#createAccountModal").modal();
+                $("#createAccountModal").modal('toggle');
+                $("input[name=create-account-name]").val("");
+                $("input[name=create-account-balance]").val("");
             }).then (function (error) {
                 // log error
             });

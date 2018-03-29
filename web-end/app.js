@@ -119,6 +119,7 @@ function sendMessage (message) {
 
     socketClient.on('data', function (data) {
       resolve(data.toString());
+      socketClient.destroy();
     });
 
     socketClient.on('error', function (data) {
