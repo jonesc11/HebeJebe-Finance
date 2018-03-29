@@ -83,27 +83,27 @@ public class Runner {
 		// the provided limit.
 		// Issues: Currently ignores NextTokens and ResourceIdentifier
 		if(actionType.equals("GetTransactions")) {
-			parseGetTransactions(action);
+			response = parseGetTransactions(action);
 		}
 		// Second case: GetAccount
 		// Returns a JSONObject containing a JSONObject that includes information about the specified Account.
 		// Issues: Currently ignores NextTokens.
 		else if(actionType.equals("GetAccounts")) {
-			parseGetAccounts(action);
+			response = parseGetAccounts(action);
 		}
 		else if(actionType.equals("GetUser")) {
-			parseGetUsers(action);
+			response = parseGetUsers(action);
 		}
 		else if(actionType.equals("CreateUser")) {
-			parseCreateUser (action);
+			response = parseCreateUser (action);
 		}
 		else if(actionType.equals("CreateAccount")) {
-			parseCreateAccount (action);
+			response = parseCreateAccount (action);
 		}
 		//Creates a new transaction, associates it with the appropriate user and account/sub-balance
 		//Issues: Currently doesn't work with Transfers.
 		else if(actionType.equals("CreateTransaction")) {
-			parseCreateTransaction (action, user);
+			response = parseCreateTransaction (action, user);
 		}
 					 
 		return response.toString();
