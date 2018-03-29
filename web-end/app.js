@@ -13,7 +13,6 @@ var keysObject = require ('./keys.json');
 var accessKey = keysObject.AccessKey;
 var secretKey = keysObject.SecretKey;
 
-
 app.listen (80);
 
 app.use (express.static (__dirname + '/public'));
@@ -27,14 +26,14 @@ app.get ('/', function (req, res) {
 app.get ('/request/:reqType/:resType', function (req, res) {
   var resourceType = req.params.resType;
   var requestType = req.params.reqType;
-  var userRID = req.cookies.accountRI;
+  var userRID = "u0";//req.cookies.accountRI;
   var data = {};
 
   if (requestType === 'get' && resourceType === 'transactions') {
     data = {
       Key: accessKey,
       Secret: secretKey,
-      AccountId: req.cookies.accountRI,
+      AccountId: userRID,
       ActionType: "GetTransactions",
       Action: {
         Limit: req.query.Limit ? req.query.Limit : 25,
@@ -49,7 +48,7 @@ app.get ('/request/:reqType/:resType', function (req, res) {
     data = {
       Key: accessKey,
       Secret: secretKey,
-      AccountId: req.cookies.accountRI,
+      AccountId: userRID,
       ActionType: "GetAccounts",
       Action: {
         Limit: req.query.Limit ? req.query.Limit : 25,
@@ -60,79 +59,71 @@ app.get ('/request/:reqType/:resType', function (req, res) {
     };
   }
 
-  var javaResponse = sendMessage (JSON.stringify (data)).then(function (data) { console.log(data); res.send (data); });
+  sendMessage (JSON.stringify (data)).then(function (data) { res.send (data); });
 });
 
 app.post ('/request/:reqType/:resType', function (req, res) {
   var resourceType = req.params.resType;
   var requestType = req.params.reqType;
-  var userRID = req.cookies.accountRI;
+  var userRID = "u0";//req.cookies.accountRI;
   var data = {};
-
+  
   if (requestType === 'create' && resourceType === 'account') {
     data = {
       Key: accessKey,
       Secret: secretKey,
-      AccountId: req.cookies.accountRI,
+      AccountId: userRID,
       ActionType: "CreateAccount",
       Action: {
-        UserResourceIdentifier: req.query.UserResourceIdentifier ? req.query.UserResourceIdentifier : userRID,
-        AccountName: req.query.AccountName ? req.query.AccountName : null,
-        AccountBalance: req.query.AccountBalance ? req.query.AccountBalance : null
+        UserResourceIdentifier: req.body.UserResourceIdentifier ? req.body.UserResourceIdentifier : userRID,
+        AccountName: req.body.AccountName ? req.body.AccountName : null,
+        AccountBalance: req.body.AccountBalance ? req.body.AccountBalance : null,
+        AccountType: req.body.AccountType ? req.body.AccountType : null
       }
     };
   } else if (requestType === 'create' && resourceType === 'transaction') {
     data = {
       Key: accessKey,
       Secret: secretKey,
-      AccountId: req.cookies.accountRI,
+      AccountId: userRID,
       ActionType: "CreateTransaction",
       Action: {
-        TransactionType: req.query.TransactionType ? req.query.TransactionType : null,
-        Amount: req.query.Amount ? req.query.Amount : 0,
-        To: req.query.To ? req.query.To : null,
-        From: req.query.From ? req.query.From : null,
-        Description: req.query.Description ? req.query.Description : null,
-        DateTime: req.query.DateTime ? req.query.DateTime : null,
-        Category: req.query.Category ? req.query.Category : null,
-        AssociatedWith: req.query.AssociatedWith ? req.query.AssociatedWith : null,
-        Recurring: req.query.Recurring ? req.query.Recurring : false,
-        RecurringUntil: req.query.RecurringUntil ? req.query.RecurringUntil : null,
-        RecurringFrequency: req.query.RecurringFrequency ? req.query.RecurringFrequency : null
+        TransactionType: req.body.TransactionType ? req.body.TransactionType : null,
+        Amount: req.body.Amount ? req.body.Amount : 0,
+        To: req.body.To ? req.body.To : null,
+        From: req.body.From ? req.body.From : null,
+        Description: req.body.Description ? req.body.Description : null,
+        DateTime: req.body.DateTime ? req.body.DateTime : null,
+        Category: req.body.Category ? req.body.Category : null,
+        AssociatedWith: req.body.AssociatedWith ? req.body.AssociatedWith : null,
+        Recurring: req.body.Recurring ? req.body.Recurring : false,
+        RecurringUntil: req.body.RecurringUntil ? req.body.RecurringUntil : null,
+        RecurringFrequency: req.body.RecurringFrequency ? req.body.RecurringFrequency : null
       }
     };
   }
 
-  var javaResponse = sendMessage (JSON.stringify (data)).then(function (data) { console.log(data); return data; });
-  res.send (javaResponse);
+  sendMessage (JSON.stringify (data)).then(function (data) { res.send (data); });
 });
-
-/*var socketClient = new net.Socket();
-socketClient.connect (9235, '127.0.0.1', function () {
-  console.log ('Connected to Java server.');
-});*/
 
 /* Sends a message to the Java API and returns the result.
     If there was a failure, null is returned */
 function sendMessage (message) {
   message += '\n';
   return new Promise (function (resolve, reject) {
-    console.log ('Sending message');
-
     var socketClient = new net.Socket();
 
     socketClient.connect (9235, '127.0.0.1', function () {
-      console.log ('Connected to Java Server.');
       socketClient.write (message);
     });
 
     socketClient.on('data', function (data) {
-      console.log ('Read data: ' + data.toString());
       resolve(data.toString());
+      socketClient.destroy();
     });
 
-    socketClient.on('error', function (data ) {
-      reject(err);
+    socketClient.on('error', function (data) {
+      reject(data);
     });
   });
 }

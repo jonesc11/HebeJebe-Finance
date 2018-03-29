@@ -17,7 +17,7 @@ public abstract class Transaction {
 	}
 	
 	public Date getDate() {
-		return getDate();
+		return date;
 	}
 	
 	public String getCategory() {
@@ -26,5 +26,9 @@ public abstract class Transaction {
 	
 	public String getResourceIdentifier() {
 		return resourceIdentifier;
+	}
+	
+	public void setResourceIdentifier(String identifier) {
+		resourceIdentifier = identifier;
 	}
 }

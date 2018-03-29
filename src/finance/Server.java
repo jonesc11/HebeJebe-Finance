@@ -35,7 +35,7 @@ public class Server {
 
     public class Handler extends Thread{
         private BufferedReader in;
-        private DataOutputStream out;
+        private PrintWriter out;
         private Socket socket;
         
         public Handler(Socket socket) {
@@ -44,21 +44,21 @@ public class Server {
 
         public void run() {
             try {
-            	System.out.println("Connected to client...");
-            	while (true) {
-	        		String request;
-	                String response;
-	                
-	                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-	                request = in.readLine();
-	                out = new DataOutputStream(socket.getOutputStream()); 
-	                try {
-	                	response = Runner.processRequest (request);
-	                	out.writeBytes (response);
-	                } catch (JSONException e) {
-	                	out.writeBytes ("{\"ErrorMessage\":\"Processing failure.\"}");
-	                }
-            	}
+        		String request;
+                String response;
+                
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                request = in.readLine();
+                out = new PrintWriter(socket.getOutputStream(), true);
+                
+                try {
+                	response = Runner.processRequest (request);
+                	out.println(response);
+                } catch (JSONException e) {
+                	e.printStackTrace();
+                	String errorMessage = "{\"ErrorMessage\":\"Processing failure.\"}";
+                	out.println (errorMessage);
+                }
             }
             catch (IOException e) {
                 System.out.println(e);
