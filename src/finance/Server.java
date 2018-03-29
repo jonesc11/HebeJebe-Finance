@@ -44,7 +44,6 @@ public class Server {
 
         public void run() {
             try {
-            	System.out.println("Connected to client...");
             	while (true) {
 	        		String request;
 	                String response;
@@ -53,11 +52,8 @@ public class Server {
 	                request = in.readLine();
 	                out = new PrintWriter(socket.getOutputStream(), true);
 	                
-	                System.out.println("Read: " + request);
-	                
 	                try {
 	                	response = Runner.processRequest (request);
-	                	System.out.println("Responding: " + response);
 	                	out.println(response);
 	                } catch (JSONException e) {
 	                	e.printStackTrace();
