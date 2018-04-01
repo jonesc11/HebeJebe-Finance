@@ -1,4 +1,4 @@
-var app = angular.module("MyApp", []);
+var app = angular.module("MyApp", ['ngRoute']);
 
 $(document).ready (function (app) {
 
@@ -8,11 +8,24 @@ $(document).ready (function (app) {
                         templateUrl : "index.html"
                    })
             	.when("/signup", {
-                        templateUrl : "signup.html
+                        templateUrl : "../../../pages/signup.html"
     		   })
-        });
 
-	app.controller("PostsCtrl", function($scope, $http) {
+             });
+
+	app.controller("PostsCtrl", function($scope, $http, $window) {
+		$http({
+  			method: 'GET',
+		 	url: '/user',
+                 	data: null
+                 }).
+                 then(function(success) {
+
+                 }). 
+                 catch(function(error){
+                      $window.location.href = "/signup"
+              	 });
+		
 		$http({
   			method: 'GET',
   			url: '/request/get/transactions',
