@@ -7,21 +7,29 @@ import java.util.ArrayList;
 
 import finance.FinanceUtilities.Period;
 
-public class Account {
+public class Account implements IAccount {
 	
 	private String name;
 	private String type;
 	private double balance;
 	private String resourceIdentifier;
-	private List<SubBalance> subBalances;
+	private Map<String, IAccount> subBalances;
 	private Map<String, Transaction> transactions;
 	
 	public Account(String n, String t, double b) {
-		name = n;
-		type = t;
-		balance = b;
-		transactions = new HashMap<String, Transaction>();
-		this.subBalances = new ArrayList<SubBalance>();
+		this.name = n;
+		this.type = t;
+		this.balance = b;
+		this.transactions = new HashMap<String, Transaction>();
+		this.subBalances = new HashMap<String, IAccount>();
+	}
+	
+	public Account(String n, String t, double b, Map<String, Transaction> tr, Map<String, IAccount> sb) {
+		this.name = n;
+		this.type = t;
+		this.balance = b;
+		this.transactions = tr;
+		this.subBalances = sb;
 	}
 	
 	public String getResourceIdentifier () {
@@ -70,7 +78,7 @@ public class Account {
 		String newIdentifier = "t" + i;
 		
 		newIncome.setResourceIdentifier(newIdentifier);
-		Runner.addResource(newIdentifier, newIncome);
+		Parser.addResource(newIdentifier, newIncome);
 		transactions.put(newIdentifier, newIncome);
 		
 		return newIdentifier;
@@ -86,7 +94,7 @@ public class Account {
 		String newIdentifier = "t" + i;
 		
 		newIncome.setResourceIdentifier(newIdentifier);
-		Runner.addResource(newIdentifier, newIncome);
+		Parser.addResource(newIdentifier, newIncome);
 		transactions.put(newIdentifier, newIncome);
 		
 		return newIdentifier;
@@ -103,7 +111,7 @@ public class Account {
 		String newIdentifier = "t" + i;
 		
 		newExpense.setResourceIdentifier(newIdentifier);
-		Runner.addResource(newIdentifier, newExpense);
+		Parser.addResource(newIdentifier, newExpense);
 		transactions.put(newIdentifier, newExpense);
 		
 		return newIdentifier;
@@ -119,7 +127,7 @@ public class Account {
 		String newIdentifier = "t" + i;
 		
 		newExpense.setResourceIdentifier(newIdentifier);
-		Runner.addResource(newIdentifier, newExpense);
+		Parser.addResource(newIdentifier, newExpense);
 		transactions.put(newIdentifier, newExpense);
 		
 		return newIdentifier;
@@ -135,7 +143,7 @@ public class Account {
 		String newIdentifier = "t" + i;
 		
 		newTransfer.setResourceIdentifier(newIdentifier);
-		Runner.addResource(newIdentifier, newTransfer);
+		Parser.addResource(newIdentifier, newTransfer);
 		transactions.put("t" + i, newTransfer);
 		
 		return newIdentifier;
