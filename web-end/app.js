@@ -35,9 +35,18 @@ app.get ('/request/:reqType/:resType', function (req, res) {
     data = handleGetAccounts (req, userRID);
   else if (requestType === 'get' && resourceType === 'subbalance')
     data = handleGetSubbalance (req, userRID);
+  else if (requestType === 'get' && resourceType === 'user')
+    data = handleGetUser (req, userRID);
 
-  sendMessage (JSON.stringify (data)).then(function (data) { res.send (data); res.status (data.ErrorMessage ? 400 : 200); });
+  if (data.ErrorMessage) {
+    res.send (data);
+    res.status (200);
+  } else {
+    sendMessage (JSON.stringify (data)).then(function (data) { res.send (data); res.status (data.ErrorMessage ? 400 : 200); });
+  }
 });
+
+app.get ('/user', function (req, res) {res.send (1);});
 
 app.post ('/request/:reqType/:resType', function (req, res) {
   var resourceType = req.params.resType;
@@ -45,13 +54,33 @@ app.post ('/request/:reqType/:resType', function (req, res) {
   var userRID = "u0";//req.cookies.accountRI;
   var data = {};
   
-  if (requestType === 'create' && resourceType === 'account') {
+  if (requestType === 'create' && resourceType === 'account')
     data = handleCreateAccount (req, userRID);
-  } else if (requestType === 'create' && resourceType === 'transaction') {
+  else if (requestType === 'create' && resourceType === 'transaction')
     data = handleCreateTransaction (req, userRID);
-  }
+  else if (requestType === 'create' && resourceType === 'user')
+    data = handleCreateUser (req, userRID);
+  else if (requestType === 'create' && resourceType === 'subbalance')
+    data = handleCreateSubbalance (req, userRID);
 
-  sendMessage (JSON.stringify (data)).then(function (data) { res.send (data); res.status (data.ErrorMessage ? 400 : 200); });
+  if (data.ErrorMessage) {
+    res.send (data);
+    res.status (200);
+  } else {
+    sendMessage (JSON.stringify (data)).then(function (data) { res.send (data); res.status (data.ErrorMessage ? 400 : 200); });
+  }
+});
+
+app.post ('/request/modify', function (req, res) {
+  var userRID = "u0";//req.cookies.accountRI;
+  var data = handleModifyResource (req, userRID);
+
+  if (data.ErrorMessage) {
+    res.send (data);
+    res.status (200);
+  } else {
+    sendMessage (JSON.stringify (data)).then (function (data) { res.send (data); res.status (data.ErrorMessage ? 400 : 200); });
+  }
 });
 
 /* Handles GetTransaction requests. Given input from AngularJS, convert it into valid input
@@ -122,6 +151,26 @@ function handleGetSubbalance (req, userRID) {
   return data;
 }
 
+/* Handles GetUser requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleGetUser (req, userRID) {
+  if ((req.body.ResourceIdentifier && req.body.ResourceIdentifer !== null && req.body.UserIdentifier && req.body.UserIdentifier !== null) || (!req.body.ResourceIdentifier || req.body.ResourceIdentifier === null && !req.body.UserIdentifier || req.body.UserIdentifier === null))
+    return { ErrorMessage: "ResourceIdentifier or UserIdentifier must be specified, but not both." };
+
+  data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: "GetUser",
+    Action: {
+      ResourceIdentifier: req.body.ResourceIdentifier ? req.body.ResourceIdentifier : null,
+      UserIdentifier: req.body.UserIdentifier ? req.body.ResourceIdentifier : null
+    }
+  };
+
+  return data;
+}
+
 /* Handles CreateAccount requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleCreateAccount (req, userRID) {
@@ -177,6 +226,84 @@ function handleCreateTransaction (req, userRID) {
       Recurring: req.body.Recurring ? req.body.Recurring : false,
       RecurringUntil: req.body.RecurringUntil ? req.body.RecurringUntil : null,
       RecurringFrequency: req.body.RecurringFrequency ? req.body.RecurringFrequency : null
+    }
+  };
+
+  return data;
+}
+
+/* Handles CreateUser requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleCreateUser (req, userRID) {
+  if (!req.body.UserIdentifier || req.body.UserIdentifier === null)
+    return { ErrorMessage: "Email address must be specified." };
+  if (!req.body.Password || req.body.Password === null)
+    return { ErrorMessage: "Password must be specified." };
+  if (!req.body.FirstName || req.body.FirstName === null)
+    return { ErrorMessage: "First name must be specified." };
+  if (!req.body.LastName || req.body.LastName === null)
+    return { ErrorMessage: "Last name must be specified." };
+
+  data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: "CreateUser",
+    Action: {
+      UserIdentifier: req.body.UserIdentifier,
+      Password: req.body.Password,
+      FirstName: req.body.FirstName,
+      LastName: req.body.LastName
+    }
+  };
+
+  return data;
+}
+
+/* Handles CreateSubbalance requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleCreateSubbalance (req, userRID) {
+  if (!req.body.AccountResourceIdentifier || req.body.AccountResourceIdentifier === null)
+    return { ErrorMessage: "Resource Identifier for the associated account is required." };
+  if (!req.body.SubBalanceName || req.body.SubBalanceName === null)
+    return { ErrorMessage: "Subbalance must have a name." };
+
+  data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: "CreateSubBalance",
+    Action: {
+      AccountResourceIdentifier: req.body.AccountResourceIdentifier,
+      SubBalanceName: req.body.SubBalanceName,
+      SubBalanceBalance: req.body.SubBalanceBalance ? req.body.SubBalanceBalance : 0
+    }
+  };
+
+  return data;
+}
+
+/* Handles ModifyResource requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleModifyResource (req, userRID) {
+  if (!req.body.ResourceIdentifier || req.body.ResourceIdentifier === null)
+    return { ErrorMessage: "ResourceIdentifier must be specified." };
+  if (!req.body.Changes || req.body.Changes === null || !Array.isArray(req.body.Changes))
+    return { ErrorMessage: "Changes is not present or incorrectly formatted." };
+
+  for (var i = 0; i < req.body.Changes.length; ++i) {
+    if (!req.body.Changes[i].Key || req.body.Changes[i].Key === null || !req.body.Changes[i].Value || req.body.Changes[i].Value === null)
+      return { ErrorMessage: "Changes is not present or incorrectly formatted." };
+  }
+
+  data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: "ModifyResource",
+    Action: {
+      ResourceIdentifier: req.body.ResourceIdentifier,
+      Changes: req.body.Changes
     }
   };
 
