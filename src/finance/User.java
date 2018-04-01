@@ -17,11 +17,18 @@ public class User {
 	private String resourceIdentifier;
 	
 	public User(String e, String pw, String fn, String ln) {
-		accounts = new HashMap<String, Account>();
 		email = e;
 		password = pw;
 		firstName = fn;
 		lastName = ln;
+		accounts = new HashMap<String, Account>();
+	}
+	public User(String e, String pw, String fn, String ln, Map<String, Account> a) {
+		email = e;
+		password = pw;
+		firstName = fn;
+		lastName = ln;
+		accounts = a;
 	}
 	
 	public String getResourceIdentifier () {
@@ -72,7 +79,7 @@ public class User {
 		String newIdentifier = "a" + i;
 		
 		account.setResourceIdentifier(newIdentifier);
-		Runner.addResource(newIdentifier, account);
+		Parser.addResource(newIdentifier, account);
 		accounts.put(newIdentifier, account);
 		
 		return newIdentifier;
