@@ -2,6 +2,16 @@ var app = angular.module("MyApp", []);
 
 $(document).ready (function (app) {
 
+        app.config(function($routeProvider) {
+            $routeProvider
+           	.when("/", {
+                        templateUrl : "index.html"
+                   })
+            	.when("/signup", {
+                        templateUrl : "signup.html
+    		   })
+        });
+
 	app.controller("PostsCtrl", function($scope, $http) {
 		$http({
   			method: 'GET',

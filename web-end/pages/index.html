@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
+
+    <base href="/">
+
     <!-- Load CSS, including Bootstrap -->
     <link rel="stylesheet" href="/resources/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/resources/css/bootstrap-grid.min.css" />
@@ -35,8 +38,8 @@
   		<tbody ng-repeat="transaction in transactions">
     			<tr>
       				<td>{{transaction.DateTime}}</td>
-                    <td>{{transaction.Description}}</td>
-                    <td>{{transaction.Amount}}</td>
+ 	                        <td>{{transaction.Description}}</td>
+                                <td>{{transaction.Amount}}</td>
       				<td>{{transaction.account.name}}</td>
       				<td>{{transaction.account.total}}</td>
 				<td>ACTION</td>
