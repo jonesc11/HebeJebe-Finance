@@ -51,52 +51,39 @@
 		</br>
 		<label> Create Transaction </label>
 		<form>
+			<div class="form-group">
+				<select class="custom-select custom-select-lg mb-3" ng-model="transactionAccount">
+					<option ng-repeat="account in accounts" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
+				</select>
+			</div>
   			<div class="form-group">
-				<div class="dropdown">
-  				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    					Account	
-  				</button>
-  				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    					<a class="dropdown-item" href="#">Account1</a>
-    					<a class="dropdown-item" href="#">Account2</a>
-
-  				</div>
-				</div>
-			</div>	
-  			<div class="form-group">
-    				<label for="transactionName">Transaction Name</label>
-    				<input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Name">
+    				<label for="transactionName">Description</label>
+    				<input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Description" ng-model="transactionDescription">
   			</div>
   			<div class="form-group">
 				<label for="exampleInputEmail1">Transaction Amount</label>
-    				<input type="text" class="form-control" id="name1" aria-describedby="transactionAmount" placeholder="Amount" ng-model="$scope.amount">
+    				<input type="text" class="form-control" id="name1" aria-describedby="transactionAmount" placeholder="Amount" ng-model="amount">
   			</div>
 			<div class="form-group">
-				<div class="dropdown">
-  				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    					label what is selected
-  				</button>
-  				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-    					<button type="button" class="dropdown-item" ng-click="setTransactionType(Expense)">Expense</button>
-    					<button type="button" class="dropdown-item" ng-click="setTransactionType(Income)">Income</button>
-  				</div>
-				 </div>	
+				<select class="custom-select custom-select-lg mb-3" ng-model=transactionType>
+  					<option selected value="Expense">Expense</option>
+  					<option value="Income">Income</option>
+				</select>
+			</div>
+			<div class="form-group">
+  				<label for="example-date-input">Date</label>
+    				<input class="form-control" type="date" id="example-date-input" ng-model=transactionDate>
 			</div>
 			 <div class="form-check">
   				<input type="checkbox" class="form-check-input" id="customCheck1"  ng-model="recurring">
   				<label class="custom-control-label" for="customCheck1">Recurring Expense</label>
 			</div>
-			<div class="form-group" >
-				<div class="dropdown" ng-show="recurring">
-  				<button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    					Recurring Period	
-  				</button>
-  				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton" >
-    					<a class="dropdown-item" href="#">Daily</a>
-    					<a class="dropdown-item" href="#">Weekly</a>
-    					<a class="dropdown-item" href="#">Monthly</a>
-  				</div>
-				 </div>	
+			<div class="form-group">
+				<select class="custom-select custom-select-lg mb-3" ng-show="recurring" ng-model="transactionRecurInterval">
+					<option value="Daily">Daily</option>
+					<option value="Weekly">Weekly</option>
+					<option selected value="Monthly">Monthly</option>
+				</select>
 			</div>
 
   			<button type="submit" class="btn btn-primary" ng-click="createTransaction()">Submit</button>
