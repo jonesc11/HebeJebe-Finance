@@ -5,15 +5,19 @@ $(document).ready (function (app) {
         app.config(function($routeProvider) {
             $routeProvider
            	.when("/", {
-                        templateUrl : "index.html"
+                        templateUrl : "/resources/views/home.html"
                    })
             	.when("/signup", {
-                        templateUrl : "../../../pages/signup.html"
+                        templateUrl : "/resources/views/signup.html"
     		   })
 
              });
 
-	app.controller("PostsCtrl", function($scope, $http, $window) {
+ 	/*app.config(["$locationProvider", function($locationProvider){
+		$locationProvider.hashPrefix(['']);
+	}]);*/
+
+	app.controller("PostsCtrl", function($scope, $http, $location) {
 		$http({
   			method: 'GET',
 		 	url: '/user',
@@ -23,7 +27,8 @@ $(document).ready (function (app) {
 
                  }). 
                  catch(function(error){
-                      $window.location.href = "/signup"
+			console.log("test");
+                      $location.url("signup");
               	 });
 		
 		$http({
