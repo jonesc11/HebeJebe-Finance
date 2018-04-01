@@ -20,7 +20,7 @@ public class AccountTest {
 	@Test
 	public void testGetters() {
 		assertEquals(name, correct.getName());
-		assertEquals(balance, correct.getBalance());
+		assertTrue(balance == correct.getBalance());
 		assertEquals(type, correct.getType());
 	}
 

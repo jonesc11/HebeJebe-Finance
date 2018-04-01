@@ -19,7 +19,7 @@ public class SingleExpenseTest {
 	
 	@Test
 	public void testCreation() {
-		assertEquals("fail on getAmount() on singleExpense",a, original.getAmount());
+		assertTrue(a == original.getAmount());
 		assertEquals("fail on getName() on singleExpense",n, original.getName());
 		assertEquals("fail on getCategorey() on singleExpense", c, original.getCategory());
 		assertEquals("fail on getDate() on singleExpense", d, original.getDate() );
