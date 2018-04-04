@@ -46,10 +46,7 @@ body {
 	/*stacking fieldsets above each other*/
 	position: relative;
 }
-/*Hide all except first fieldset*/
-#msform fieldset:not(:first-of-type) {
-	display: none;
-}
+
 /*inputs*/
 #msform input, #msform textarea {
 	padding: 15px;

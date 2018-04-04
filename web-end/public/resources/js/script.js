@@ -17,6 +17,34 @@ $(document).ready (function (app) {
 		$locationProvider.hashPrefix(['']);
 	}]);*/
 
+	app.controller("SignupCtrl", function($scope, $http){
+		$scope.page1 = true
+
+		$scope.nextOne = function(){
+			$scope.page1 = false
+			$scope.page2 = true
+			$scope.page3 = false	
+		}	
+
+		$scope.prevTwo = function(){
+			$scope.page1 = true
+			$scope.page2 = false
+			$scope.page3 = false
+		}
+
+		$scope.nextTwo = function(){
+			$scope.page1 = false
+			$scope.page2 = false
+			$scope.page3 = true
+		}
+
+		$scope.prevThree = function(){
+			$scope.page1 = false
+			$scope.page2 = true
+			$scope.page3 = false
+		}
+	});
+
 	app.controller("PostsCtrl", function($scope, $http, $location) {
 		$http({
   			method: 'GET',
