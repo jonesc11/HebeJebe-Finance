@@ -13,9 +13,9 @@
     <input type="text" name="email" placeholder="Email" />
     <input type="password" name="pass" placeholder="Password" />
     <input type="password" name="cpass" placeholder="Confirm Password" />
-    <input type="button" name="next" class="next action-button" value="Next" />
+    <input type="button" name="next" class="next action-button" value="Next" ng-model="step2"/>
   </fieldset>
-  <fieldset>
+  <fieldset ng-show="step2">
     <h2 class="fs-title">Account Info</h2>
     <h3 class="fs-subtitle">Your presence on the social network</h3>
     <input type="text" name="twitter" placeholder="Twitter" />
