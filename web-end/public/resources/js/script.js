@@ -13,9 +13,6 @@ $(document).ready (function (app) {
 
              });
 
- 	/*app.config(["$locationProvider", function($locationProvider){
-		$locationProvider.hashPrefix(['']);
-	}]);*/
 
 	app.controller("SignupCtrl", function($scope, $http){
 		$scope.page1 = true
@@ -23,26 +20,35 @@ $(document).ready (function (app) {
 		$scope.nextOne = function(){
 			$scope.page1 = false
 			$scope.page2 = true
-			$scope.page3 = false	
 		}	
 
 		$scope.prevTwo = function(){
 			$scope.page1 = true
 			$scope.page2 = false
-			$scope.page3 = false
 		}
 
-		$scope.nextTwo = function(){
-			$scope.page1 = false
-			$scope.page2 = false
-			$scope.page3 = true
+		$scope.submit = function(){
+			$http({
+				method: 'POST',
+				url: '/request/create/user',
+				data: {
+					"UserIdentifier": $scope.email,
+  					"Password": $scope.pw,
+  					"FirstName": $scope.firstName,
+  					"LastName": $scope.lastName
+				}
+			},{
+				method: 'POST',
+				url: '/request/create/account',
+				data: {
+					"UserResourceIdentifier": $scope.email,
+  					"AccountName": $scope.accountName,
+  					"AccountBalance": $scope.accountAmnt,
+  					"AccountType":  $scope.accountType
+				}
+			});	
 		}
 
-		$scope.prevThree = function(){
-			$scope.page1 = false
-			$scope.page2 = true
-			$scope.page3 = false
-		}
 	});
 
 	app.controller("PostsCtrl", function($scope, $http, $location) {
