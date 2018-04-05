@@ -23,5 +23,13 @@ public class AccountTest {
 		assertTrue(balance == correct.getBalance());
 		assertEquals(type, correct.getType());
 	}
+	
+	@Test
+	public void resourceIdentifierItems() {
+	
+		correct.setResourceIdentifier("test1");
+		assertEquals("test1", correct.getResourceIdentifier());	
+		
+	}
 
 }
