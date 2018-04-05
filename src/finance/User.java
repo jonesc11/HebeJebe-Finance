@@ -80,6 +80,7 @@ public class User {
 		
 		account.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, account);
+		dbParser.insertAccount(account, this.resourceIdentifier);
 		accounts.put(newIdentifier, account);
 		
 		return newIdentifier;
