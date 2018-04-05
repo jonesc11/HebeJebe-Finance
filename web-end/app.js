@@ -83,6 +83,35 @@ app.post ('/request/modify', function (req, res) {
   }
 });
 
+app.post ('/request/delete', function (req, res) {
+  var userRID = "u0";//req.cookies.accountRI;
+  data = handleDeleteResource (req, userRID);
+
+  if (data.ErrorMessage) {
+    res.send (data);
+    res.status (200);
+  } else {
+    sendMessage (JSON.stringify (data)).then (function (data) { res.send (data); res.status (data.ErrorMessage ? 400 : 200)});
+  }
+});
+
+function handleDeleteResource (req, userRID) {
+  if (req.body.ResourceIdentifier === undefined || req.body.ResourceIdentifier === null)
+    return { ErrorMessage: "ResourceIdentifier must be defined." };
+
+  data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: "DeleteResource",
+    Action: {
+      ResourceIdentifier: req.body.ResourceIdentifier
+    }
+  };
+
+  return data;
+}
+
 /* Handles GetTransaction requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetTransactions (req, userRID) {
