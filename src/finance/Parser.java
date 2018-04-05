@@ -233,6 +233,7 @@ public class Parser {
 			i++;
 		}
 		users.put("u" + i, newUser);
+		dbParser.insertUser(newUser, password);
 		
 		response.put("ResourceIdentifier", "u" + i);
 		response.put("UserIdentifier", email);
@@ -397,7 +398,7 @@ public class Parser {
 				o.put("ResourceIdentifier", accountsList.get(i).getResourceIdentifier());
 				o.put("AccountName", accountsList.get(i).getName());
 				o.put("AccountType", accountsList.get(i).getType());
-				o.put("LatestBalance", accountsList.get(i).getBalance());
+				o.put("LatestBalance", accountsList.get(i).getTotal());
 				o.put("LatestTransactions", transactions);
 				
 				accounts.put(o);
@@ -427,7 +428,7 @@ public class Parser {
 			o.put("ResourceIdentifier", account.getResourceIdentifier());
 			o.put("AccountName", account.getName());
 			o.put("AccountType", account.getType());
-			o.put("LatestBalance", account.getBalance());
+			o.put("LatestBalance", account.getTotal());
 			o.put("LatestTransactions", transactions);
 			
 			response.put("Account", o);

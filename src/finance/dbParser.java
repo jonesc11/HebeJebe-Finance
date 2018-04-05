@@ -98,7 +98,7 @@ public class dbParser {
 	}
 	
 	public static Map<String, Transaction> getTransactionsFromDB(String pIdentifier) {
-		MongoCollection<Document> transactions = db.getCollection("transaction");
+		MongoCollection<Document> transactions = db.getCollection("transactions");
 		FindIterable<Document> iterDoc = transactions.find(Filters.eq("ParentIdentifier", pIdentifier));
 		Iterator<Document> it = iterDoc.iterator();
 		Map<String, Transaction> transactionsList = new HashMap<String, Transaction>();
@@ -182,5 +182,89 @@ public class dbParser {
 		}
 		
 		return transactionsList;
+	}
+	
+	public static void insertTransaction(Transaction t, String pIdentifier) {
+		//Connect to the transactions collection, where the new Document will be stored
+		MongoCollection<Document> transactions = db.getCollection("transactions");
+		
+		//Create the new Document and fill in the appropriate values for each key based on the
+		//given Transaction object.
+		Document newTransaction = new Document("ResourceIdentifier", t.getResourceIdentifier());
+		newTransaction.append("ParentIdentifier", pIdentifier);
+		if(t instanceof Income) {
+			newTransaction.append("TransactionType", "Income");
+		}
+		else if(t instanceof Expense) {
+			newTransaction.append("TransactionType", "Expense");
+		}
+		else if (t instanceof Transfer) {
+			newTransaction.append("TransactionType", "Transfer");
+		}
+		newTransaction.append("Amount", t.getAmount());
+		newTransaction.append("Description", t.getName());
+		newTransaction.append("DateTime", t.getDate().format());
+		newTransaction.append("Category", t.getCategory());
+		if(t instanceof RecurringIncome) {
+			newTransaction.append("Recurring", true);
+			newTransaction.append("RecurringUntil", ((RecurringIncome) t).getEndDate().format());
+			if(((RecurringIncome) t).getPeriod().equals(Period.DAILY)) {
+				newTransaction.append("RecurringFrequency", 1);
+			}
+			else if(((RecurringIncome) t).getPeriod().equals(Period.MONTHLY)) {
+				newTransaction.append("RecurringFrequency", 30);
+			}
+			else if(((RecurringIncome) t).getPeriod().equals(Period.YEARLY)) {
+				newTransaction.append("RecurringFrequency", 365);
+			}
+		}
+		else if(t instanceof RecurringExpense) {
+			newTransaction.append("Recurring", true);
+			newTransaction.append("RecurringUntil", ((RecurringExpense) t).getEndDate().format());
+			if(((RecurringExpense) t).getPeriod().equals(Period.DAILY)) {
+				newTransaction.append("RecurringFrequency", 1);
+			}
+			else if(((RecurringExpense) t).getPeriod().equals(Period.MONTHLY)) {
+				newTransaction.append("RecurringFrequency", 30);
+			}
+			else if(((RecurringExpense) t).getPeriod().equals(Period.YEARLY)) {
+				newTransaction.append("RecurringFrequency", 365);
+			}
+		}
+		else {
+			newTransaction.append("Recurring", false);
+		}
+		
+		transactions.insertOne(newTransaction);
+	}
+	
+	public static void insertAccount(Account a, String pIdentifier) {
+		//Connect to the accounts collection, where the new Document will be stored
+		MongoCollection<Document> accounts = db.getCollection("accounts");
+		
+		//Create the new Document and fill in the appropriate values for each key based on the
+		//given Account object.
+		Document newAccount = new Document("ResourceIdentifier", a.getResourceIdentifier());
+		newAccount.append("ParentIdentifier", pIdentifier);
+		newAccount.append("AccountName", a.getName());
+		newAccount.append("AccountType", a.getType());
+		newAccount.append("LatestBalance", a.getBalance());
+		
+		accounts.insertOne(newAccount);
+	}
+	
+	public static void insertUser(User u, String pw) {
+		//Connect to the users collection, where the new Document will be stored
+		MongoCollection<Document> users = db.getCollection("accounts");
+		
+		//Create the new Document and fill in the appropriate values for each key based on the
+		//given User object.
+		Document newUser = new Document("ResourceIdentifier", u.getResourceIdentifier());
+		newUser.append("UserIdentifier", u.getEmail());
+		newUser.append("FirstName", u.getFirstName());
+		newUser.append("LastName", u.getLastName());
+		newUser.append("Password", pw);
+		
+		users.insertOne(newUser);
 	}
 }
