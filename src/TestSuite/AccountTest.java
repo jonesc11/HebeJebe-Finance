@@ -6,6 +6,10 @@ import org.junit.Ignore;
 import static org.junit.Assert.assertEquals;
 
 import finance.Account;
+import finance.Runner;
+import finance.SingleExpense;
+import finance.Date;
+
 
 public class AccountTest {
 	
@@ -28,8 +32,17 @@ public class AccountTest {
 	public void resourceIdentifierItems() {
 	
 		correct.setResourceIdentifier("test1");
-		assertEquals("test1", correct.getResourceIdentifier());	
+		assertEquals("test1", correct.getResourceIdentifier());		
+	}
+	
+	@Test
+	public void addSingleExpenseTest() {
+	
+		correct2.addSingleExpense(20, "turtle", "test", new Date(5, 4, 2018) );
 		
+		assertTrue(correct2.getBalance() == 9980);
+		
+				
 	}
 
 }
