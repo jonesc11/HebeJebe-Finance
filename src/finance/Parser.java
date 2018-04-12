@@ -1,7 +1,11 @@
 package finance;
 
 import java.util.*;
+
+import javax.xml.bind.DatatypeConverter;
+
 import java.lang.String;
+import java.security.MessageDigest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -85,6 +89,9 @@ public class Parser {
 		else if(actionType.equals("GetAccounts")) {
 			response = parseGetAccounts(action);
 		}
+		else if(actionType.equals("GetSubBalance")) {
+			response = parseGetSubBalance(action);
+		}
 		else if(actionType.equals("GetUser")) {
 			response = parseGetUsers(action);
 		}
@@ -94,10 +101,16 @@ public class Parser {
 		else if(actionType.equals("CreateAccount")) {
 			response = parseCreateAccount (action);
 		}
+		else if(actionType.equals("CreateSubBalance")) {
+			response = parseCreateSubBalance (action);
+		}
 		//Creates a new transaction, associates it with the appropriate user and account/sub-balance
 		//Issues: Currently doesn't work with Transfers.
 		else if(actionType.equals("CreateTransaction")) {
 			response = parseCreateTransaction (action, user);
+		}
+		else if(actionType.equals("Login")) {
+			response = parseLogin (action);
 		}
 					 
 		return response.toString();
@@ -216,16 +229,33 @@ public class Parser {
 		
 		return response;
 	}
+	public static JSONObject parseCreateSubBalance(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		
+		Account account = Parser.getAccount(action.getString("AccountResourceIdentifier"));
+		String name = action.getString("SubBalanceName");
+		Double balance = action.getDouble("SubBalanceBalance");
+		
+		String resourceIdentifier = account.createSubBalance(name, balance);
+		
+		response.put("ResourceIdentifier", resourceIdentifier);
+		response.put("AccountResourceIdentifier", account.getResourceIdentifier());
+		response.put("SubBalanceName", name);
+		response.put("SubBalanceBalance", balance);
+		
+		return response;
+	}
 	
 	public static JSONObject parseCreateUser (JSONObject action) throws JSONException {
 		JSONObject response = new JSONObject();
 		
 		String email = action.getString("UserIdentifier");
-		String password = action.getString("Password");
+		String salt = getSHA256Hash(getSaltString());
+		String password = salt + getSHA256Hash(action.getString("Password"));
 		String firstName = action.getString("FirstName");
 		String lastName = action.getString("LastName");
 		
-		User newUser = new User(email, password, firstName, lastName);
+		User newUser = new User(email, password, salt, firstName, lastName);
 		
 		//A very poor way of creating a new Resource Identifier for the new User
 		int i = 1;
@@ -233,7 +263,7 @@ public class Parser {
 			i++;
 		}
 		users.put("u" + i, newUser);
-		dbParser.insertUser(newUser, password);
+		dbParser.insertUser(newUser, salt, password);
 		
 		response.put("ResourceIdentifier", "u" + i);
 		response.put("UserIdentifier", email);
@@ -335,71 +365,15 @@ public class Parser {
 			JSONArray accounts = new JSONArray();
 			
 			for(int i = 0; i < accountsList.size(); i++) {
+				Account a = accountsList.get(i);
 				JSONObject o = new JSONObject();
-				JSONArray transactions = new JSONArray();
-				List<Transaction> allTransactions = accountsList.get(i).getTransactionHistory();
-				
-				//Puts the most recent 25 transactions from the specified accounts into the JSONArray transactions.
-				for(int j = 0; j < allTransactions.size(); j++) {
-					if(transactions.length() >= 25) {
-						break;
-					}
-					
-					JSONObject t = new JSONObject();
-					
-					t.put("ResourceIdentifier", allTransactions.get(j).getResourceIdentifier());
-					if(allTransactions.get(j) instanceof Income) {
-						t.put("TransactionType", "Income");
-					}
-					else if(allTransactions.get(j) instanceof Expense) {
-						t.put("TransactionType", "Expense");
-					}
-					else if(allTransactions.get(j) instanceof Transfer) {
-						t.put("TransactionType", "Transfer");
-					}
-					t.put("Amount", allTransactions.get(j).getAmount());
-					t.put("Description", allTransactions.get(j).getName());
-					t.put("DateTime", allTransactions.get(j).getDate().format());
-					t.put("Category", allTransactions.get(j).getCategory());
-					if (allTransactions.get(j) instanceof RecurringIncome) {
-						o.put("Recurring", true);
-						o.put("RecurringUntil", ((RecurringIncome)allTransactions.get(j)).getEndDate().format());
-						if(((RecurringIncome)allTransactions.get(j)).getPeriod() == Period.DAILY) {
-							o.put("RecurringInterval", 1);
-						}
-						else if(((RecurringIncome)allTransactions.get(j)).getPeriod() == Period.MONTHLY) {
-							o.put("RecurringInterval", 30);
-						}
-						else if(((RecurringIncome)allTransactions.get(j)).getPeriod() == Period.YEARLY) {
-							o.put("RecurringInterval", 365);
-						}
-					}
-					else if (allTransactions.get(j) instanceof RecurringExpense) {
-						o.put("Recurring", true);
-						o.put("RecurringUntil", ((RecurringExpense)allTransactions.get(j)).getEndDate().format());
-						if(((RecurringExpense)allTransactions.get(j)).getPeriod() == Period.DAILY) {
-							o.put("RecurringInterval", 1);
-						}
-						else if(((RecurringExpense)allTransactions.get(j)).getPeriod() == Period.MONTHLY) {
-							o.put("RecurringInterval", 30);
-						}
-						else if(((RecurringExpense)allTransactions.get(j)).getPeriod() == Period.YEARLY) {
-							o.put("RecurringInterval", 365);
-						}
-					}
-					else {
-						t.put("Recurring", false);
-					}
-					
-					transactions.put(t);
-				}
 				
 				//Creates the appropriate Account JSONObject based on information about the specified Account.
-				o.put("ResourceIdentifier", accountsList.get(i).getResourceIdentifier());
-				o.put("AccountName", accountsList.get(i).getName());
-				o.put("AccountType", accountsList.get(i).getType());
-				o.put("LatestBalance", accountsList.get(i).getTotal());
-				o.put("LatestTransactions", transactions);
+				o.put("ResourceIdentifier", a.getResourceIdentifier());
+				o.put("AccountName", a.getName());
+				o.put("AccountType", a.getType());
+				o.put("LatestBalance", a.getTotal());
+				o.put("LatestTransactions", Parser.getTransactionsJSONArray(a.getResourceIdentifier(), 25));
 				
 				accounts.put(o);
 			}
@@ -410,29 +384,63 @@ public class Parser {
 			// Gets the Account object specified by the ResourceIdentifier, and creates a new JSONObject
 			// which will contain information about the Account. Creates a JSONArray transactions to contain
 			// the most recent 25 transactions associated with the Account.
-			Account account = user.getAccount(action.getString("ResourceIdentifier"));
+			Account a = user.getAccount(action.getString("ResourceIdentifier"));
 			JSONObject o = new JSONObject();
-			JSONArray transactions = new JSONArray();
-			List<Transaction> allTransactions = account.getTransactionHistory();
-			
-			//Puts the most recent 25 transactions from the specified accounts into the JSONArray transactions.
-			for(int i = 0; i < allTransactions.size(); i++) {
-				if(transactions.length() >= 25) {
-					break;
-				}
-				
-				transactions.put(allTransactions.get(i));
-			}
 			
 			//Creates the appropriate Account JSONObject based on information about the specified Account.
-			o.put("ResourceIdentifier", account.getResourceIdentifier());
-			o.put("AccountName", account.getName());
-			o.put("AccountType", account.getType());
-			o.put("LatestBalance", account.getTotal());
-			o.put("LatestTransactions", transactions);
+			o.put("ResourceIdentifier", a.getResourceIdentifier());
+			o.put("AccountName", a.getName());
+			o.put("AccountType", a.getType());
+			o.put("LatestBalance", a.getTotal());
+			o.put("LatestTransactions", Parser.getTransactionsJSONArray(a.getResourceIdentifier(), 25));
 			
 			response.put("Account", o);
 		}
+		
+		return response;
+	}
+	
+	public static JSONObject parseGetSubBalance (JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		JSONArray subBalances = new JSONArray();
+		
+		if(action.isNull("ResourceIdentifier")) {
+			int limit;
+			if(action.get("Limit").equals(null)) {
+				limit = 25;
+			}
+			else {
+				limit = action.getInt("Limit");
+			}
+			User user = Parser.getUser(action.getString("GetFrom"));
+			List<String> subBalanceList = user.getSubBalanceResourceIdentifiers();
+			
+			for(int i = 0; i < limit; i++) {
+				SubBalance sb = (SubBalance)Parser.getResource(subBalanceList.get(i));
+				JSONObject sbObject = new JSONObject();
+				
+				sbObject.put("ResourceIdentifier", sb.getResourceIdentifier());
+				sbObject.put("AccountResourceIdentifier", sb.getParentIdentifier());
+				sbObject.put("SubBalanceName", sb.getName());
+				sbObject.put("Balance", sb.getBalance());
+				sbObject.put("LatestTransactions", Parser.getTransactionsJSONArray(sb.getResourceIdentifier(), 25));
+				
+				subBalances.put(sbObject);
+			}
+		}
+		else {
+			SubBalance sb = (SubBalance)Parser.getResource(action.getString("ResourceIdentifier"));
+			JSONObject sbObject = new JSONObject();
+			
+			sbObject.put("ResourceIdentifier", sb.getResourceIdentifier());
+			sbObject.put("AccountResourceIdentifier", sb.getParentIdentifier());
+			sbObject.put("SubBalanceName", sb.getName());
+			sbObject.put("Balance", sb.getBalance());
+			sbObject.put("LatestTransactions", Parser.getTransactionsJSONArray(sb.getResourceIdentifier(), 25));
+			
+			subBalances.put(sbObject);
+		}
+		response.put("SubBalances", subBalances);
 		
 		return response;
 	}
@@ -527,5 +535,123 @@ public class Parser {
 		JSONObject response = new JSONObject();
 		response.put("Transactions", transactions);
 		return response;
+	}
+	
+	public static  JSONObject parseLogin(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		String resourceIdentifier = dbParser.verifyLogin(action.getString("UserIdentifier"), action.getString("Password"));
+		
+		if(resourceIdentifier.equals("")) {
+			response.put("Verified", false);
+		}
+		else {
+			User u = users.get(resourceIdentifier);
+			response.put("Verified", true);
+			response.put("ResourceIdentifier", resourceIdentifier);
+			response.put("UserIdentifier", u.getEmail());
+			response.put("FirstName", u.getFirstName());
+			response.put("LastName", u.getLastName());
+		}
+		
+		return response;
+	}
+	
+	public static JSONArray getTransactionsJSONArray(String identifier, int limit) throws JSONException {
+		JSONArray transactions = new JSONArray();
+		IAccount parent = (IAccount)Parser.getResource(identifier);
+		List<Transaction> transactionList = parent.getTransactionHistory();
+		
+		for(int i = 0; i < limit; i++) {
+			if(i >= transactionList.size()) {
+				break;
+			}
+			Transaction t = transactionList.get(i);
+			JSONObject transaction = new JSONObject();
+			
+			transaction.put("ResourceIdentifier", t.getResourceIdentifier());
+			if(t instanceof Income) {
+				transaction.put("TransactionType", "Income");
+			}
+			else if(t instanceof Expense) {
+				transaction.put("TransactionType", "Expense");
+			}
+			else if(t instanceof Transfer) {
+				transaction.put("TransactionType", "Transfer");
+			}
+			transaction.put("Amount", t.getAmount());
+			transaction.put("Description", t.getName());
+			transaction.put("DateTime", t.getDate().format());
+			transaction.put("Category", t.getCategory());
+			transaction.put("AssociatedWith", identifier);
+			if(t instanceof SingleIncome || t instanceof SingleExpense || t instanceof Transfer) {
+				transaction.put("Recurring", false);
+			}
+			else if(t instanceof RecurringIncome) {
+				transaction.put("Recurring", true);
+				transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
+				if(((RecurringIncome)t).getPeriod() == Period.DAILY) {
+					transaction.put("RecurringInterval", 1);
+				}
+				else if(((RecurringIncome)t).getPeriod() == Period.WEEKLY) {
+					transaction.put("RecurringInterval", 7);
+				}
+				else if(((RecurringIncome)t).getPeriod() == Period.MONTHLY) {
+					transaction.put("RecurringInterval", 30);
+				}
+				else if(((RecurringIncome)t).getPeriod() == Period.YEARLY) {
+					transaction.put("RecurringInterval", 365);
+				}
+			}
+			else if(t instanceof RecurringExpense) {
+				transaction.put("Recurring", true);
+				transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
+				if(((RecurringExpense)t).getPeriod() == Period.DAILY) {
+					transaction.put("RecurringInterval", 1);
+				}
+				else if(((RecurringExpense)t).getPeriod() == Period.WEEKLY) {
+					transaction.put("RecurringInterval", 7);
+				}
+				else if(((RecurringExpense)t).getPeriod() == Period.MONTHLY) {
+					transaction.put("RecurringInterval", 30);
+				}
+				else if(((RecurringExpense)t).getPeriod() == Period.YEARLY) {
+					transaction.put("RecurringInterval", 365);
+				}
+			}
+			
+			transactions.put(transaction);
+		}
+		
+		return transactions;
+		
+	}
+	
+	private static String getSaltString() {
+        String SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        StringBuilder salt = new StringBuilder();
+        Random rnd = new Random();
+        while (salt.length() < 18) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * SALTCHARS.length());
+            salt.append(SALTCHARS.charAt(index));
+        }
+        String saltStr = salt.toString();
+        return saltStr;
+
+    }
+	
+	public static String getSHA256Hash(String s) {
+		String result = null;
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] hash = digest.digest(s.getBytes("UTF-8"));
+			return bytesToHex(hash);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	private static String bytesToHex(byte[] hash) {
+		return DatatypeConverter.printHexBinary(hash);
 	}
 }

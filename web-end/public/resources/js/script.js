@@ -1,6 +1,48 @@
-var app = angular.module("MyApp", []);
+var app = angular.module("MyApp", ['ngRoute']);
 
 $(document).ready (function (app) {
+
+	app.controller("LoginCtrl", function($scope, $http){
+
+	}
+
+
+	app.controller("SignupCtrl", function($scope, $http){
+		$scope.page1 = true
+
+		$scope.nextOne = function(){
+			$scope.page1 = false
+			$scope.page2 = true
+		}	
+
+		$scope.prevTwo = function(){
+			$scope.page1 = true
+			$scope.page2 = false
+		}
+
+		$scope.submit = function(){
+			$http({
+				method: 'POST',
+				url: '/request/create/user',
+				data: {
+					"UserIdentifier": $scope.email,
+  					"Password": $scope.pw,
+  					"FirstName": $scope.firstName,
+  					"LastName": $scope.lastName
+				}
+			},{
+				method: 'POST',
+				url: '/request/create/account',
+				data: {
+					"UserResourceIdentifier": $scope.email,
+  					"AccountName": $scope.accountName,
+  					"AccountBalance": $scope.accountAmnt,
+  					"AccountType":  $scope.accountType
+				}
+			});	
+		}
+
+	});
 
 	app.controller("PostsCtrl", function($scope, $http) {
 		$http({

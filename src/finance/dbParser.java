@@ -253,7 +253,21 @@ public class dbParser {
 		accounts.insertOne(newAccount);
 	}
 	
-	public static void insertUser(User u, String pw) {
+	public static void insertSubBalance(SubBalance sb, String pIdentifier) {
+		//Connect to the accounts collection, where the new Document will be stored
+		MongoCollection<Document> accounts = db.getCollection("accounts");
+		
+		//Create the new Document and fill in the appropriate values for each key based on the
+		//given SubBalance object.
+		Document newSubBalance = new Document("ResourceIdentifier", sb.getResourceIdentifier());
+		newSubBalance.append("ParentIdentifier", pIdentifier);
+		newSubBalance.append("AccountName", sb.getName());
+		newSubBalance.append("LatestBalance", sb.getBalance());
+		
+		accounts.insertOne(newSubBalance);
+	}
+	
+	public static void insertUser(User u, String salt, String pw) {
 		//Connect to the users collection, where the new Document will be stored
 		MongoCollection<Document> users = db.getCollection("accounts");
 		
@@ -264,7 +278,30 @@ public class dbParser {
 		newUser.append("FirstName", u.getFirstName());
 		newUser.append("LastName", u.getLastName());
 		newUser.append("Password", pw);
+		newUser.append("Salt", salt);
 		
 		users.insertOne(newUser);
+	}
+	
+	public static String verifyLogin(String email, String pw) {
+		MongoCollection<Document> users = db.getCollection("users");
+		FindIterable<Document> iterDoc = users.find(Filters.eq("UserIdentifier", email));
+		Iterator<Document> iter = iterDoc.iterator();
+		
+		if(iter.hasNext()) {
+			Document u = iter.next();
+			
+			String salt = u.getString("Salt");
+			String password = u.getString("Password");
+			if(password.equals(salt + Parser.getSHA256Hash(pw))) {
+				return u.getString("ResourceIdentifier");
+			}
+			else {
+				return "";
+			}
+		}
+		else {
+			return "";
+		}
 	}
 }
