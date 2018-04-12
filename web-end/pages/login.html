@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <base href="/">
+
+    <!-- Load CSS, including Bootstrap -->
+    <link rel="stylesheet" href="/resources/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/resources/css/bootstrap-grid.min.css" />
+    <link rel="stylesheet" href="/resources/css/bootstrap-reboot.min.css" />
+    <link rel="stylesheet" href="/resources/css/style.css" />
+    
+    <!-- Load JavaScript, including AngularJS, jQuery, Bootstrap, Socket.io and Popper -->
+    <script type="text/javascript" src="/resources/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="/resources/js/popper.min.js"></script>
+    <script type="text/javascript" src="/resources/js/angular.min.js"></script>
+    <script type="text/javascript" src="/resources/js/angular-route.js"></script>
+    <script type="text/javascript" src="/resources/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="/resources/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/resources/js/script.js"></script>
+    
+    <title>HebeJebe Finance</title>
+  </head>
+ 
+<!-- multistep form -->
+<form id="msform" ng-controller="LoginCtrl" method="POST" action="/login">
+  <!-- fieldsets -->
+  <fieldset ng-show="page1">
+    <h2 class="fs-title">Sign in</h2>
+    <input type="text" name="email" placeholder="Email" ng-model="$scope.email"/>
+    <input type="password" name="pass" placeholder="Password" ng-model="$scope.pw"/>
+    <input type="submit" name="Login" class="next action-button" value="Login"/>
+  </fieldset>
+</form>
+</body>
+</html>

@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
+
+    <base href="/">
+
     <!-- Load CSS, including Bootstrap -->
     <link rel="stylesheet" href="/resources/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/resources/css/bootstrap-grid.min.css" />
@@ -11,14 +14,15 @@
     <script type="text/javascript" src="/resources/js/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="/resources/js/popper.min.js"></script>
     <script type="text/javascript" src="/resources/js/angular.min.js"></script>
+    <script type="text/javascript" src="/resources/js/angular-route.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="/resources/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/resources/js/script.js"></script>
     
     <title>HebeJebe Finance</title>
   </head>
-  <body ng-app="MyApp">
-  <div class="container">
+ 
+<div class="container">
 	<div class = "row">
 	<div class="col-8" ng-controller="PostsCtrl">	
 		<table class="table">
@@ -35,8 +39,8 @@
   		<tbody ng-repeat="transaction in transactions">
     			<tr>
       				<td>{{transaction.DateTime}}</td>
-                    <td>{{transaction.Description}}</td>
-                    <td>{{transaction.Amount}}</td>
+ 	                        <td>{{transaction.Description}}</td>
+                                <td>{{transaction.Amount}}</td>
       				<td>{{transaction.account.name}}</td>
       				<td>{{transaction.account.total}}</td>
 				<td>ACTION</td>
@@ -119,7 +123,5 @@
 	</div>	<!-- end col div -->
 	</div> <!-- end row div -->
 	</div> <!-- end container div -->
-    
-    
-  </body>
+</body>
 </html>

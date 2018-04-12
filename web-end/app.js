@@ -6,8 +6,8 @@ var bodyParser = require ('body-parser');
 var server = require ('http').Server (app);
 var fs = require ('fs');
 var request = require ('request');
-var cookieParser = require ('cookie-parser');
-var net = require ('net');
+var validator = require ('validator');
+var session = require ('express-session');
 
 var keysObject = require ('./keys.json');
 var accessKey = keysObject.AccessKey;
@@ -17,10 +17,96 @@ app.listen (80);
 
 app.use (express.static (__dirname + '/public'));
 app.use (bodyParser.json());
-app.use (cookieParser());
+app.use (bodyParser.urlencoded({ extended: true }));
+app.use (session({ secret: 'secret', resave: false, saveUninitialized: true }));
 
 app.get ('/', function (req, res) {
-  res.sendFile (__dirname + '/pages/index.html');
+console.log(req.session);
+  res.sendFile (__dirname + '/pages/home.html');
+});
+
+app.get ('/login', function (req, res) {
+  res.sendFile (__dirname + '/pages/login.html');
+});
+
+app.post ('/login', function (req, res) {
+  var email = req.body.email;
+  var pass = req.body.pass;
+
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    ActionType: "Login",
+    Action: {
+      UserIdentifier: email,
+      Password: pass
+    }
+  };
+
+  sendMessage(JSON.stringify (data)).then (function (returnData) {
+    if (returnData.verified) {
+      req.session.user.email = returnData.UserIdentifier;
+      req.session.user.fname = returnData.FirstName;
+      req.session.user.lname = returnData.LastName;
+      req.session.user.rid = returnData.ResourceIdentifier;
+
+      res.redirect ('/');
+    } else {
+      res.redirect ('/login');
+    }
+  });
+});
+
+app.get ('/signup', function (req, res) {
+  res.sendFile (__dirname + '/pages/signup.html');
+});
+
+app.post ('/signup', function (req, res) {
+  var firstName = req.body.firstName;
+  var lastName = req.body.lastName;
+  var email = req.body.email;
+  var pass = req.body.pass;
+
+  var accountName = req.body.accountName;
+  var accountBalance = req.body.accountAmount;
+  var accountType = req.body.accountType;
+
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    ActionType: "CreateUser",
+    Action: {
+      UserIdentifier: email,
+      Password: pass,
+      FirstName: firstName,
+      LastName: lastName
+    }
+  };
+
+  sendMessage (JSON.stringify (data)).then (function (returnData) {
+    var resourceId = returnData.ResourceIdentifier;
+
+    var data2 = {
+      Key: accessKey,
+      Secret: secretKey,
+      AccountId: resourceId,
+      ActionType: "CreateAccount",
+      Action: {
+        UserResourceIdentifier: resourceId,
+        AccountName: accountName,
+        AccountBalance: accountBalance,
+        AccountType: accountType
+      }
+    };
+
+    sendMessage (JSON.stringify (data)).then (function (data) {
+      res.redirect ('/login');
+    });
+  });
+});
+
+app.get ('/logout', function (req, res) {
+
 });
 
 app.get ('/request/:reqType/:resType', function (req, res) {
@@ -165,10 +251,10 @@ function handleGetSubbalance (req, userRID) {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
-    ActionType: "GetSubbalance"
+    ActionType: "GetSubbalance",
     Action: {
       Limit: req.query.Limit ? req.query.Limit : 25,
-      ResourceIdentifier: req.query.ResourceIdentifier ? req.query.ResourceIdentifier ? null,
+      ResourceIdentifier: req.query.ResourceIdentifier ? req.query.ResourceIdentifier : null,
       GetFrom: req.query.GetFrom ? req.query.GetFrom : userRID,
       NextToken: req.query.NextToken ? req.query.NextToken : null
     }
@@ -229,7 +315,7 @@ function handleCreateAccount (req, userRID) {
 function handleCreateTransaction (req, userRID) {
   if (!req.body.Amount || req.body.Amount === "" || req.body.Amount == 0)
     return { ErrorMessage: "Amount not specified." };
-  if ((!req.body.To || req.body.To === null) && (!req.body.From || req.body.From === null)
+  if ((!req.body.To || req.body.To === null) && (!req.body.From || req.body.From === null))
     return { ErrorMessage: "Account(s) To and / or From must be specified." };
   if (!req.body.DateTime || req.body.DateTime === null)
     return { ErrorMessage: "Transaction date must be specified." };
