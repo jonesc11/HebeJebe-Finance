@@ -25,24 +25,24 @@ html {
 
 body {
 	font-family: montserrat, arial, verdana;
+	background: #f1f7ee
 }
 /*form styles*/
 #msform {
-	width: 400px;
+	width: 800px;
 	margin: 50px auto;
 	text-align: center;
 	position: relative;
 }
 #msform fieldset {
 	background: white;
-	border: 0 none;
-	border-radius: 3px;
-	box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+	border: 1px solid #aaa;
+	border-radius: 16px;
 	padding: 20px 30px;
 	box-sizing: border-box;
 	width: 80%;
 	margin: 0 10%;
-	
+	box-shadow: 10px 10px 15px #aaaaaa;
 	/*stacking fieldsets above each other*/
 	position: relative;
 }
@@ -50,14 +50,11 @@ body {
 /*inputs*/
 #msform input, #msform textarea, #msform select{
 	padding: 15px;
-	border: 1px solid #ccc;
+	border: 1px solid #aaa;
 	border-radius: 3px;
 	margin-bottom: 8px;
 	width: 100%;
 	box-sizing: border-box;
-	font-family: montserrat;
-	color: #2C3E50;
-	font-size: 13px;
 }
 /*buttons*/
 #msform .action-button {
@@ -87,3 +84,4 @@ body {
 	color: #666;
 	margin-bottom: 20px;
 }
+
