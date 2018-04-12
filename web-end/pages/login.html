@@ -21,11 +21,16 @@
     
     <title>HebeJebe Finance</title>
   </head>
-  <body ng-app="MyApp">
-
-  <div ng-view="">
-
-  </div>
-    
-  </body>
+ 
+<!-- multistep form -->
+<form id="msform" ng-controller="SignupCtrl">
+  <!-- fieldsets -->
+  <fieldset ng-show="page1">
+    <h2 class="fs-title">Sign in</h2>
+    <input type="text" name="email" placeholder="Email" ng-model="$scope.email"/>
+    <input type="password" name="pass" placeholder="Password" ng-model="$scope.pw"/>
+    <input type="button" name="next" class="next action-button" value="Next" ng-click="nextOne()"/>
+  </fieldset>
+</form>
+</body>
 </html>
