@@ -21,8 +21,8 @@ public class RecurringExpenseTest {
 	private RecurringExpense original = new RecurringExpense(a, n, c, p, d1, d2);
 	
 	
-	@Test
-	public void testCreation() {
+	@Test 
+	public void testCreation() { 
 		assertTrue(a == original.getAmount());
 		assertEquals("fail on getName() on recurringExpense",n, original.getName());
 		assertEquals("fail on getCategorey() on recurringExpense", c, original.getCategory());

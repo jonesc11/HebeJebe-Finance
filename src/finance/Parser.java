@@ -229,7 +229,6 @@ public class Parser {
 		
 		return response;
 	}
-	
 	public static JSONObject parseCreateSubBalance(JSONObject action) throws JSONException {
 		JSONObject response = new JSONObject();
 		
