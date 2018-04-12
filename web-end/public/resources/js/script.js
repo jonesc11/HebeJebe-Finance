@@ -2,17 +2,6 @@ var app = angular.module("MyApp", ['ngRoute']);
 
 $(document).ready (function (app) {
 
-        app.config(function($routeProvider) {
-            $routeProvider
-           	.when("/", {
-                        templateUrl : "/resources/views/home.html"
-                   })
-            	.when("/signup", {
-                        templateUrl : "/resources/views/signup.html"
-    		   })
-
-             });
-
 
 	app.controller("SignupCtrl", function($scope, $http){
 		$scope.page1 = true
@@ -51,20 +40,7 @@ $(document).ready (function (app) {
 
 	});
 
-	app.controller("PostsCtrl", function($scope, $http, $location) {
-		$http({
-  			method: 'GET',
-		 	url: '/user',
-                 	data: null
-                 }).
-                 then(function(success) {
-
-                 }). 
-                 catch(function(error){
-			console.log("test");
-                      $location.url("signup");
-              	 });
-		
+	app.controller("PostsCtrl", function($scope, $http) {
 		$http({
   			method: 'GET',
   			url: '/request/get/transactions',
