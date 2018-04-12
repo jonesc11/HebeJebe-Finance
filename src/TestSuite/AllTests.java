@@ -11,7 +11,10 @@ import org.junit.runners.Suite.SuiteClasses;
 	RecurringExpenseTest.class,
 	RecurringIncomeTest.class,
 	DateTest.class,
-	AccountTest.class
+	AccountTest.class,
+	TransactionTest.class,
+	BudgetTest.class,
+	UserTest.class
 	
 	
 	
