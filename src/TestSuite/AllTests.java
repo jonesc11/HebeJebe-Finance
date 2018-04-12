@@ -14,7 +14,9 @@ import org.junit.runners.Suite.SuiteClasses;
 	AccountTest.class,
 	TransactionTest.class,
 	BudgetTest.class,
-	UserTest.class
+	UserTest.class,
+	TransferTest.class,
+	SubBalanceTest.class
 	
 	
 	
