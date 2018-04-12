@@ -189,5 +189,11 @@ public class User {
 	public List<Transaction> getTransactionHistory(Account a) {
 		return a.getTransactionHistory();
 	}
+	
+	public void checkRecurringTransactions() {
+		for(int i = 0; i < accounts.size(); i++) {
+			accounts.get(i).checkRecurringTransactions();
+		}
+	}
 
 }

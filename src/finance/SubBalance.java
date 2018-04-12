@@ -6,6 +6,7 @@ import finance.FinanceUtilities.Period;
 
 import java.util.HashMap;
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class SubBalance implements IAccount {
@@ -78,6 +79,8 @@ public class SubBalance implements IAccount {
 		
 		newIncome.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newIncome);
+		dbParser.insertTransaction(newIncome, this.resourceIdentifier);
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		transactions.put(newIdentifier, newIncome);
 		
 		return newIdentifier;
@@ -94,6 +97,7 @@ public class SubBalance implements IAccount {
 		
 		newIncome.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newIncome);
+		dbParser.insertTransaction(newIncome, this.resourceIdentifier);
 		transactions.put(newIdentifier, newIncome);
 		
 		return newIdentifier;
@@ -111,6 +115,8 @@ public class SubBalance implements IAccount {
 		
 		newExpense.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newExpense);
+		dbParser.insertTransaction(newExpense, this.resourceIdentifier);
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		transactions.put(newIdentifier, newExpense);
 		
 		return newIdentifier;
@@ -127,6 +133,7 @@ public class SubBalance implements IAccount {
 		
 		newExpense.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newExpense);
+		dbParser.insertTransaction(newExpense, this.resourceIdentifier);
 		transactions.put(newIdentifier, newExpense);
 		
 		return newIdentifier;
@@ -143,9 +150,27 @@ public class SubBalance implements IAccount {
 		
 		newTransfer.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newTransfer);
+		dbParser.insertTransaction(newTransfer, this.resourceIdentifier);
 		transactions.put("t" + i, newTransfer);
 		
 		return newIdentifier;
 	}	
+	
+	public void checkRecurringTransactions() {
+		LocalDateTime now = LocalDateTime.now();
+		Date d = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
+		for(int i = 0; i < transactions.size(); i++) {
+			Transaction t = transactions.get(i);
+			if(t instanceof RecurringIncome) {
+				balance += ((RecurringIncome)t).amountByDate(d);
+				((RecurringIncome)t).updateLastUpdated(d);
+			}
+			else if(t instanceof RecurringExpense) {
+				balance -= ((RecurringExpense)t).amountByDate(d);
+				((RecurringExpense)t).updateLastUpdated(d);
+			}
+		}
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
+	}
 
 }

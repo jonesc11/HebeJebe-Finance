@@ -70,7 +70,6 @@ public class Parser {
 		//Gets the User object from users based on the specified resource identifier, the actionType, 
 		//which will specify what the response JSONObject will look like, and the action 
 		//JSONObject that will specify important information regarding the action to be performed.
-		User user = users.get(request.getString("AccountId"));
 		String actionType = request.getString("ActionType");
 		JSONObject action = request.getJSONObject("Action");
 		
@@ -107,6 +106,7 @@ public class Parser {
 		//Creates a new transaction, associates it with the appropriate user and account/sub-balance
 		//Issues: Currently doesn't work with Transfers.
 		else if(actionType.equals("CreateTransaction")) {
+			User user = users.get(request.getString("AccountID"));
 			response = parseCreateTransaction (action, user);
 		}
 		else if(actionType.equals("Login")) {
@@ -552,6 +552,8 @@ public class Parser {
 			response.put("UserIdentifier", u.getEmail());
 			response.put("FirstName", u.getFirstName());
 			response.put("LastName", u.getLastName());
+			
+			u.checkRecurringTransactions();
 		}
 		
 		return response;
