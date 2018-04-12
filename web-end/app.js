@@ -8,6 +8,9 @@ var fs = require ('fs');
 var request = require ('request');
 var cookieParser = require ('cookie-parser');
 var net = require ('net');
+var passport = require ('passport');
+var strategy = require ('passport-local').Strategy;
+var validator = require ('validator');
 
 var keysObject = require ('./keys.json');
 var accessKey = keysObject.AccessKey;
@@ -17,10 +20,71 @@ app.listen (80);
 
 app.use (express.static (__dirname + '/public'));
 app.use (bodyParser.json());
+app.use (bodyParser.urlencoded({ extended: true });
 app.use (cookieParser());
 
 app.get ('/', function (req, res) {
   res.sendFile (__dirname + '/pages/index.html');
+});
+
+app.get ('/login', function (req, res) {
+  res.sendFile (__dirname + '/pages/login.html');
+});
+
+app.post ('/login', function (req, res) {
+
+});
+
+app.get ('/signup', function (req, res) {
+  res.sendFile (__dirname + '/pages/signup.html');
+});
+
+app.post ('/signup', function (req, res) {
+  var firstName = req.body.firstName;
+  var lastName = req.body.lastName;
+  var email = req.body.email;
+  var pass = req.body.pass;
+
+  var accountName = req.body.accountName;
+  var accountBalance = req.body.accountAmount;
+  var accountType = req.body.accountType;
+
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    ActionType: "CreateUser",
+    Action: {
+      UserIdentifier: email,
+      Password: pass,
+      FirstName: firstName,
+      LastName: lastName
+    }
+  };
+
+  sendMessage (JSON.stringify (data)).then (function (returnData) {
+    var resourceId = returnData.ResourceIdentifier;
+
+    var data2 = {
+      Key: accessKey,
+      Secret: secretKey,
+      AccountId: resourceId,
+      ActionType: "CreateAccount",
+      Action: {
+        UserResourceIdentifier: resourceId,
+        AccountName: accountName,
+        AccountBalance: accountBalance,
+        AccountType: accountType
+      }
+    };
+
+    sendMessage (JSON.stringify (data)).then (function (data) {
+      res.redirect ('/login');
+    });
+  });
+});
+
+app.get ('/logout', function (req, res) {
+
 });
 
 app.get ('/request/:reqType/:resType', function (req, res) {
