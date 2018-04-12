@@ -269,7 +269,7 @@ public class dbParser {
 	
 	public static void insertUser(User u, String salt, String pw) {
 		//Connect to the users collection, where the new Document will be stored
-		MongoCollection<Document> users = db.getCollection("accounts");
+		MongoCollection<Document> users = db.getCollection("users");
 		
 		//Create the new Document and fill in the appropriate values for each key based on the
 		//given User object.
