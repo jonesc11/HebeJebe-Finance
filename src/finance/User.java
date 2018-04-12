@@ -1,6 +1,7 @@
 package finance;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -13,16 +14,19 @@ public class User {
 	private String password;
 	private String firstName;
 	private String lastName;
+	private String salt;
 	private Map<String, Account> accounts;
 	private String resourceIdentifier;
 	
-	public User(String e, String pw, String fn, String ln) {
-		email = e;
-		password = pw;
-		firstName = fn;
-		lastName = ln;
-		accounts = new HashMap<String, Account>();
+	public User(String e, String pw, String s, String fn, String ln) {
+		this.email = e;
+		this.password = pw;
+		this.salt = s;
+		this.firstName = fn;
+		this.lastName = ln;
+		this.accounts = new HashMap<String, Account>();
 	}
+	
 	public User(String e, String pw, String fn, String ln, Map<String, Account> a) {
 		email = e;
 		password = pw;
@@ -66,6 +70,14 @@ public class User {
 	public List<String> getAccountResourceIdentifiers() {
 		List<String> accountRIs = new ArrayList<String>(accounts.keySet());
 		return accountRIs;
+	}
+	
+	public List<String> getSubBalanceResourceIdentifiers() {
+		List<String> subBalanceRIs = new ArrayList<String>();
+		for(int i = 0; i < this.accounts.size(); i++) {
+			subBalanceRIs.addAll(this.accounts.get(i).getSubBalanceResourceIdentifiers());
+		}
+		return subBalanceRIs;
 	}
 	
 	public String createAccount(String name, String type, double balance) {
