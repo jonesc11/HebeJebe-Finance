@@ -23,13 +23,13 @@
   </head>
  
 <!-- multistep form -->
-<form id="msform" ng-controller="SignupCtrl">
+<form id="msform" ng-controller="LoginCtrl" method="POST" action="/login">
   <!-- fieldsets -->
   <fieldset ng-show="page1">
     <h2 class="fs-title">Sign in</h2>
     <input type="text" name="email" placeholder="Email" ng-model="$scope.email"/>
     <input type="password" name="pass" placeholder="Password" ng-model="$scope.pw"/>
-    <input type="button" name="next" class="next action-button" value="Next" ng-click="nextOne()"/>
+    <input type="submit" name="Login" class="next action-button" value="Login"/>
   </fieldset>
 </form>
 </body>

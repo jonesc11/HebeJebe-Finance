@@ -2,6 +2,10 @@ var app = angular.module("MyApp", ['ngRoute']);
 
 $(document).ready (function (app) {
 
+	app.controller("LoginCtrl", function($scope, $http){
+
+	}
+
 
 	app.controller("SignupCtrl", function($scope, $http){
 		$scope.page1 = true
