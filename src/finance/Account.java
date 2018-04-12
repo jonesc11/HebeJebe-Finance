@@ -60,6 +60,11 @@ public class Account implements IAccount {
 		return b;
 	}
 	
+	public List<String> getSubBalanceResourceIdentifiers() {
+		List<String> subBalanceRIs = new ArrayList<String>(subBalances.keySet());
+		return subBalanceRIs;
+	}
+	
 	public List<Transaction> getTransactionHistory() {
 		List<Transaction> allTransactions = new ArrayList<Transaction>(transactions.values());
 		for(int i = 0; i < subBalances.size(); i++) {
@@ -69,6 +74,23 @@ public class Account implements IAccount {
 			}
 		}
 		return allTransactions;
+	}
+	
+	public String createSubBalance(String n, Double b) {
+		SubBalance sb = new SubBalance(n, b, this);
+		
+		int i = 0;
+		while(subBalances.get("sb" + i) != null) 
+			i++;
+		
+		String newIdentifier = "sb" + i;
+		
+		sb.setResourceIdentifier(newIdentifier);
+		Parser.addResource(newIdentifier, sb);
+		dbParser.insertSubBalance(sb, this.resourceIdentifier);
+		subBalances.put(newIdentifier, sb);
+		
+		return newIdentifier;
 	}
 	
 	public String addSingleIncome(double a, String n, String c, Date d) {
