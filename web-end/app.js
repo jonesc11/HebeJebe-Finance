@@ -8,6 +8,7 @@ var fs = require ('fs');
 var request = require ('request');
 var validator = require ('validator');
 var session = require ('express-session');
+var net = require ('net');
 
 var keysObject = require ('./keys.json');
 var accessKey = keysObject.AccessKey;
@@ -84,6 +85,7 @@ app.post ('/signup', function (req, res) {
   };
 
   sendMessage (JSON.stringify (data)).then (function (returnData) {
+console.log (returnData);
     var resourceId = returnData.ResourceIdentifier;
 
     var data2 = {
@@ -139,7 +141,7 @@ app.post ('/request/:reqType/:resType', function (req, res) {
   var requestType = req.params.reqType;
   var userRID = "u0";//req.cookies.accountRI;
   var data = {};
-  
+
   if (requestType === 'create' && resourceType === 'account')
     data = handleCreateAccount (req, userRID);
   else if (requestType === 'create' && resourceType === 'transaction')

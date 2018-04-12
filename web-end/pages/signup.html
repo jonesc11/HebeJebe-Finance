@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="MyApp">
   <head>
 
     <base href="/">
@@ -21,9 +21,9 @@
     
     <title>HebeJebe Finance</title>
   </head>
- 
+<body> 
 <!-- multistep form -->
-<form id="msform" ng-controller="SignupCtrl">
+<form id="msform" ng-controller="SignupCtrl" method="post" action="/signup">
   <!-- fieldsets -->
   <fieldset ng-show="page1">
     <h2 class="fs-title">Create your account</h2>
@@ -46,7 +46,7 @@
     	<option value="Trust">Trust</option>
     </select>
     <input type="button" name="previous" class="previous action-button" value="Previous" ng-click="prevTwo()"/>
-    <input type="button" name="submit" class="next action-button" value="Submit" ng-click="submit()"/>
+    <input type="submit" name="submit" class="next action-button" value="Submit"/>
   </fieldset>
 </form>
 </body>

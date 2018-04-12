@@ -8,7 +8,8 @@ $(document).ready (function (app) {
 
 
 	app.controller("SignupCtrl", function($scope, $http){
-		$scope.page1 = true
+		$scope.page1 = true;
+		$scope.page2 = false;
 
 		$scope.nextOne = function(){
 			$scope.page1 = false
