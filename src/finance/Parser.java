@@ -101,10 +101,16 @@ public class Parser {
 		else if(actionType.equals("CreateAccount")) {
 			response = parseCreateAccount (action);
 		}
+		else if(actionType.equals("CreateSubBalance")) {
+			response = parseCreateSubBalance (action);
+		}
 		//Creates a new transaction, associates it with the appropriate user and account/sub-balance
 		//Issues: Currently doesn't work with Transfers.
 		else if(actionType.equals("CreateTransaction")) {
 			response = parseCreateTransaction (action, user);
+		}
+		else if(actionType.equals("Login")) {
+			response = parseLogin (action);
 		}
 					 
 		return response.toString();
@@ -541,6 +547,7 @@ public class Parser {
 		}
 		else {
 			User u = users.get(resourceIdentifier);
+			response.put("Verified", true);
 			response.put("ResourceIdentifier", resourceIdentifier);
 			response.put("UserIdentifier", u.getEmail());
 			response.put("FirstName", u.getFirstName());
