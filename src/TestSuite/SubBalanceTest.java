@@ -75,5 +75,16 @@ public class SubBalanceTest {
 		assertEquals("t0",test);
 					
 	} 
+	
+	@Test
+	public void addTransferTest() {
+	
+		Account correct2 = new Account("Collin", "Checking", balance);
+		SubBalance test2 = new SubBalance(name, balance, correct2);
+		String test = test2.addTransfer(20, "from grams for birthday" );
+		
+		assertEquals("t0",test);
+					
+	}
 
 }

@@ -83,9 +83,8 @@ public class AccountTest {
 	public void addTransferTest() {
 	
 		Account correct2 = new Account("Collin", "Checking", balance);
-		String test = correct2.addRecurringIncome(20, "getting mail for grampa", "test", Period.WEEKLY, new Date(5, 4, 2018), new Date(5, 4, 2020) );
+		String test = correct2.addTransfer(20, "from grams for birthday" );
 		
-		assertTrue(correct2.getBalance() == 10020);
 		assertEquals("t0",test);
 					
 	}
