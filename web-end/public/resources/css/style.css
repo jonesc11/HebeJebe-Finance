@@ -27,6 +27,31 @@ body {
 	font-family: montserrat, arial, verdana;
 	background: #f1f7ee
 }
+
+.btn:hover{
+	background: #b0bea9;
+	border: #b0bea9;
+}
+
+.btn{
+	background: #67ba5d;
+	border: #67ba5d;
+}
+
+
+#home fieldset{
+	background: white;
+	border: 1px solid #aaa;
+	border-radius: 16px;
+	padding: 10px 20px;
+	box-sizing: border-box;
+	width: 70%;
+	margin: 0 10%;
+	/*box-shadow: 10px 10px 15px #aaaaaa;*/
+	/*stacking fieldsets above each other*/
+	position: relative;
+}
+
 /*form styles*/
 #msform {
 	width: 800px;
@@ -34,6 +59,7 @@ body {
 	text-align: center;
 	position: relative;
 }
+
 #msform fieldset {
 	background: white;
 	border: 1px solid #aaa;
