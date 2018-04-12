@@ -7,6 +7,7 @@ var server = require ('http').Server (app);
 var fs = require ('fs');
 var request = require ('request');
 var validator = require ('validator');
+var session = require ('express-session');
 
 var keysObject = require ('./keys.json');
 var accessKey = keysObject.AccessKey;
@@ -17,8 +18,10 @@ app.listen (80);
 app.use (express.static (__dirname + '/public'));
 app.use (bodyParser.json());
 app.use (bodyParser.urlencoded({ extended: true }));
+app.use (session({ secret: 'secret', resave: false, saveUninitialized: true }));
 
 app.get ('/', function (req, res) {
+console.log(req.session);
   res.sendFile (__dirname + '/pages/home.html');
 });
 
@@ -27,7 +30,31 @@ app.get ('/login', function (req, res) {
 });
 
 app.post ('/login', function (req, res) {
+  var email = req.body.email;
+  var pass = req.body.pass;
 
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    ActionType: "Login",
+    Action: {
+      UserIdentifier: email,
+      Password: pass
+    }
+  };
+
+  sendMessage(JSON.stringify (data)).then (function (returnData) {
+    if (returnData.verified) {
+      req.session.user.email = returnData.UserIdentifier;
+      req.session.user.fname = returnData.FirstName;
+      req.session.user.lname = returnData.LastName;
+      req.session.user.rid = returnData.ResourceIdentifier;
+
+      res.redirect ('/');
+    } else {
+      res.redirect ('/login');
+    }
+  });
 });
 
 app.get ('/signup', function (req, res) {
