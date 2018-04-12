@@ -1,6 +1,10 @@
 package TestSuite;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -8,6 +12,7 @@ import finance.Account;
 import finance.Date;
 import finance.IAccount;
 import finance.SubBalance;
+import finance.Transaction;
 import finance.FinanceUtilities.Period;
 
 public class SubBalanceTest {
@@ -26,6 +31,15 @@ public class SubBalanceTest {
 	}
 	
 	@Test
+	public void testCreation() {
+		Map<String, Transaction> transactions = new HashMap<String, Transaction>();
+		SubBalance test2 = new SubBalance(name, balance, parent, transactions);
+		
+		assertNotNull(test2);
+		
+	}
+	
+	@Test
 	public void testResourceID() {
 		test.setResourceIdentifier("test1");
 		assertEquals("test1", test.getResourceIdentifier());
@@ -38,7 +52,7 @@ public class SubBalanceTest {
 		String test = test2.addSingleExpense(20, "turtle", "test", new Date(5, 4, 2018) );
 		
 		assertTrue(correct2.getBalance() == 680);
-		assertEquals("t0",test);
+		assertTrue("t0" == test);
 					
 	}
 	
