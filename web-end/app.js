@@ -32,7 +32,31 @@ app.get ('/login', function (req, res) {
 });
 
 app.post ('/login', function (req, res) {
+  var email = req.body.email;
+  var pass = req.body.pass;
 
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    ActionType: "Login",
+    Action: {
+      UserIdentifier: email,
+      Password: pass
+    }
+  };
+
+  sendMessage(JSON.stringify (data)).then (function (returnData) {
+    if (returnData.verified) {
+      req.session.user.email = returnData.UserIdentifier;
+      req.session.user.fname = returnData.FirstName;
+      req.session.user.lname = returnData.LastName;
+      req.session.user.rid = returnData.ResourceIdentifier;
+
+      res.redirect ('/');
+    } else {
+      res.redirect ('/login');
+    }
+  });
 });
 
 app.get ('/signup', function (req, res) {
