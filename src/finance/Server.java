@@ -52,7 +52,7 @@ public class Server {
                 out = new PrintWriter(socket.getOutputStream(), true);
                 
                 try {
-                	response = Runner.processRequest (request);
+                	response = Parser.processRequest (request);
                 	out.println(response);
                 } catch (JSONException e) {
                 	e.printStackTrace();
