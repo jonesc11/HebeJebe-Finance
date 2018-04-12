@@ -54,6 +54,7 @@ body {
 	border-radius: 3px;
 	margin-bottom: 8px;
 	width: 100%;
+	height: auto;
 	box-sizing: border-box;
 }
 /*buttons*/
