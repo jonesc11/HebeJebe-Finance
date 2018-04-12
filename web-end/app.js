@@ -6,10 +6,6 @@ var bodyParser = require ('body-parser');
 var server = require ('http').Server (app);
 var fs = require ('fs');
 var request = require ('request');
-var cookieParser = require ('cookie-parser');
-var net = require ('net');
-var passport = require ('passport');
-var strategy = require ('passport-local').Strategy;
 var validator = require ('validator');
 
 var keysObject = require ('./keys.json');
@@ -21,7 +17,6 @@ app.listen (80);
 app.use (express.static (__dirname + '/public'));
 app.use (bodyParser.json());
 app.use (bodyParser.urlencoded({ extended: true }));
-app.use (cookieParser());
 
 app.get ('/', function (req, res) {
   res.sendFile (__dirname + '/pages/home.html');
@@ -253,10 +248,10 @@ function handleGetSubbalance (req, userRID) {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
-    ActionType: "GetSubbalance"
+    ActionType: "GetSubbalance",
     Action: {
       Limit: req.query.Limit ? req.query.Limit : 25,
-      ResourceIdentifier: req.query.ResourceIdentifier ? req.query.ResourceIdentifier ? null,
+      ResourceIdentifier: req.query.ResourceIdentifier ? req.query.ResourceIdentifier : null,
       GetFrom: req.query.GetFrom ? req.query.GetFrom : userRID,
       NextToken: req.query.NextToken ? req.query.NextToken : null
     }
@@ -317,7 +312,7 @@ function handleCreateAccount (req, userRID) {
 function handleCreateTransaction (req, userRID) {
   if (!req.body.Amount || req.body.Amount === "" || req.body.Amount == 0)
     return { ErrorMessage: "Amount not specified." };
-  if ((!req.body.To || req.body.To === null) && (!req.body.From || req.body.From === null)
+  if ((!req.body.To || req.body.To === null) && (!req.body.From || req.body.From === null))
     return { ErrorMessage: "Account(s) To and / or From must be specified." };
   if (!req.body.DateTime || req.body.DateTime === null)
     return { ErrorMessage: "Transaction date must be specified." };
