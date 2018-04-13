@@ -31,7 +31,6 @@ $(document).ready (function (app) {
 			      }
 			}).
 			then(function(success) {
-				console.log(success.data);
 				$scope.transactions = success.data.Transactions;
 			}).
 			then(function(error) {
@@ -48,7 +47,6 @@ $(document).ready (function (app) {
                     "Limit": 30
                     }
                 }).then(function(success) {
-                    console.log (success.data);
                     $scope.accounts = success.data.Account;
                 }).
                 then(function(error) {
@@ -66,8 +64,8 @@ $(document).ready (function (app) {
   				"Limit": 30,
 				"TransactionType": $scope.transactionType, 
   				"Amount": $scope.amount,
-  				"To": null,
-  				"From": null,
+  				"To": $scope.transactionType == 'Expense' ? null : $scope.transactionAccount,
+  				"From": $scope.transactionType == 'Income' ? null : $scope.transactionAccount,
   				"Description": $scope.transactionDescription,
   				"DateTime": $scope.transactionDate,
   				"Category": "<string>",
@@ -78,7 +76,6 @@ $(document).ready (function (app) {
 			      }
 			}).
 			then(function(success) {
-				console.log (success.data);
 			}).
 			then(function(error) {
 				// log error

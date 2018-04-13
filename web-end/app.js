@@ -22,12 +22,17 @@ app.use (bodyParser.urlencoded({ extended: true }));
 app.use (session({ secret: 'secret', resave: false, saveUninitialized: true }));
 
 app.get ('/', function (req, res) {
-  res.sendFile (__dirname + '/pages/home.html');
+  if (!req.session || !req.session.user || !req.session.user.email)
+    res.redirect ('/signup');
+  else
+    res.sendFile (__dirname + '/pages/home.html');
 });
 
 app.get ('/login', function (req, res) {
-console.log(req.session);
-  res.sendFile (__dirname + '/pages/login.html');
+  if (req.session && req.session.user && req.session.user.email)
+    res.redirect ('/');
+  else
+    res.sendFile (__dirname + '/pages/login.html');
 });
 
 app.post ('/login', function (req, res) {
@@ -61,7 +66,10 @@ app.post ('/login', function (req, res) {
 });
 
 app.get ('/signup', function (req, res) {
-  res.sendFile (__dirname + '/pages/signup.html');
+  if (req.session && req.session.user && req.session.user.email)
+    res.redirect ('/');
+  else
+    res.sendFile (__dirname + '/pages/signup.html');
 });
 
 app.post ('/signup', function (req, res) {
@@ -117,7 +125,7 @@ app.get ('/logout', function (req, res) {
 app.get ('/request/:reqType/:resType', function (req, res) {
   var resourceType = req.params.resType;
   var requestType = req.params.reqType;
-  var userRID = "u0";//req.cookies.accountRI;
+  var userRID = req.session.user.rid;
   var data = {};
 
   if (requestType === 'get' && resourceType === 'transactions')
@@ -142,7 +150,7 @@ app.get ('/user', function (req, res) {res.send (1);});
 app.post ('/request/:reqType/:resType', function (req, res) {
   var resourceType = req.params.resType;
   var requestType = req.params.reqType;
-  var userRID = "u0";//req.cookies.accountRI;
+  var userRID = req.session.user.rid;
   var data = {};
 
   if (requestType === 'create' && resourceType === 'account')
