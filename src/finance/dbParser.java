@@ -175,7 +175,7 @@ public class dbParser {
 				//Unimplemented
 			}
 			
-			if(t == null) {
+			if(t != null) {
 				Parser.addResource(identifier, t);
 				transactionsList.put(identifier, t);
 			}
