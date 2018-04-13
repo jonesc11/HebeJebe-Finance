@@ -22,11 +22,11 @@ app.use (bodyParser.urlencoded({ extended: true }));
 app.use (session({ secret: 'secret', resave: false, saveUninitialized: true }));
 
 app.get ('/', function (req, res) {
-console.log(req.session);
   res.sendFile (__dirname + '/pages/home.html');
 });
 
 app.get ('/login', function (req, res) {
+console.log(req.session);
   res.sendFile (__dirname + '/pages/login.html');
 });
 
@@ -45,7 +45,9 @@ app.post ('/login', function (req, res) {
   };
 
   sendMessage(JSON.stringify (data)).then (function (returnData) {
-    if (returnData.verified) {
+    returnData = JSON.parse(returnData);
+    if (returnData.Verified) {
+      req.session.user = {};
       req.session.user.email = returnData.UserIdentifier;
       req.session.user.fname = returnData.FirstName;
       req.session.user.lname = returnData.LastName;
@@ -85,8 +87,8 @@ app.post ('/signup', function (req, res) {
   };
 
   sendMessage (JSON.stringify (data)).then (function (returnData) {
-console.log (returnData);
-    var resourceId = returnData.ResourceIdentifier;
+    var parsed = JSON.parse (returnData);
+    var resourceId = parsed.ResourceIdentifier;
 
     var data2 = {
       Key: accessKey,
@@ -101,14 +103,15 @@ console.log (returnData);
       }
     };
 
-    sendMessage (JSON.stringify (data)).then (function (data) {
+    sendMessage (JSON.stringify (data2)).then (function (data) {
       res.redirect ('/login');
     });
   });
 });
 
 app.get ('/logout', function (req, res) {
-
+  req.session.user = undefined;
+  res.redirect ('/login');
 });
 
 app.get ('/request/:reqType/:resType', function (req, res) {

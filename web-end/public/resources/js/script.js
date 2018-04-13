@@ -20,29 +20,6 @@ $(document).ready (function (app) {
 			$scope.page1 = true
 			$scope.page2 = false
 		}
-
-		$scope.submit = function(){
-			$http({
-				method: 'POST',
-				url: '/request/create/user',
-				data: {
-					"UserIdentifier": $scope.email,
-  					"Password": $scope.pw,
-  					"FirstName": $scope.firstName,
-  					"LastName": $scope.lastName
-				}
-			},{
-				method: 'POST',
-				url: '/request/create/account',
-				data: {
-					"UserResourceIdentifier": $scope.email,
-  					"AccountName": $scope.accountName,
-  					"AccountBalance": $scope.accountAmnt,
-  					"AccountType":  $scope.accountType
-				}
-			});	
-		}
-
 	});
 
 	app.controller("PostsCtrl", function($scope, $http) {
