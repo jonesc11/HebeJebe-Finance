@@ -94,7 +94,7 @@ public class Account implements IAccount {
 	}
 	
 	public String addSingleIncome(double a, String n, String c, Date d) {
-		SingleIncome newIncome = new SingleIncome(a, n, c, d);
+		SingleIncome newIncome = new SingleIncome(a, n, c, d, this.balance);
 		balance += a;
 		
 		int i = 0;
@@ -128,7 +128,7 @@ public class Account implements IAccount {
 	}
 	
 	public String addSingleExpense(double a, String n, String c, Date d) {
-		SingleExpense newExpense = new SingleExpense(a, n, c, d);
+		SingleExpense newExpense = new SingleExpense(a, n, c, d, this.balance);
 		balance -= a;
 		
 		int i = 0;
