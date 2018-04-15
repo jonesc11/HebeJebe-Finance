@@ -87,7 +87,6 @@ public class Account implements IAccount {
 		
 		sb.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, sb);
-		dbParser.insertSubBalance(sb, this.resourceIdentifier);
 		subBalances.put(newIdentifier, sb);
 		
 		return newIdentifier;
@@ -105,7 +104,6 @@ public class Account implements IAccount {
 		
 		newIncome.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newIncome);
-		dbParser.insertTransaction(newIncome, this.resourceIdentifier);
 		transactions.put(newIdentifier, newIncome);
 		
 		return newIdentifier;
@@ -122,7 +120,6 @@ public class Account implements IAccount {
 		
 		newIncome.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newIncome);
-		dbParser.insertTransaction(newIncome, this.resourceIdentifier);
 		transactions.put(newIdentifier, newIncome);
 		
 		return newIdentifier;
@@ -140,7 +137,6 @@ public class Account implements IAccount {
 		
 		newExpense.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newExpense);
-		dbParser.insertTransaction(newExpense, this.resourceIdentifier);
 		transactions.put(newIdentifier, newExpense);
 		
 		return newIdentifier;
@@ -157,7 +153,6 @@ public class Account implements IAccount {
 		
 		newExpense.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newExpense);
-		dbParser.insertTransaction(newExpense, this.resourceIdentifier);
 		transactions.put(newIdentifier, newExpense);
 		
 		return newIdentifier;
@@ -174,7 +169,6 @@ public class Account implements IAccount {
 		
 		newTransfer.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newTransfer);
-		dbParser.insertTransaction(newTransfer, this.resourceIdentifier);
 		transactions.put("t" + i, newTransfer);
 		
 		return newIdentifier;

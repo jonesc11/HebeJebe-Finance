@@ -70,7 +70,6 @@ public class Parser {
 		//Gets the User object from users based on the specified resource identifier, the actionType, 
 		//which will specify what the response JSONObject will look like, and the action 
 		//JSONObject that will specify important information regarding the action to be performed.
-		User user = users.get(request.getString("AccountId"));
 		String actionType = request.getString("ActionType");
 		JSONObject action = request.getJSONObject("Action");
 		
@@ -107,6 +106,7 @@ public class Parser {
 		//Creates a new transaction, associates it with the appropriate user and account/sub-balance
 		//Issues: Currently doesn't work with Transfers.
 		else if(actionType.equals("CreateTransaction")) {
+			User user = users.get(request.getString("AccountId"));
 			response = parseCreateTransaction (action, user);
 		}
 		else if(actionType.equals("Login")) {
@@ -194,6 +194,9 @@ public class Parser {
 			}
 		}
 		
+		Transaction t = (Transaction)resources.get(transactionRI);
+		dbParser.insertTransaction(t, parentRI);
+		
 		//Creates the appropriate response JSONObject for the CreateTransaction Request
 		response.put("ResourceIdentifier", transactionRI);
 		response.put("TransactionType", type);
@@ -220,12 +223,14 @@ public class Parser {
 		double balance = action.getDouble("AccountBalance");
 		
 		String resourceIdentifier = user.createAccount(name, type, balance);
+		Account a = (Account)resources.get(resourceIdentifier);
+		dbParser.insertAccount(a, user.getResourceIdentifier());
 		
 		response.put("ResourceIdentifier", resourceIdentifier);
 		response.put("UserResourceIdentifier", action.getString("UserResourceIdentifier"));
-		response.put("AccountName", name);
-		response.put("AccountType", type);
-		response.put("AccountBalance", balance);
+		response.put("AccountName", a.getName());
+		response.put("AccountType", a.getType());
+		response.put("AccountBalance", a.getBalance());
 		
 		return response;
 	}
@@ -237,6 +242,8 @@ public class Parser {
 		Double balance = action.getDouble("SubBalanceBalance");
 		
 		String resourceIdentifier = account.createSubBalance(name, balance);
+		SubBalance sb = (SubBalance)resources.get(resourceIdentifier);
+		dbParser.insertSubBalance(sb, account.getResourceIdentifier());
 		
 		response.put("ResourceIdentifier", resourceIdentifier);
 		response.put("AccountResourceIdentifier", account.getResourceIdentifier());
@@ -262,6 +269,7 @@ public class Parser {
 		while(users.get("u" + i) != null) {
 			i++;
 		}
+		newUser.setResourceIdentifier("u" + i);
 		users.put("u" + i, newUser);
 		dbParser.insertUser(newUser, salt, password);
 		

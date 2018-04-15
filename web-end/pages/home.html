@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="MyApp">
   <head>
 
     <base href="/">
@@ -49,12 +49,13 @@
 		</table>    
 	</div>
 	<div class="col-4" ng-controller="NewPanel">
+		<form id = "home">
+		<fieldset>
 		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createAccountModal">Add Account</button>
 		</br>
 		<button type="button" class="btn btn-primary">Budgets</button>
 		</br>
 		<label> Create Transaction </label>
-		<form>
 			<div class="form-group">
 				<select class="custom-select custom-select-lg mb-3" ng-model="transactionAccount">
 					<option ng-repeat="account in accounts" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
@@ -91,7 +92,9 @@
 			</div>
 
   			<button type="submit" class="btn btn-primary" ng-click="createTransaction()">Submit</button>
-		</form>
+
+	</fieldset>
+	</form>
         <div class="modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-labelledby="createAccountLabel" aria-hidden="true">
           <div class="modal-dialog" role="document">
             <div class="modal-content">
