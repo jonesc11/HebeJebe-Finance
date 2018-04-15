@@ -89,7 +89,6 @@ public class Account implements IAccount {
 		
 		sb.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, sb);
-		dbParser.insertSubBalance(sb, this.resourceIdentifier);
 		subBalances.put(newIdentifier, sb);
 		
 		return newIdentifier;

@@ -106,7 +106,7 @@ public class Parser {
 		//Creates a new transaction, associates it with the appropriate user and account/sub-balance
 		//Issues: Currently doesn't work with Transfers.
 		else if(actionType.equals("CreateTransaction")) {
-			User user = users.get(request.getString("AccountID"));
+			User user = users.get(request.getString("AccountId"));
 			response = parseCreateTransaction (action, user);
 		}
 		else if(actionType.equals("Login")) {
@@ -227,13 +227,12 @@ public class Parser {
 		
 		response.put("ResourceIdentifier", resourceIdentifier);
 		response.put("UserResourceIdentifier", action.getString("UserResourceIdentifier"));
-		response.put("AccountName", name);
-		response.put("AccountType", type);
-		response.put("AccountBalance", balance);
+		response.put("AccountName", a.getName());
+		response.put("AccountType", a.getType());
+		response.put("AccountBalance", a.getBalance());
 		
 		return response;
 	}
-	
 	public static JSONObject parseCreateSubBalance(JSONObject action) throws JSONException {
 		JSONObject response = new JSONObject();
 		
@@ -243,7 +242,7 @@ public class Parser {
 		
 		String resourceIdentifier = account.createSubBalance(name, balance);
 		SubBalance sb = (SubBalance)resources.get(resourceIdentifier);
-		dbParser.insertSubBalance(sb, sb.getParentIdentifier());
+		dbParser.insertSubBalance(sb, account.getResourceIdentifier());
 		
 		response.put("ResourceIdentifier", resourceIdentifier);
 		response.put("AccountResourceIdentifier", account.getResourceIdentifier());

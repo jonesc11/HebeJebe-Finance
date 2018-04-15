@@ -12,6 +12,7 @@ public class RecurringIncome extends Income {
 		amount = a;
 		name = n;
 		category = c;
+		period = p;
 		date = d1;
 		lastUpdated = d1;
 		endDate = d2;
