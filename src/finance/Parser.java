@@ -488,53 +488,56 @@ public class Parser {
 		// type == null means no transaction types have been specified.
 		for(int i = 0; i < allTransactions.size() && i < limit; i++) {
 			JSONObject o = new JSONObject();
-			if(allTransactions.get(i) instanceof Income && (category == null || allTransactions.get(i).getCategory().equals(category)) && (types == null || types.contains("Income"))) {
-				o.put("ResourceIdentifier", allTransactions.get(i).getResourceIdentifier());
+			Transaction t = allTransactions.get(i);
+			if(t instanceof Income && (category == null || t.getCategory().equals(category)) && (types == null || types.contains("Income"))) {
+				o.put("ResourceIdentifier", t.getResourceIdentifier());
 				o.put("TransactionType", "Income");
-				o.put("Amount", allTransactions.get(i).getAmount());
-				o.put("Description", allTransactions.get(i).getName());
-				o.put("DateTime", allTransactions.get(i).getDate().format());
-				o.put("Category", allTransactions.get(i).getCategory());
-				if (allTransactions.get(i) instanceof RecurringIncome) {
+				o.put("Amount", t.getAmount());
+				o.put("Description", t.getName());
+				o.put("DateTime", t.getDate().format());
+				o.put("Category", t.getCategory());
+				if (t instanceof RecurringIncome) {
 					o.put("Recurring", true);
-					o.put("RecurringUntil", ((RecurringIncome)allTransactions.get(i)).getEndDate().format());
-					if(((RecurringIncome)allTransactions.get(i)).getPeriod() == Period.DAILY)
+					o.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
+					if(((RecurringIncome)t).getPeriod() == Period.DAILY)
 						o.put("RecurringInterval", 1);
-					else if(((RecurringIncome)allTransactions.get(i)).getPeriod() == Period.MONTHLY)
+					else if(((RecurringIncome)t).getPeriod() == Period.MONTHLY)
 						o.put("RecurringInterval", 30);
-					else if(((RecurringIncome)allTransactions.get(i)).getPeriod() == Period.YEARLY)
+					else if(((RecurringIncome)t).getPeriod() == Period.YEARLY)
 						o.put("RecurringInterval", 365);
 				} else {
 					o.put("Recurring", false);
+					o.put("AccountBalanceAfter", ((SingleIncome)t).getBalanceAfter());
 				}
 				transactions.put(o);
-			} else if(allTransactions.get(i) instanceof Expense && (category == null || allTransactions.get(i).getCategory().equals(category)) && (types == null || types.contains("Expense"))) {
-				o.put("ResourceIdentifier", allTransactions.get(i).getResourceIdentifier());
+			} else if(t instanceof Expense && (category == null || t.getCategory().equals(category)) && (types == null || types.contains("Expense"))) {
+				o.put("ResourceIdentifier", t.getResourceIdentifier());
 				o.put("TransactionType", "Expense");
-				o.put("Amount", allTransactions.get(i).getAmount());
-				o.put("Description", allTransactions.get(i).getName());
-				o.put("DateTime", allTransactions.get(i).getDate().format());
-				o.put("Category", allTransactions.get(i).getCategory());
-				if (allTransactions.get(i) instanceof RecurringExpense) {
+				o.put("Amount", t.getAmount());
+				o.put("Description", t.getName());
+				o.put("DateTime", t.getDate().format());
+				o.put("Category", t.getCategory());
+				if (t instanceof RecurringExpense) {
 					o.put("Recurring", true);
-					o.put("RecurringUntil", ((RecurringExpense)allTransactions.get(i)).getEndDate().format());
-					if(((RecurringExpense)allTransactions.get(i)).getPeriod() == Period.DAILY)
+					o.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
+					if(((RecurringExpense)t).getPeriod() == Period.DAILY)
 						o.put("RecurringInterval", 1);
-					else if(((RecurringExpense)allTransactions.get(i)).getPeriod() == Period.MONTHLY)
+					else if(((RecurringExpense)t).getPeriod() == Period.MONTHLY)
 						o.put("RecurringInterval", 30);
-					else if(((RecurringExpense)allTransactions.get(i)).getPeriod() == Period.YEARLY)
+					else if(((RecurringExpense)t).getPeriod() == Period.YEARLY)
 						o.put("RecurringInterval", 365);
 				} else {
 					o.put("Recurring", false);
+					o.put("AccountBalanceAfter", ((SingleExpense)t).getBalanceAfter());
 				}
 				transactions.put(o);
-			} else if(allTransactions.get(i) instanceof Transfer && (category == null || allTransactions.get(i).getCategory().equals(category)) && (types == null || types.contains("Transfer"))) {
-				o.put("ResourceIdentifier", allTransactions.get(i).getResourceIdentifier());
+			} else if(t instanceof Transfer && (category == null || t.getCategory().equals(category)) && (types == null || types.contains("Transfer"))) {
+				o.put("ResourceIdentifier", t.getResourceIdentifier());
 				o.put("TransactionType", "Transfer");
-				o.put("Amount", allTransactions.get(i).getAmount());
-				o.put("Description", allTransactions.get(i).getName());
-				o.put("DateTime", allTransactions.get(i).getDate().format());
-				o.put("Category", allTransactions.get(i).getCategory());
+				o.put("Amount", t.getAmount());
+				o.put("Description", t.getName());
+				o.put("DateTime", t.getDate().format());
+				o.put("Category", t.getCategory());
 				o.put("Recurring",  false);
 				transactions.put(o);
 			}
@@ -593,7 +596,15 @@ public class Parser {
 			transaction.put("DateTime", t.getDate().format());
 			transaction.put("Category", t.getCategory());
 			transaction.put("AssociatedWith", identifier);
-			if(t instanceof SingleIncome || t instanceof SingleExpense || t instanceof Transfer) {
+			if(t instanceof SingleIncome) {
+				transaction.put("Recurring", false);
+				transaction.put("AccountBalanceAfter", ((SingleIncome)t).getBalanceAfter());
+			}
+			else if(t instanceof SingleExpense) {
+				transaction.put("Recurring", false);
+				transaction.put("AccountBalanceAfter", ((SingleExpense)t).getBalanceAfter());
+			}
+			else if(t instanceof Transfer) {
 				transaction.put("Recurring", false);
 			}
 			else if(t instanceof RecurringIncome) {

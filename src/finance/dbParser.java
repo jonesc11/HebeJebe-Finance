@@ -118,6 +118,7 @@ public class dbParser {
 			Date date = DateFactory.getDate(day, month, year);
 			String category = d.getString("Category");
 			Boolean recurring = d.getBoolean("Recurring");
+			IAccount a = (IAccount)Parser.getResource(pIdentifier);
 			Transaction t = null;
 			
 			if(type.equals("Income")) {
@@ -142,7 +143,7 @@ public class dbParser {
 					t.setResourceIdentifier(identifier);
 				}
 				else {
-					t = new SingleIncome(amount, name, category, date);
+					t = new SingleIncome(amount, name, category, date, a.getBalance());
 					t.setResourceIdentifier(identifier);
 				}
 			}
@@ -168,7 +169,7 @@ public class dbParser {
 					t.setResourceIdentifier(identifier);
 				}
 				else {
-					t = new SingleExpense(amount, name, category, date);
+					t = new SingleExpense(amount, name, category, date, a.getBalance());
 					t.setResourceIdentifier(identifier);
 				}
 			}
@@ -232,7 +233,15 @@ public class dbParser {
 				newTransaction.append("RecurringFrequency", 365);
 			}
 		}
-		else {
+		else if(t instanceof SingleIncome) {
+			newTransaction.append("Recurring", false);
+			newTransaction.append("AccountBalanceAfter", ((SingleIncome)t).getBalanceAfter());
+		}
+		else if(t instanceof SingleExpense) {
+			newTransaction.append("Recurring", false);
+			newTransaction.append("AccountBalanceAfter", ((SingleExpense)t).getBalanceAfter());
+		}
+		else if(t instanceof Transfer) {
 			newTransaction.append("Recurring", false);
 		}
 		
