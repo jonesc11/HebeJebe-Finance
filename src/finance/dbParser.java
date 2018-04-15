@@ -132,22 +132,18 @@ public class dbParser {
 					Period period;
 					if(recurFrequency == 30) {
 						period = Period.MONTHLY;
-					}
-					else if(recurFrequency == 365) {
+					} else if(recurFrequency == 365) {
 						period = Period.YEARLY;
-					}
-					else {
+					} else {
 						period = Period.DAILY;
 					}
-					t = new RecurringIncome(amount, name, category, period, date, endDate);
+					t = new RecurringIncome(amount, name, category, period, date, endDate, a.getResourceIdentifier());
+					t.setResourceIdentifier(identifier);
+				} else {
+					t = new SingleIncome(amount, name, category, date, a.getBalance(), a.getResourceIdentifier());
 					t.setResourceIdentifier(identifier);
 				}
-				else {
-					t = new SingleIncome(amount, name, category, date, a.getBalance());
-					t.setResourceIdentifier(identifier);
-				}
-			}
-			else if(type.equals("Expense")) {
+			} else if(type.equals("Expense")) {
 				if(recurring) {
 					String endDateString = d.getString("RecurringUntil");
 					int endYear = Integer.parseInt(endDateString.substring(0,4));
@@ -158,22 +154,18 @@ public class dbParser {
 					Period period;
 					if(recurFrequency == 30) {
 						period = Period.MONTHLY;
-					}
-					else if(recurFrequency == 365) {
+					} else if(recurFrequency == 365) {
 						period = Period.YEARLY;
-					}
-					else {
+					} else {
 						period = Period.DAILY;
 					}
-					t = new RecurringExpense(amount, name, category, period, date, endDate);
+					t = new RecurringExpense(amount, name, category, period, date, endDate, a.getResourceIdentifier());
+					t.setResourceIdentifier(identifier);
+				} else {
+					t = new SingleExpense(amount, name, category, date, a.getBalance(), a.getResourceIdentifier());
 					t.setResourceIdentifier(identifier);
 				}
-				else {
-					t = new SingleExpense(amount, name, category, date, a.getBalance());
-					t.setResourceIdentifier(identifier);
-				}
-			}
-			else if(type.equals("Transfer")) {
+			} else if(type.equals("Transfer")) {
 				//Unimplemented
 			}
 			

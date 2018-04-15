@@ -7,6 +7,7 @@ public abstract class Transaction {
 	protected Date date;
 	protected String category;
 	protected String resourceIdentifier;
+	protected String parentIdentifier;
 	
 	public double getAmount() { 
 		return amount; 
@@ -26,6 +27,10 @@ public abstract class Transaction {
 	
 	public String getResourceIdentifier() {
 		return resourceIdentifier;
+	}
+	
+	public String getParentIdentifier() {
+		return parentIdentifier;
 	}
 	
 	public void setResourceIdentifier(String identifier) {

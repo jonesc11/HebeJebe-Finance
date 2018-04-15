@@ -8,13 +8,14 @@ public class RecurringIncome extends Income {
 	private Date lastUpdated;
 	private Period period;
 	
-	public RecurringIncome(double a, String n, String c, Period p, Date d1, Date d2) {
+	public RecurringIncome(double a, String n, String c, Period p, Date d1, Date d2, String pri) {
 		amount = a;
 		name = n;
 		category = c;
 		date = d1;
 		lastUpdated = d1;
 		endDate = d2;
+		parentIdentifier = pri;
 	}
 	
 	public Date getEndDate() {
