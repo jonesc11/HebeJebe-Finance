@@ -1,9 +1,63 @@
 package finance;
 
-public class Budget {
-	
-	public Budget() {
-		
-	}
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+public abstract class Budget {
+	
+	protected double limit;
+	protected String name;
+	protected Date date;
+	protected Date endDate;
+	protected String resourceIdentifier;
+	protected double balance;
+	private Map<String, Transaction> transactions;
+	private Map<String, IAccount> subBalances;
+	
+	public double getLimit() { 
+		return limit; 
+	}
+	
+	public String getName() { 
+		return name; 
+	}
+	
+	public Date getDate() {
+		return date;
+	}
+	
+	public Date getEndDate() {
+		return endDate;
+	}
+	
+	public String getResourceIdentifier() {
+		return resourceIdentifier;
+	}
+	
+	public void setResourceIdentifier(String identifier) {
+		resourceIdentifier = identifier;
+	}
+	
+	public double getBalance() {
+		double b = balance;
+		for (int i = 0; i < subBalances.size(); i++) {
+			b += subBalances.get(i).getBalance();
+		}
+		return b;
+	}
+	
+	public List<Transaction> getTransactionHistory() {
+		List<Transaction> allTransactions = new ArrayList<Transaction>(transactions.values());
+		for(int i = 0; i < subBalances.size(); i++) {
+			List<Transaction> temp = subBalances.get(i).getTransactionHistory();
+			for(int j = 0; j < temp.size(); j++) {
+				allTransactions.add(temp.get(j));
+			}
+		}
+		return allTransactions;
+	}
+	
+	
 }
