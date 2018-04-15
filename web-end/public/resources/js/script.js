@@ -20,6 +20,23 @@ $(document).ready (function (app) {
 			$scope.page1 = true
 			$scope.page2 = false
 		}
+
+		$scope.register = function(){
+			$http({
+				method: 'POST',
+				url: '/signup',
+				data: {
+					"firstName": $scope.firstName,
+					"lastName": $scope.lastName,
+					"email": $scope.email,
+					"pass": $scope.pw,
+					"accountName": $scope.accountName,
+					"accountAmount": $scope.accountAmnt,
+					"accountType": $scope.accountType
+				}
+			})
+		};
+
 	});
 
 	app.controller("PostsCtrl", function($scope, $http) {
