@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Budget {
+public class Budget {
 	
 	protected double limit;
 	protected String name;
@@ -16,6 +16,15 @@ public abstract class Budget {
 	private Map<String, Transaction> transactions;
 	private Map<String, IAccount> subBalances;
 	
+	public Budget(String n, double l, Date d, Date endD, double b) {
+		this.name = n;
+		this.balance = b;
+		this.limit = l;
+		this.date = d;
+		this.endDate = endD;
+		this.transactions = new HashMap<String, Transaction>();
+		this.subBalances = new HashMap<String, IAccount>();
+	}
 	public double getLimit() { 
 		return limit; 
 	}
