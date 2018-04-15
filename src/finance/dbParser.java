@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 
 import finance.FinanceUtilities.Period;
 
@@ -303,5 +304,10 @@ public class dbParser {
 		else {
 			return "";
 		}
+	}
+	
+	public static void updateBalance(String identifier, double balance) {
+		MongoCollection<Document> accounts = db.getCollection("accounts");
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("Balance", balance));
 	}
 }

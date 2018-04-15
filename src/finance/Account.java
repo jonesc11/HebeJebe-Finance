@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 import finance.FinanceUtilities.Period;
 
@@ -104,6 +105,7 @@ public class Account implements IAccount {
 		
 		newIncome.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newIncome);
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		transactions.put(newIdentifier, newIncome);
 		
 		return newIdentifier;
@@ -137,6 +139,7 @@ public class Account implements IAccount {
 		
 		newExpense.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newExpense);
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		transactions.put(newIdentifier, newExpense);
 		
 		return newIdentifier;
@@ -173,5 +176,26 @@ public class Account implements IAccount {
 		
 		return newIdentifier;
 	}	
+	
+	public void checkRecurringTransactions() {
+		LocalDateTime now = LocalDateTime.now();
+		Date d = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
+		for(int i = 0; i < transactions.size(); i++) {
+			Transaction t = transactions.get(i);
+			if(t instanceof RecurringIncome) {
+				this.balance += ((RecurringIncome)t).amountByDate(d);
+				((RecurringIncome)t).updateLastUpdated(d);
+			}
+			else if(t instanceof RecurringExpense) {
+				this.balance -= ((RecurringExpense)t).amountByDate(d);
+				((RecurringExpense)t).updateLastUpdated(d);
+			}
+			
+		}
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
+		for(int i = 0; i < subBalances.size(); i++) {
+			subBalances.get(i).checkRecurringTransactions();
+		}
+	}
 
 }

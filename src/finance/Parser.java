@@ -193,7 +193,6 @@ public class Parser {
 				
 			}
 		}
-		
 		Transaction t = (Transaction)resources.get(transactionRI);
 		dbParser.insertTransaction(t, parentRI);
 		
@@ -559,6 +558,8 @@ public class Parser {
 			response.put("UserIdentifier", u.getEmail());
 			response.put("FirstName", u.getFirstName());
 			response.put("LastName", u.getLastName());
+			
+			u.checkRecurringTransactions();
 		}
 		
 		return response;
