@@ -8,6 +8,7 @@ var fs = require ('fs');
 var request = require ('request');
 var validator = require ('validator');
 var session = require ('express-session');
+var net = require ('net');
 
 var keysObject = require ('./keys.json');
 var accessKey = keysObject.AccessKey;
@@ -21,12 +22,17 @@ app.use (bodyParser.urlencoded({ extended: true }));
 app.use (session({ secret: 'secret', resave: false, saveUninitialized: true }));
 
 app.get ('/', function (req, res) {
-console.log(req.session);
-  res.sendFile (__dirname + '/pages/home.html');
+  if (!req.session || !req.session.user || !req.session.user.email)
+    res.redirect ('/signup');
+  else
+    res.sendFile (__dirname + '/pages/home.html');
 });
 
 app.get ('/login', function (req, res) {
-  res.sendFile (__dirname + '/pages/login.html');
+  if (req.session && req.session.user && req.session.user.email)
+    res.redirect ('/');
+  else
+    res.sendFile (__dirname + '/pages/login.html');
 });
 
 app.post ('/login', function (req, res) {
@@ -44,7 +50,9 @@ app.post ('/login', function (req, res) {
   };
 
   sendMessage(JSON.stringify (data)).then (function (returnData) {
-    if (returnData.verified) {
+    returnData = JSON.parse(returnData);
+    if (returnData.Verified) {
+      req.session.user = {};
       req.session.user.email = returnData.UserIdentifier;
       req.session.user.fname = returnData.FirstName;
       req.session.user.lname = returnData.LastName;
@@ -58,7 +66,10 @@ app.post ('/login', function (req, res) {
 });
 
 app.get ('/signup', function (req, res) {
-  res.sendFile (__dirname + '/pages/signup.html');
+  if (req.session && req.session.user && req.session.user.email)
+    res.redirect ('/');
+  else
+    res.sendFile (__dirname + '/pages/signup.html');
 });
 
 app.post ('/signup', function (req, res) {
@@ -84,7 +95,8 @@ app.post ('/signup', function (req, res) {
   };
 
   sendMessage (JSON.stringify (data)).then (function (returnData) {
-    var resourceId = returnData.ResourceIdentifier;
+    var parsed = JSON.parse (returnData);
+    var resourceId = parsed.ResourceIdentifier;
 
     var data2 = {
       Key: accessKey,
@@ -99,20 +111,21 @@ app.post ('/signup', function (req, res) {
       }
     };
 
-    sendMessage (JSON.stringify (data)).then (function (data) {
+    sendMessage (JSON.stringify (data2)).then (function (data) {
       res.redirect ('/login');
     });
   });
 });
 
 app.get ('/logout', function (req, res) {
-
+  req.session.user = undefined;
+  res.redirect ('/login');
 });
 
 app.get ('/request/:reqType/:resType', function (req, res) {
   var resourceType = req.params.resType;
   var requestType = req.params.reqType;
-  var userRID = "u0";//req.cookies.accountRI;
+  var userRID = req.session.user.rid;
   var data = {};
 
   if (requestType === 'get' && resourceType === 'transactions')
@@ -137,9 +150,9 @@ app.get ('/user', function (req, res) {res.send (1);});
 app.post ('/request/:reqType/:resType', function (req, res) {
   var resourceType = req.params.resType;
   var requestType = req.params.reqType;
-  var userRID = "u0";//req.cookies.accountRI;
+  var userRID = req.session.user.rid;
   var data = {};
-  
+
   if (requestType === 'create' && resourceType === 'account')
     data = handleCreateAccount (req, userRID);
   else if (requestType === 'create' && resourceType === 'transaction')
