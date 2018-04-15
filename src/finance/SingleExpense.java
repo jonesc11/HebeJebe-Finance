@@ -9,7 +9,7 @@ public class SingleExpense extends Expense {
 		name = n;
 		category = c;
 		date = d;
-		balanceAfter = b - a;
+		balanceAfter = b;
 		parentIdentifier = pri;
 	}
 	

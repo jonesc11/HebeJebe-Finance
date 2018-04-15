@@ -153,20 +153,16 @@ public class Parser {
 					Period period;
 					if(action.getInt("RecurringFrequency") == 30) {
 						period = Period.MONTHLY;
-					}
-					else if(action.getInt("RecurringFrequency") == 365) {
+					} else if(action.getInt("RecurringFrequency") == 365) {
 						period = Period.YEARLY;
-					}
-					else {
+					} else {
 						period = Period.DAILY;
 					}
 					transactionRI = user.createIncome(parentRI, amount, name, category, date, recurring, endDate, period);
-				}
-				else {
+				} else {
 					transactionRI = user.createIncome(parentRI, amount, name, category, date, recurring, null, null);
 				}
-			}
-			else if(type.equals("Expense")) {
+			} else if(type.equals("Expense")) {
 				if(recurring) {
 					String endDateString = action.getString("RecurringUntil");
 					int endYear = Integer.parseInt(endDateString.substring(0,4));
@@ -176,21 +172,19 @@ public class Parser {
 					Period period;
 					if(action.getInt("RecurringFrequency") == 30) {
 						period = Period.MONTHLY;
-					}
-					else if(action.getInt("RecurringFrequency") == 365) {
+					} else if(action.getInt("RecurringFrequency") == 365) {
 						period = Period.YEARLY;
-					}
-					else {
+					} else {
 						period = Period.DAILY;
 					}
 					transactionRI = user.createExpense(parentRI, amount, name, category, date, recurring, endDate, period);
-				}
-				else {
+				} else {
 					transactionRI = user.createExpense(parentRI, amount, name, category, date, recurring, null, null);
 				}
-			}
-			else if(type.equals("Transfer")) {
-				
+			} else if(type.equals("Transfer")) {
+				String fromRI = action.getString("From");
+				String toRI = action.getString("To");
+				transactionRI = user.createTransfer(amount, name, category, date, fromRI, toRI);
 			}
 		}
 		Transaction t = (Transaction)resources.get(transactionRI);

@@ -9,7 +9,7 @@ public class SingleIncome extends Income {
 		name = n;
 		category = c;
 		date = d;
-		balanceAfter = b + a;
+		balanceAfter = b;
 		parentIdentifier = pri;
 	}
 	

@@ -19,6 +19,10 @@ public class RecurringIncome extends Income {
 		parentIdentifier = pri;
 	}
 	
+	public String getParentIdentifier() {
+		return parentIdentifier;
+	}
+	
 	public Date getEndDate() {
 		return endDate;
 	}
