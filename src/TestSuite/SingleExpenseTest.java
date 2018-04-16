@@ -14,7 +14,8 @@ public class SingleExpenseTest {
 	private String n = "dog treats";
 	private String c = "Other";
 	private Date d = new Date(30, 3, 2018);
-	private SingleExpense original = new SingleExpense(a, n, c, d);
+	private String pri = "parent";
+	private SingleExpense original = new SingleExpense(a, n, c, d, 700, pri);
 	
 	
 	@Test
@@ -23,6 +24,11 @@ public class SingleExpenseTest {
 		assertEquals("fail on getName() on singleExpense",n, original.getName());
 		assertEquals("fail on getCategorey() on singleExpense", c, original.getCategory());
 		assertEquals("fail on getDate() on singleExpense", d, original.getDate() );
+	}
+	
+	@Test
+	public void testGetBalanceAfter() {
+		assertTrue(original.getBalanceAfter() == 700);
 	}
 
 }

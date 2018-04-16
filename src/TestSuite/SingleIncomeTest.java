@@ -14,7 +14,9 @@ public class SingleIncomeTest {
 	private String n = "yard work for gram";
 	private String c = "Other";
 	private Date d = new Date(30, 3, 2018);
-	private SingleIncome original = new SingleIncome(a, n, c, d);
+	private String pri = "parent";
+	private double b = 1300;
+	private SingleIncome original = new SingleIncome(a, n, c, d, b, pri);
 	
 	
 	@Test
@@ -23,6 +25,8 @@ public class SingleIncomeTest {
 		assertEquals("fail on getName() on singleIncome",n, original.getName());
 		assertEquals("fail on getCategorey() on singleIncome", c, original.getCategory());
 		assertEquals("fail on getDate() on singleIncome", d, original.getDate() );
+		assertEquals("fail on getParentIdentifier() on singleIncome", pri, original.getParentIdentifier());
+		assertTrue(b == original.getBalanceAfter());
 	}
 
 }
