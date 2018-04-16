@@ -8,7 +8,7 @@ public class RecurringExpense extends Expense {
 	private Date lastUpdated;
 	private Period period;
 	
-	public RecurringExpense(double a, String n, String c, Period p, Date d1, Date d2) {
+	public RecurringExpense(double a, String n, String c, Period p, Date d1, Date d2, String pri) {
 		amount = a;
 		name = n;
 		category = c;
@@ -16,6 +16,7 @@ public class RecurringExpense extends Expense {
 		date = d1;
 		lastUpdated = d1;
 		endDate = d2;
+		parentIdentifier = pri;
 	}
 	
 	public Date getEndDate() {

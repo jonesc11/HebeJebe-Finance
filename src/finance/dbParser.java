@@ -118,7 +118,6 @@ public class dbParser {
 			Date date = DateFactory.getDate(day, month, year);
 			String category = d.getString("Category");
 			Boolean recurring = d.getBoolean("Recurring");
-			IAccount a = (IAccount)Parser.getResource(pIdentifier);
 			Transaction t = null;
 			
 			if(type.equals("Income")) {
@@ -132,22 +131,19 @@ public class dbParser {
 					Period period;
 					if(recurFrequency == 30) {
 						period = Period.MONTHLY;
-					}
-					else if(recurFrequency == 365) {
+					} else if(recurFrequency == 365) {
 						period = Period.YEARLY;
-					}
-					else {
+					} else {
 						period = Period.DAILY;
 					}
-					t = new RecurringIncome(amount, name, category, period, date, endDate);
+					t = new RecurringIncome(amount, name, category, period, date, endDate, pIdentifier);
+					t.setResourceIdentifier(identifier);
+				} else {
+					double balanceAfter = d.getDouble("AccountBalanceAfter");
+					t = new SingleIncome(amount, name, category, date, balanceAfter, pIdentifier);
 					t.setResourceIdentifier(identifier);
 				}
-				else {
-					t = new SingleIncome(amount, name, category, date, a.getBalance());
-					t.setResourceIdentifier(identifier);
-				}
-			}
-			else if(type.equals("Expense")) {
+			} else if(type.equals("Expense")) {
 				if(recurring) {
 					String endDateString = d.getString("RecurringUntil");
 					int endYear = Integer.parseInt(endDateString.substring(0,4));
@@ -158,23 +154,25 @@ public class dbParser {
 					Period period;
 					if(recurFrequency == 30) {
 						period = Period.MONTHLY;
-					}
-					else if(recurFrequency == 365) {
+					} else if(recurFrequency == 365) {
 						period = Period.YEARLY;
-					}
-					else {
+					} else {
 						period = Period.DAILY;
 					}
-					t = new RecurringExpense(amount, name, category, period, date, endDate);
+					t = new RecurringExpense(amount, name, category, period, date, endDate, pIdentifier);
+					t.setResourceIdentifier(identifier);
+				} else {
+					double balanceAfter = d.getDouble("AccountBalanceAfter");
+					t = new SingleExpense(amount, name, category, date, balanceAfter, pIdentifier);
 					t.setResourceIdentifier(identifier);
 				}
-				else {
-					t = new SingleExpense(amount, name, category, date, a.getBalance());
-					t.setResourceIdentifier(identifier);
-				}
-			}
-			else if(type.equals("Transfer")) {
-				//Unimplemented
+			} else if(type.equals("Transfer")) {
+				String fromRI = d.getString("From");
+				String toRI = d.getString("To");
+				double fromBalanceAfter = d.getDouble("FromAccountBalanceAfter");
+				double toBalanceAfter = d.getDouble("ToAccountBalanceAfter");
+				t = new Transfer(amount, name, category, date, fromRI, toRI, fromBalanceAfter, toBalanceAfter);
+				t.setResourceIdentifier(identifier);
 			}
 			
 			if(t != null) {
@@ -202,6 +200,10 @@ public class dbParser {
 		}
 		else if (t instanceof Transfer) {
 			newTransaction.append("TransactionType", "Transfer");
+			newTransaction.append("From", ((Transfer) t).getFromResourceIdentifier());
+			newTransaction.append("To", ((Transfer) t).getToResourceIdentifier());
+			newTransaction.append("FromAccountBalanceAfter", ((Transfer) t).getFromBalanceAfter());
+			newTransaction.append("ToAccountBalanceAfter", ((Transfer) t).getToBalanceAfter());
 		}
 		newTransaction.append("Amount", t.getAmount());
 		newTransaction.append("Description", t.getName());

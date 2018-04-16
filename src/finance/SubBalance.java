@@ -68,7 +68,7 @@ public class SubBalance implements IAccount {
 	}
 	
 	public String addSingleIncome(double a, String n, String c, Date d) {
-		SingleIncome newIncome = new SingleIncome(a, n, c, d, this.balance);
+		SingleIncome newIncome = new SingleIncome(a, n, c, d, this.balance - a, this.resourceIdentifier);
 		balance += a;
 		
 		int i = 0;
@@ -86,7 +86,7 @@ public class SubBalance implements IAccount {
 	}
 	
 	public String addRecurringIncome(double a, String n, String c, Period p, Date d1, Date d2) {
-		RecurringIncome newIncome = new RecurringIncome(a, n, c, p, d1, d2);
+		RecurringIncome newIncome = new RecurringIncome(a, n, c, p, d1, d2, this.resourceIdentifier);
 		
 		int i = 0;
 		while(transactions.get("t" + i) != null)
@@ -102,7 +102,7 @@ public class SubBalance implements IAccount {
 	}
 	
 	public String addSingleExpense(double a, String n, String c, Date d) {
-		SingleExpense newExpense = new SingleExpense(a, n, c, d, this.balance);
+		SingleExpense newExpense = new SingleExpense(a, n, c, d, this.balance - a, this.resourceIdentifier);
 		balance -= a;
 		
 		int i = 0;
@@ -120,7 +120,7 @@ public class SubBalance implements IAccount {
 	}
 	
 	public String addRecurringExpense(double a, String n, String c, Period p, Date d1, Date d2) {
-		RecurringExpense newExpense = new RecurringExpense(a, n, c, p, d1, d2);
+		RecurringExpense newExpense = new RecurringExpense(a, n, c, p, d1, d2, this.resourceIdentifier);
 		
 		int i = 0;
 		while(transactions.get("t" + i) != null)
@@ -135,9 +135,13 @@ public class SubBalance implements IAccount {
 		return newIdentifier;
 	}
 	
-	public String addTransfer(double a, String n) {
-		Transfer newTransfer = new Transfer(a, n);
-
+	public String addTransfer(Transfer newTransfer) {
+		if(this.resourceIdentifier.equals(newTransfer.getFromResourceIdentifier())) {
+			this.balance -= newTransfer.getAmount();
+		} else if(this.resourceIdentifier.equals(newTransfer.getFromResourceIdentifier())) {
+			this.balance += newTransfer.getAmount();
+		}
+		
 		int i = 0;
 		while(transactions.get("t" + i) != null)
 			i++;
@@ -146,6 +150,7 @@ public class SubBalance implements IAccount {
 		
 		newTransfer.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newTransfer);
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		transactions.put("t" + i, newTransfer);
 		
 		return newIdentifier;
