@@ -9,7 +9,8 @@
       				<th scope="col">Amount (colored)</th>
       				<th scope="col">Account</th>
       				<th scope="col">Account Total</th>
-				<th scope="col">Action Button</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
     			</tr>
   		</thead>
   		<tbody ng-repeat="transaction in transactions">
@@ -19,33 +20,39 @@
                                 <td>{{transaction.Amount}}</td>
       				<td>{{transaction.account.name}}</td>
       				<td>{{transaction.account.total}}</td>
-				<td>ACTION</td>
+				<td> <span class="glyphicon glyphicon-edit" aria-hidden="true"></span> </td>
+				<td> <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> </td>
     			</tr>
   		</tbody>
 		</table>    
 	</div>
-	<div class="col-4" ng-controller="HomeCtrl">
+	<div class="col-4 addTransaction" ng-controller="HomeCtrl">
 		<form id = "home">
 		<fieldset>
-		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createAccountModal">Add Account</button>
-		</br>
-		<button type="button" class="btn btn-primary">Budgets</button>
-		</br>
-		<label> Create Transaction </label>
+		<h4> Create Transaction </h4>
 			<div class="form-group">
+				<label>Account </label>
 				<select class="custom-select custom-select-lg mb-3" ng-model="transactionAccount">
 					<option ng-repeat="account in accounts" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
 				</select>
 			</div>
+			
   			<div class="form-group">
     				<label for="transactionName">Description</label>
     				<input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Description" ng-model="transactionDescription">
   			</div>
+			
+			<div class="form-group">
+    				<label for="transactionCategory">Category</label>
+    				<input type="text" class="form-control" id="name1" aria-describedby="transactionCategory" placeholder="Category" ng-model="transactionCategory">
+  			</div>
+
   			<div class="form-group">
 				<label for="exampleInputEmail1">Transaction Amount</label>
     				<input type="number" class="form-control" id="name1" aria-describedby="transactionAmount" placeholder="Amount" ng-model="amount">
   			</div>
 			<div class="form-group">
+				<label> Transaction Type </label>
 				<select class="custom-select custom-select-lg mb-3" ng-model=transactionType>
   					<option selected value="Expense">Expense</option>
   					<option value="Income">Income</option>
