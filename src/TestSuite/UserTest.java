@@ -61,6 +61,26 @@ public class UserTest {
 	}
 	
 	@Test
+	public void testcreateIncome() {
+		User test2 = new User("testing@tester.org", password, firstName, lastName, accounts);
+		account.addRecurringIncome(200, "raking", "income", Period.WEEKLY, new Date(12, 4, 2018), new Date(12, 4, 2019));
+
+		accounts.put("test1", account);
+		String test1 = test2.createIncome(account.getResourceIdentifier(), 250, "pasta selling", "income", new Date(2, 1, 2017), false, null, null);
+
+	}
+	
+	@Test
+	public void testcreateIncomeRecurring() {
+		User test2 = new User("testing@tester.org", password, firstName, lastName, accounts);
+		account.addRecurringIncome(200, "raking", "income", Period.WEEKLY, new Date(12, 4, 2018), new Date(12, 4, 2019));
+
+		accounts.put("test1", account);
+		String test1 = test.createIncome(account.getResourceIdentifier(), 250, "pasta selling", "income", new Date(12, 4, 2018), true, new Date(12, 4, 2019), Period.WEEKLY);
+		assertNotNull(test1);
+	}
+	
+	@Test
 	public void testCreateExpenseRecurring() {
 		test.createAccount("test2", "Savings", 10000);
 		String test1 = test.createExpense("a0", 1000, "rent", "housing", new Date(12, 4, 2018), true, new Date(12, 4, 2019), Period.MONTHLY);

@@ -30,5 +30,10 @@ public class RecurringExpenseTest {
 		assertEquals("fail on getPeriod() on recurringExpense", p, original.getPeriod() );
 		assertEquals("fail on getEndDate() on recurringExpense", d2, original.getEndDate() );
 	}
+	
+	@Test
+	public void testGetPeriod() {
+		assertEquals("fail on getPeriod() on recurringExpense", p, original.getPeriod() );
+	}
 
 }
