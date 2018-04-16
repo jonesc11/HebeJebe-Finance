@@ -2,12 +2,23 @@ var app = angular.module("MyApp", ['ngRoute']);
 
 $(document).ready (function (app) {
 
-	app.controller("LoginCtrl", function($scope, $http){
+
+	app.config(["$routeProvider", function($routeProvider){
+		$routeProvider
+		.when("/", {
+			controller: 'HomeCtrl',
+			templateUrl: '/resources/views/home.html'
+		})
+		.otherwise({redirectTo: "/"})
+
+	}]);
+
+	app.controller("NavBarCtrl", function($rootScope, $scope, $http){
 
 	});
 
-
-	app.controller("SignupCtrl", function($scope, $http){
+	
+	app.controller("HomeCtrl", function($rootScope, $scope, $http){
 		$scope.page1 = true;
 		$scope.page2 = false;
 
@@ -20,9 +31,25 @@ $(document).ready (function (app) {
 			$scope.page1 = true
 			$scope.page2 = false
 		}
-	});
 
-	app.controller("PostsCtrl", function($scope, $http) {
+		$scope.register = function(){
+			$http({
+				method: 'POST',
+				url: '/signup',
+				data: {
+					"firstName": $scope.firstName,
+					"lastName": $scope.lastName,
+					"email": $scope.email,
+					"pass": $scope.pw,
+					"accountName": $scope.accountName,
+					"accountAmount": $scope.accountAmnt,
+					"accountType": $scope.accountType
+				}
+			})
+		};
+
+
+
 		$http({
   			method: 'GET',
   			url: '/request/get/transactions',
@@ -36,25 +63,24 @@ $(document).ready (function (app) {
 			then(function(error) {
 				// log error
 		});
-	}); 
 
-	app.controller("NewPanel", function($scope, $http) {
-        var getAccounts = function () {
-            $http({
-                method: 'GET',
-                url: '/request/get/accounts',
-                data: {
-                    "Limit": 30
-                    }
-                }).then(function(success) {
-                    $scope.accounts = success.data.Account;
-                }).
-                then(function(error) {
-                    // log error
-            });
-        };
+
+        	var getAccounts = function () {
+            		$http({
+                		method: 'GET',
+                		url: '/request/get/accounts',
+                		data: {
+                    			"Limit": 30
+                    		}
+                	}).then(function(success) {
+                    		$scope.accounts = success.data.Account;
+                	}).
+                	then(function(error) {
+                    		// log error
+            		});
+        	};
         
-        getAccounts();
+        	getAccounts();
 
 		$scope.createTransaction = function(){
 	    	 $http({
@@ -75,32 +101,32 @@ $(document).ready (function (app) {
   				"RecurringFrequency": $scope.transactionRecurInterval,
 			      }
 			}).
-			then(function(success) {
+				then(function(success) {
 			}).
-			then(function(error) {
+				then(function(error) {
 				// log error
-		});
+			});
 
 		};
         
-        $scope.createAccount = function () {
-            $http ({
-                method: 'POST',
-                url: '/request/create/account',
-                data: {
-                    AccountName: $scope.createAccountName,
-                    AccountBalance: $scope.createAccountBalance,
-                    AccountType: $scope.createAccountType
-                }
-            }).then (function (success) {
-                console.log (success.data);
-                getAccounts();
-                $("#createAccountModal").modal('toggle');
-                $("input[name=create-account-name]").val("");
-                $("input[name=create-account-balance]").val("");
-            }).then (function (error) {
-                // log error
-            });
+        	$scope.createAccount = function () {
+            	$http ({
+                	method: 'POST',
+                	url: '/request/create/account',
+                	data: {
+                    		AccountName: $scope.createAccountName,
+                    		AccountBalance: $scope.createAccountBalance,
+                    		AccountType: $scope.createAccountType
+                	}
+            	}).then (function (success) {
+                	console.log (success.data);
+                	getAccounts();
+                	$("#createAccountModal").modal('toggle');
+                	$("input[name=create-account-name]").val("");
+                	$("input[name=create-account-balance]").val("");
+            	}).then (function (error) {
+                	// log error
+            	});
         };
 	});
 	 
