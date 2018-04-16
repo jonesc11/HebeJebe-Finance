@@ -18,7 +18,7 @@ import java.util.HashMap;
 
 public class dbParser {
 	
-	private static MongoClient mongo = new MongoClient("localhost", 27017);
+	private static MongoClient mongo = new MongoClient("http://ec2-18-217-228-55.us-east-2.compute.amazonaws.com", 27017);
 	private static MongoCredential credentials = MongoCredential.createCredential("", "finance", "".toCharArray());
 	private static MongoDatabase db = mongo.getDatabase("finance");
 	
