@@ -9,6 +9,10 @@ $(document).ready (function (app) {
 			controller: 'HomeCtrl',
 			templateUrl: '/resources/views/home.html'
 		})
+		.when('/account/:id', {
+			controller: 'AccountsController',
+			templateUrl: '/resources/views/account.html'
+		})
 		.otherwise({redirectTo: "/"})
 
 	}]);
@@ -17,7 +21,23 @@ $(document).ready (function (app) {
 
 	});
 
-	
+	app.controller('AccountsController', function ($rootScope, $scope, $http, $routeParams) {
+		$scope.user = {};
+		$scope.account = {};
+		$http({
+			method: 'GET',
+			url: '/request/get/user',
+			data: {}
+		}).then (function (response) {
+			$scope.user = response.data.User;
+			if ($routeParams.id) {
+				for (var i = 0; i < $scope.user.AccountResourceIdentifiers
+			} else {
+				$scope.noAccountSelected = true;
+			}
+		});
+	});
+
 	app.controller("HomeCtrl", function($rootScope, $scope, $http){
 		$scope.page1 = true;
 		$scope.page2 = false;

@@ -291,8 +291,8 @@ function handleGetUser (req, userRID) {
     AccountId: userRID,
     ActionType: "GetUser",
     Action: {
-      ResourceIdentifier: req.body.ResourceIdentifier ? req.body.ResourceIdentifier : null,
-      UserIdentifier: req.body.UserIdentifier ? req.body.ResourceIdentifier : null
+      ResourceIdentifier: req.body.ResourceIdentifier ? req.body.ResourceIdentifier : userRID,
+      UserIdentifier: req.body.UserIdentifier ? req.body.UserIdentifier : null
     }
   };
 
