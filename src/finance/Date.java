@@ -1,5 +1,7 @@
 package finance;
 
+import finance.FinanceUtilities.Period;
+
 /**
  * A date class represents a date. This object is immutable, and you will be able to get the formatted date
  * as well as the individual integer values of the date.
@@ -206,6 +208,89 @@ public class Date {
 		}
 		
 		return ret;
+	}
+	
+	/**
+	 * 
+	 * @param d is the date we are comparing this to
+	 * @param p is the Period we are using for the comparison
+	 * @return an integer that represents the number of periods of type p are between this and d, starting with this
+	 */
+	public int periodsBetween(Date d, Period p) {
+		if(this.isBefore(d)) {
+			return 0;
+		}
+		else {
+			int daysBetween = 0;
+			//If the new year is greater than the old year, and the new month is greater than the old month OR the months are equivalent
+			//AND the new day is greater than the old day, we can add 365 days times the difference between the years
+			if(this.year > d.getYear() && (this.month > d.getMonth() || (this.month == d.getMonth() && this.day >= d.getDay()))) {
+				daysBetween += 365 * (this.year - d.getYear());
+			}
+			//If the new year is greater than the old year, but the other criteria above don't match, we can add 365 days for each year
+			//between the two dates except for the most recent year (a full year hasn't passed yet).
+			else if(this.year > d.getYear()) {
+				daysBetween += 365 * (this.year - d.getYear() - 1);
+			}
+			
+			//If the new year is greater than the old year, or if the new month is greater than the old month, we need to add each of the
+			//days in each month between the two dates to daysBetween
+			if(this.year > d.getYear() || this.month > d.getMonth()) {
+				//Add the number of days from date d to the end of d's month
+				int m = d.getMonth();
+				if(m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) {
+					daysBetween += 31 - d.getDay();
+				}
+				else if(m == 4 || m == 6 || m == 9 || m == 11) {
+					daysBetween += 30 - d.getDay();
+				}
+				else if(m == 2) {
+					daysBetween += 28 - d.getDay();
+				}
+				m++;
+				//For the remaining months between d and this, add the number of days in month m
+				while(m != d.getMonth()) {
+					if(m == 1 || m == 3 || m == 5 || m == 7 || m == 8 || m == 10 || m == 12) {
+						daysBetween += 31;
+					}
+					else if(m == 4 || m == 6 || m == 9 || m == 11) {
+						daysBetween += 30;
+					}
+					else if(m == 2) {
+						daysBetween += 28;
+					}
+					if(m == 12) {
+						m = 1;
+					}
+					else {
+						m++;
+					}
+				}
+			}
+			
+			//If d and this are in the same month and year, add the difference between the dates.
+			//Otherwise, add the number of days up to this.day
+			if(this.year == d.getYear() && this.month == d.getMonth()) {
+				daysBetween += this.day - d.getDay();
+			}
+			else {
+				daysBetween += d.getDay();
+			}
+			
+			if(p == Period.DAILY) {
+				return daysBetween;
+			}
+			else if(p == Period.WEEKLY) {
+				return (int)Math.floor(daysBetween / 7);
+			}
+			else if(p == Period.MONTHLY) {
+				return (int)Math.floor(daysBetween / 30);
+			}
+			else if (p == Period.YEARLY) {
+				return (int)Math.floor(daysBetween / 365);
+			}
+			return 0;
+		}
 	}
 	
 	@Override
