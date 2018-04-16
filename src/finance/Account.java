@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 import finance.FinanceUtilities.Period;
 
@@ -78,6 +79,7 @@ public class Account implements IAccount {
 	
 	public String createSubBalance(String n, Double b) {
 		SubBalance sb = new SubBalance(n, b, this);
+		this.balance -= b;
 		
 		int i = 0;
 		while(subBalances.get("sb" + i) != null) 
@@ -93,7 +95,7 @@ public class Account implements IAccount {
 	}
 	
 	public String addSingleIncome(double a, String n, String c, Date d) {
-		SingleIncome newIncome = new SingleIncome(a, n, c, d);
+		SingleIncome newIncome = new SingleIncome(a, n, c, d, this.balance - a, this.resourceIdentifier);
 		balance += a;
 		
 		int i = 0;
@@ -104,13 +106,14 @@ public class Account implements IAccount {
 		
 		newIncome.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newIncome);
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		transactions.put(newIdentifier, newIncome);
 		
 		return newIdentifier;
 	}
 	
 	public String addRecurringIncome(double a, String n, String c, Period p, Date d1, Date d2) {
-		RecurringIncome newIncome = new RecurringIncome(a, n, c, p, d1, d2);
+		RecurringIncome newIncome = new RecurringIncome(a, n, c, p, d1, d2, this.resourceIdentifier);
 		
 		int i = 0;
 		while(transactions.get("t" + i) != null)
@@ -126,7 +129,7 @@ public class Account implements IAccount {
 	}
 	
 	public String addSingleExpense(double a, String n, String c, Date d) {
-		SingleExpense newExpense = new SingleExpense(a, n, c, d);
+		SingleExpense newExpense = new SingleExpense(a, n, c, d, this.balance - a, this.resourceIdentifier);
 		balance -= a;
 		
 		int i = 0;
@@ -137,13 +140,14 @@ public class Account implements IAccount {
 		
 		newExpense.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newExpense);
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		transactions.put(newIdentifier, newExpense);
 		
 		return newIdentifier;
 	}
 	
 	public String addRecurringExpense(double a, String n, String c, Period p, Date d1, Date d2) {
-		RecurringExpense newExpense = new RecurringExpense(a, n, c, p, d1, d2);
+		RecurringExpense newExpense = new RecurringExpense(a, n, c, p, d1, d2, this.resourceIdentifier);
 		
 		int i = 0;
 		while(transactions.get("t" + i) != null)
@@ -158,8 +162,12 @@ public class Account implements IAccount {
 		return newIdentifier;
 	}
 	
-	public String addTransfer(double a, String n) {
-		Transfer newTransfer = new Transfer(a, n);
+	public String addTransfer(Transfer newTransfer) {
+		if(this.resourceIdentifier.equals(newTransfer.getFromResourceIdentifier())) {
+			this.balance -= newTransfer.getAmount();
+		} else if(this.resourceIdentifier.equals(newTransfer.getFromResourceIdentifier())) {
+			this.balance += newTransfer.getAmount();
+		}
 
 		int i = 0;
 		while(transactions.get("t" + i) != null)
@@ -169,9 +177,31 @@ public class Account implements IAccount {
 		
 		newTransfer.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newTransfer);
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		transactions.put("t" + i, newTransfer);
 		
 		return newIdentifier;
 	}	
+	
+	public void checkRecurringTransactions() {
+		LocalDateTime now = LocalDateTime.now();
+		Date d = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
+		for(int i = 0; i < transactions.size(); i++) {
+			Transaction t = transactions.get(i);
+			if(t instanceof RecurringIncome) {
+				this.balance += ((RecurringIncome)t).amountByDate(d);
+				((RecurringIncome)t).updateLastUpdated(d);
+			}
+			else if(t instanceof RecurringExpense) {
+				this.balance -= ((RecurringExpense)t).amountByDate(d);
+				((RecurringExpense)t).updateLastUpdated(d);
+			}
+			
+		}
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
+		for(int i = 0; i < subBalances.size(); i++) {
+			subBalances.get(i).checkRecurringTransactions();
+		}
+	}
 
 }

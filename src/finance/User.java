@@ -145,6 +145,19 @@ public class User {
 		return transactionRI;
 	}
 	
+	public String createTransfer(double a, String n, String c, Date d, String fromRI, String toRI) {
+		Account from = getAccount(fromRI);
+		Account to = getAccount(toRI);
+		
+		Transfer newTransfer = new Transfer(a, n, c, d, fromRI, toRI, from.getBalance(), to.getBalance());
+		
+		String identifier = from.addTransfer(newTransfer);
+		to.addTransfer(newTransfer);
+		newTransfer.setResourceIdentifier(identifier);
+		
+		return identifier;
+	}
+	
 	/*
 	 * @requires none
 	 * @throws none
@@ -187,6 +200,12 @@ public class User {
 	 */
 	public List<Transaction> getTransactionHistory(Account a) {
 		return a.getTransactionHistory();
+	}
+	
+	public void checkRecurringTransactions() {
+		for(int i = 0; i < accounts.size(); i++) {
+			accounts.get(i).checkRecurringTransactions();
+		}
 	}
 
 }

@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 
 import finance.FinanceUtilities.Period;
 
@@ -17,7 +18,7 @@ import java.util.HashMap;
 
 public class dbParser {
 	
-	private static MongoClient mongo = new MongoClient("localhost", 27017);
+	private static MongoClient mongo = new MongoClient("http://ec2-18-217-228-55.us-east-2.compute.amazonaws.com", 27017);
 	private static MongoCredential credentials = MongoCredential.createCredential("", "finance", "".toCharArray());
 	private static MongoDatabase db = mongo.getDatabase("finance");
 	
@@ -130,22 +131,19 @@ public class dbParser {
 					Period period;
 					if(recurFrequency == 30) {
 						period = Period.MONTHLY;
-					}
-					else if(recurFrequency == 365) {
+					} else if(recurFrequency == 365) {
 						period = Period.YEARLY;
-					}
-					else {
+					} else {
 						period = Period.DAILY;
 					}
-					t = new RecurringIncome(amount, name, category, period, date, endDate);
+					t = new RecurringIncome(amount, name, category, period, date, endDate, pIdentifier);
+					t.setResourceIdentifier(identifier);
+				} else {
+					double balanceAfter = d.getDouble("AccountBalanceAfter");
+					t = new SingleIncome(amount, name, category, date, balanceAfter, pIdentifier);
 					t.setResourceIdentifier(identifier);
 				}
-				else {
-					t = new SingleIncome(amount, name, category, date);
-					t.setResourceIdentifier(identifier);
-				}
-			}
-			else if(type.equals("Expense")) {
+			} else if(type.equals("Expense")) {
 				if(recurring) {
 					String endDateString = d.getString("RecurringUntil");
 					int endYear = Integer.parseInt(endDateString.substring(0,4));
@@ -156,23 +154,25 @@ public class dbParser {
 					Period period;
 					if(recurFrequency == 30) {
 						period = Period.MONTHLY;
-					}
-					else if(recurFrequency == 365) {
+					} else if(recurFrequency == 365) {
 						period = Period.YEARLY;
-					}
-					else {
+					} else {
 						period = Period.DAILY;
 					}
-					t = new RecurringExpense(amount, name, category, period, date, endDate);
+					t = new RecurringExpense(amount, name, category, period, date, endDate, pIdentifier);
+					t.setResourceIdentifier(identifier);
+				} else {
+					double balanceAfter = d.getDouble("AccountBalanceAfter");
+					t = new SingleExpense(amount, name, category, date, balanceAfter, pIdentifier);
 					t.setResourceIdentifier(identifier);
 				}
-				else {
-					t = new SingleExpense(amount, name, category, date);
-					t.setResourceIdentifier(identifier);
-				}
-			}
-			else if(type.equals("Transfer")) {
-				//Unimplemented
+			} else if(type.equals("Transfer")) {
+				String fromRI = d.getString("From");
+				String toRI = d.getString("To");
+				double fromBalanceAfter = d.getDouble("FromAccountBalanceAfter");
+				double toBalanceAfter = d.getDouble("ToAccountBalanceAfter");
+				t = new Transfer(amount, name, category, date, fromRI, toRI, fromBalanceAfter, toBalanceAfter);
+				t.setResourceIdentifier(identifier);
 			}
 			
 			if(t != null) {
@@ -200,6 +200,10 @@ public class dbParser {
 		}
 		else if (t instanceof Transfer) {
 			newTransaction.append("TransactionType", "Transfer");
+			newTransaction.append("From", ((Transfer) t).getFromResourceIdentifier());
+			newTransaction.append("To", ((Transfer) t).getToResourceIdentifier());
+			newTransaction.append("FromAccountBalanceAfter", ((Transfer) t).getFromBalanceAfter());
+			newTransaction.append("ToAccountBalanceAfter", ((Transfer) t).getToBalanceAfter());
 		}
 		newTransaction.append("Amount", t.getAmount());
 		newTransaction.append("Description", t.getName());
@@ -231,7 +235,15 @@ public class dbParser {
 				newTransaction.append("RecurringFrequency", 365);
 			}
 		}
-		else {
+		else if(t instanceof SingleIncome) {
+			newTransaction.append("Recurring", false);
+			newTransaction.append("AccountBalanceAfter", ((SingleIncome)t).getBalanceAfter());
+		}
+		else if(t instanceof SingleExpense) {
+			newTransaction.append("Recurring", false);
+			newTransaction.append("AccountBalanceAfter", ((SingleExpense)t).getBalanceAfter());
+		}
+		else if(t instanceof Transfer) {
 			newTransaction.append("Recurring", false);
 		}
 		
@@ -303,5 +315,10 @@ public class dbParser {
 		else {
 			return "";
 		}
+	}
+	
+	public static void updateBalance(String identifier, double balance) {
+		MongoCollection<Document> accounts = db.getCollection("accounts");
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("Balance", balance));
 	}
 }

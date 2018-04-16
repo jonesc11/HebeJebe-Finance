@@ -136,6 +136,8 @@ app.get ('/request/:reqType/:resType', function (req, res) {
     data = handleGetSubbalance (req, userRID);
   else if (requestType === 'get' && resourceType === 'user')
     data = handleGetUser (req, userRID);
+  else if (requestType === 'get' && resourceType === 'budget')
+    data = handleGetBudgets (req, userRID);
 
   if (data.ErrorMessage) {
     res.send (data);
@@ -161,6 +163,8 @@ app.post ('/request/:reqType/:resType', function (req, res) {
     data = handleCreateUser (req, userRID);
   else if (requestType === 'create' && resourceType === 'subbalance')
     data = handleCreateSubbalance (req, userRID);
+  else if (requestType === 'create' && resourceType === 'budget')
+    data = handleCreateBudget (req, userRID);
 
   if (data.ErrorMessage) {
     res.send (data);
@@ -231,6 +235,23 @@ function handleGetTransactions (req, userRID) {
 
   if (data.Action.ResourceIdentifier !== null)
     data.Action.GetFrom = null;
+
+  return data;
+}
+
+/* Handles GetBudgets requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleGetBudgets (req, userRID) {
+  data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: 'GetBudgets',
+    Action: {
+      Limit: req.query.Limit ? req.query.Limit : 25,
+      ResourceIdentifier: req.query.ResourceIdentifier ? req.query.ResourceIdentifier : null
+    }
+  };
 
   return data;
 }
@@ -317,6 +338,29 @@ function handleCreateAccount (req, userRID) {
       AccountName: req.body.AccountName ? req.body.AccountName : null,
       AccountBalance: req.body.AccountBalance ? req.body.AccountBalance : 0,
       AccountType: req.body.AccountType ? req.body.AccountType : null
+    }
+  };
+
+  return data;
+}
+
+/* Handles CreateBudget requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleCreateBudget (req, userRID) {
+  if (!req.body.Limit || req.body.Limit == null)
+    return { ErrorMessage: 'A budget limit must be applied.' };
+  if (!req.body.Duration || req.body.Duration == null)
+    return { ErrorMessage: 'A budget duration must be applied.' };
+
+  data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: 'CreateBudget',
+    Action: {
+      Limit: req.body.Limit,
+      Description: req.body.Description ? req.body.Description : '',
+      Duration: req.body.Duration
     }
   };
 
