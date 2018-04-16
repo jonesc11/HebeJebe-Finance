@@ -13,7 +13,10 @@ public class Budget {
 	protected String resourceIdentifier;
 	protected double balance;
 	protected User user;
-
+	
+	public Budget() {
+		
+	}
 	
 	public Budget(String n, double l, int d, double b) {
 		this.name = n;
