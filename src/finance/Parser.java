@@ -380,13 +380,13 @@ public class Parser {
 	
 	public static JSONObject parseGetAccounts (JSONObject action) throws JSONException {
 		JSONObject response = new JSONObject();
+		JSONArray accounts = new JSONArray();
 		
 		User user = Parser.getUser(action.getString("GetFrom"));
 		//If a Resource Identifier is specified, returns a single Account Object. Otherwise, returns
 		//a list of all account objects.
 		if(action.getString("ResourceIdentifier") != null) {
 			List<Account> accountsList = user.getAccounts();
-			JSONArray accounts = new JSONArray();
 			
 			for(int i = 0; i < accountsList.size(); i++) {
 				Account a = accountsList.get(i);
@@ -418,8 +418,9 @@ public class Parser {
 			o.put("LatestBalance", a.getTotal());
 			o.put("LatestTransactions", Parser.getTransactionsJSONArray(a.getResourceIdentifier(), 25));
 			
-			response.put("Account", o);
+			accounts.put(o);
 		}
+		response.put("Accounts", accounts);
 		
 		return response;
 	}
