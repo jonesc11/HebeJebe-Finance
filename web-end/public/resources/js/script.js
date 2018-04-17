@@ -31,7 +31,6 @@ $(document).ready (function (app) {
 		}).then (function (response) {
 			$scope.user = response.data.User;
 			if ($routeParams.id) {
-				for (var i = 0; i < $scope.user.AccountResourceIdentifiers
 			} else {
 				$scope.noAccountSelected = true;
 			}

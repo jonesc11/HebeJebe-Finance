@@ -3,6 +3,7 @@ package finance;
 import java.util.Map;
 import java.util.Random;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.String;
@@ -203,8 +204,9 @@ public class User {
 	}
 	
 	public void checkRecurringTransactions() {
-		for(int i = 0; i < accounts.size(); i++) {
-			accounts.get(i).checkRecurringTransactions();
+		Iterator<String> keys = accounts.keySet().iterator();
+		while (keys.hasNext()) {
+			accounts.get(keys.next()).checkRecurringTransactions();
 		}
 	}
 
