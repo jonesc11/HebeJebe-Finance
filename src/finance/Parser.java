@@ -17,6 +17,10 @@ import finance.FinanceUtilities.Period;
 public class Parser {
 	private static Map<String, User> users = new HashMap<String, User>();
 	private static Map<String, Object> resources = new HashMap<String, Object>();
+	private static int nextUserRI;
+	private static int nextAccountRI;
+	private static int nextSubBalanceRI;
+	private static int nextTransactionRI;
 	
 	//Helper function to make a JSONArray into a Java List object.
 	public static List<String> JSONArrayToList(JSONArray a) throws JSONException {
@@ -257,16 +261,14 @@ public class Parser {
 		
 		User newUser = new User(email, password, salt, firstName, lastName);
 		
-		//A very poor way of creating a new Resource Identifier for the new User
-		int i = 1;
-		while(users.get("u" + i) != null) {
-			i++;
-		}
-		newUser.setResourceIdentifier("u" + i);
-		users.put("u" + i, newUser);
-		dbParser.insertUser(newUser, salt, password);
+		int ri = Parser.getNextUserRI();
 		
-		response.put("ResourceIdentifier", "u" + i);
+		newUser.setResourceIdentifier("u" + ri);
+		users.put("u" + ri, newUser);
+		dbParser.insertUser(newUser, salt, password);
+		Parser.setNextUserRI(ri+1);
+		
+		response.put("ResourceIdentifier", "u" + ri);
 		response.put("UserIdentifier", email);
 		response.put("Password", password);
 		response.put("FirstName", firstName);
@@ -343,7 +345,7 @@ public class Parser {
 				JSONObject a = new JSONObject();
 				a.put("AccountResourceIdentifier", tParent.getResourceIdentifier());
 				a.put("AccountName", tParent.getName());
-				a.put("AccountBalance", tParent.getBalance());
+				a.put("AccountBalance", ((Account) tParent).getTotal());
 				
 				transaction.put("Account", a);
 			} else if(tParent instanceof SubBalance) {
@@ -355,8 +357,9 @@ public class Parser {
 				Account sbParent = Parser.getAccount(((SubBalance) tParent).getParentIdentifier());
 				JSONObject a = new JSONObject();
 				a.put("AccountResourceIdentifier", sbParent.getResourceIdentifier());
-				a.put("AccountName", tParent.getName());
-				a.put("AccountBalance", tParent.getBalance());
+				a.put("AccountName", sbParent.getName());
+				a.put("AccountBalance", sbParent.getBalance());
+				a.put("AccountTotal", sbParent.getTotal());
 				
 				transaction.put("Account", a);
 				transaction.put("SubBalance", sb);
@@ -562,7 +565,7 @@ public class Parser {
 				JSONObject a = new JSONObject();
 				a.put("AccountResourceIdentifier", tParent.getResourceIdentifier());
 				a.put("AccountName", tParent.getName());
-				a.put("AccountBalance", tParent.getBalance());
+				a.put("AccountBalance", ((Account) tParent).getTotal());
 				
 				transaction.put("Account", a);
 			} else if(tParent instanceof SubBalance) {
@@ -574,8 +577,9 @@ public class Parser {
 				Account sbParent = Parser.getAccount(((SubBalance) tParent).getParentIdentifier());
 				JSONObject a = new JSONObject();
 				a.put("AccountResourceIdentifier", sbParent.getResourceIdentifier());
-				a.put("AccountName", tParent.getName());
-				a.put("AccountBalance", tParent.getBalance());
+				a.put("AccountName", sbParent.getName());
+				a.put("AccountBalance", sbParent.getBalance());
+				a.put("AccountTotal", sbParent.getTotal());
 				
 				transaction.put("Account", a);
 				transaction.put("SubBalance", sb);
@@ -674,7 +678,7 @@ public class Parser {
 				JSONObject a = new JSONObject();
 				a.put("AccountResourceIdentifier", tParent.getResourceIdentifier());
 				a.put("AccountName", tParent.getName());
-				a.put("AccountBalance", tParent.getBalance());
+				a.put("AccountBalance", ((Account) tParent).getTotal());
 				
 				transaction.put("Account", a);
 			} else if(tParent instanceof SubBalance) {
@@ -686,8 +690,9 @@ public class Parser {
 				Account sbParent = Parser.getAccount(((SubBalance) tParent).getParentIdentifier());
 				JSONObject a = new JSONObject();
 				a.put("AccountResourceIdentifier", sbParent.getResourceIdentifier());
-				a.put("AccountName", tParent.getName());
-				a.put("AccountBalance", tParent.getBalance());
+				a.put("AccountName", sbParent.getName());
+				a.put("AccountBalance", sbParent.getBalance());
+				a.put("AccountTotal", sbParent.getTotal());
 				
 				transaction.put("Account", a);
 				transaction.put("SubBalance", sb);
@@ -698,6 +703,59 @@ public class Parser {
 		
 		return transactions;
 		
+	}
+	
+	public static void setNextUserRI(int ri) {
+		nextUserRI = ri;
+	}
+	
+	public static void setNextAccountRI(int ri) {
+		nextAccountRI = ri;
+	}
+	
+	public static void setNextSubBalanceRI(int ri) {
+		nextSubBalanceRI = ri;
+	}
+	
+	public static void setNextTransactionRI(int ri) {
+		nextTransactionRI = ri;
+	}
+	
+	public static int getNextUserRI() {
+		return nextUserRI;
+	}
+	
+	public static int getNextAccountRI() {
+		return nextAccountRI;
+	}
+	
+	public static int getNextSubBalanceRI() {
+		return nextSubBalanceRI;
+	}
+	
+	public static int getNextTransactionRI() {
+		return nextTransactionRI;
+	}
+	
+	public static void updateNextRIs() {
+		int numUsers = users.keySet().size();
+		nextUserRI = numUsers + 1;
+		
+		int numAccounts = 0, numSubBalances = 0, numTransactions = 0;
+		List<Object> resourceList = new ArrayList<Object>(resources.keySet());
+		for(int i = 0; i < resourceList.size(); i++) {
+			if(resourceList.get(i) instanceof Account) {
+				numAccounts++;
+			} else if(resourceList.get(i) instanceof SubBalance) {
+				numSubBalances++;
+			} else if(resourceList.get(i) instanceof Transaction) {
+				numTransactions++;
+			}
+		}
+		
+		nextAccountRI = numAccounts + 1;
+		nextSubBalanceRI = numSubBalances + 1;
+		nextTransactionRI = numTransactions + 1;
 	}
 	
 	private static String getSaltString() {

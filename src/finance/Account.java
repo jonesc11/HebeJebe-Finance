@@ -81,15 +81,14 @@ public class Account implements IAccount {
 		SubBalance sb = new SubBalance(n, b, this);
 		this.balance -= b;
 		
-		int i = 0;
-		while(subBalances.get("sb" + i) != null) 
-			i++;
+		int ri = Parser.getNextSubBalanceRI();
 		
-		String newIdentifier = "sb" + i;
+		String newIdentifier = "sb" + ri;
 		
 		sb.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, sb);
 		subBalances.put(newIdentifier, sb);
+		Parser.setNextSubBalanceRI(ri+1);
 		
 		return newIdentifier;
 	}
@@ -98,16 +97,14 @@ public class Account implements IAccount {
 		SingleIncome newIncome = new SingleIncome(a, n, c, d, this.balance - a, this.resourceIdentifier);
 		balance += a;
 		
-		int i = 0;
-		while(transactions.get("t" + i) != null)
-			i++;
-		
-		String newIdentifier = "t" + i;
+		int ri = Parser.getNextTransactionRI();
+		String newIdentifier = "t" + ri;
 		
 		newIncome.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newIncome);
 		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		transactions.put(newIdentifier, newIncome);
+		Parser.setNextTransactionRI(ri+1);
 		
 		return newIdentifier;
 	}
@@ -115,15 +112,13 @@ public class Account implements IAccount {
 	public String addRecurringIncome(double a, String n, String c, Period p, Date d1, Date d2) {
 		RecurringIncome newIncome = new RecurringIncome(a, n, c, p, d1, d2, this.resourceIdentifier);
 		
-		int i = 0;
-		while(transactions.get("t" + i) != null)
-			i++;
-		
-		String newIdentifier = "t" + i;
+		int ri = Parser.getNextTransactionRI();
+		String newIdentifier = "t" + ri;
 		
 		newIncome.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newIncome);
 		transactions.put(newIdentifier, newIncome);
+		Parser.setNextTransactionRI(ri+1);
 		
 		return newIdentifier;
 	}
@@ -132,16 +127,14 @@ public class Account implements IAccount {
 		SingleExpense newExpense = new SingleExpense(a, n, c, d, this.balance - a, this.resourceIdentifier);
 		balance -= a;
 		
-		int i = 0;
-		while(transactions.get("t" + i) != null)
-			i++;
-		
-		String newIdentifier = "t" + i;
+		int ri = Parser.getNextTransactionRI();
+		String newIdentifier = "t" + ri;
 		
 		newExpense.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newExpense);
 		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		transactions.put(newIdentifier, newExpense);
+		Parser.setNextTransactionRI(ri+1);
 		
 		return newIdentifier;
 	}
@@ -149,38 +142,26 @@ public class Account implements IAccount {
 	public String addRecurringExpense(double a, String n, String c, Period p, Date d1, Date d2) {
 		RecurringExpense newExpense = new RecurringExpense(a, n, c, p, d1, d2, this.resourceIdentifier);
 		
-		int i = 0;
-		while(transactions.get("t" + i) != null)
-			i++;
-		
-		String newIdentifier = "t" + i;
+		int ri = Parser.getNextTransactionRI();
+		String newIdentifier = "t" + ri;
 		
 		newExpense.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newExpense);
 		transactions.put(newIdentifier, newExpense);
+		Parser.setNextTransactionRI(ri+1);
 		
 		return newIdentifier;
 	}
 	
-	public String addTransfer(Transfer newTransfer) {
+	public void addTransfer(Transfer newTransfer) {
 		if(this.resourceIdentifier.equals(newTransfer.getFromResourceIdentifier())) {
 			this.balance -= newTransfer.getAmount();
 		} else if(this.resourceIdentifier.equals(newTransfer.getFromResourceIdentifier())) {
 			this.balance += newTransfer.getAmount();
 		}
-
-		int i = 0;
-		while(transactions.get("t" + i) != null)
-			i++;
 		
-		String newIdentifier = "t" + i;
-		
-		newTransfer.setResourceIdentifier(newIdentifier);
-		Parser.addResource(newIdentifier, newTransfer);
 		dbParser.updateBalance(this.resourceIdentifier, this.balance);
-		transactions.put("t" + i, newTransfer);
-		
-		return newIdentifier;
+		transactions.put(newTransfer.getResourceIdentifier(), newTransfer);
 	}	
 	
 	public void checkRecurringTransactions() {

@@ -135,25 +135,15 @@ public class SubBalance implements IAccount {
 		return newIdentifier;
 	}
 	
-	public String addTransfer(Transfer newTransfer) {
+	public void addTransfer(Transfer newTransfer) {
 		if(this.resourceIdentifier.equals(newTransfer.getFromResourceIdentifier())) {
 			this.balance -= newTransfer.getAmount();
 		} else if(this.resourceIdentifier.equals(newTransfer.getFromResourceIdentifier())) {
 			this.balance += newTransfer.getAmount();
 		}
 		
-		int i = 0;
-		while(transactions.get("t" + i) != null)
-			i++;
-		
-		String newIdentifier = "t" + i;
-		
-		newTransfer.setResourceIdentifier(newIdentifier);
-		Parser.addResource(newIdentifier, newTransfer);
 		dbParser.updateBalance(this.resourceIdentifier, this.balance);
-		transactions.put("t" + i, newTransfer);
-		
-		return newIdentifier;
+		transactions.put(newTransfer.getResourceIdentifier(), newTransfer);
 	}	
 	
 	public void checkRecurringTransactions() {

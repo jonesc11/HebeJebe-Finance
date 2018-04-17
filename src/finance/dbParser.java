@@ -44,6 +44,8 @@ public class dbParser {
 			
 			Parser.addUser(identifier, u);
 		}
+		
+		Parser.updateNextRIs();
 	}
 	
 	public static Map<String, Account> getAccountsFromDB(String pIdentifier) {

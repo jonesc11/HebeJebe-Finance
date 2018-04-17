@@ -83,16 +83,14 @@ public class User {
 	public String createAccount(String name, String type, double balance) {
 		Account account = new Account(name, type, balance);
 		
-		//A really poor way of creating a unique ResourceIdentifier for the new Account
-		int i = 0;
-		while(accounts.get("a" + i) != null)
-			i++;
+		int ri = Parser.getNextAccountRI();
 		
-		String newIdentifier = "a" + i;
+		String newIdentifier = "a" + ri;
 		
 		account.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, account);
 		accounts.put(newIdentifier, account);
+		Parser.setNextAccountRI(ri+1);
 		
 		return newIdentifier;
 	}
@@ -151,11 +149,15 @@ public class User {
 		
 		Transfer newTransfer = new Transfer(a, n, c, d, fromRI, toRI, from.getBalance(), to.getBalance());
 		
-		String identifier = from.addTransfer(newTransfer);
-		to.addTransfer(newTransfer);
-		newTransfer.setResourceIdentifier(identifier);
+		int ri = Parser.getNextTransactionRI();
+		String newIdentifier = "t" + ri;
+		newTransfer.setResourceIdentifier(newIdentifier);
+		Parser.setNextTransactionRI(ri+1);
 		
-		return identifier;
+		from.addTransfer(newTransfer);
+		to.addTransfer(newTransfer);
+		
+		return newIdentifier;
 	}
 	
 	/*
