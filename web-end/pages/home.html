@@ -21,47 +21,30 @@
     <title>HebeJebe Finance</title>
   </head>
   <body ng-controller="NavBarCtrl">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav>
   	<a class="navbar-brand" href="">H.J. Finance</a>
-  	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    		<span class="navbar-toggler-icon"></span>
-  	</button>
-
   	<div class="collapse navbar-collapse" id="navbarSupportedContent">
-    		<ul class="navbar-nav mr-auto">
-			<li class="nav-item dropdown">
-        			<a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          			Accounts
-        			</a>
-        			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" ng-repeat="account in accounts" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" data-toggle="modal" data-target="#createAccountModal" href="">Add Account</a>
-        			</div>
-	
-			</li>
-			<li class="nav-item dropdown">
-        			<a class="nav-link dropdown-toggle" href="" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          			Budgets
-        			</a>
-        			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-				<a class="dropdown-item" ng-repeat="budget in budgets" value="{{budget.ResourceIdentifier}}">{{budget.BudgetName}}</a>
-				<div class="dropdown-divider"></div>
-				<a class="dropdown-item" data-toggle="modal" data-target="#createBudgetModal" href="">Create Budget</a>
-        			</div>
-	
-			</li>
+		<div class="dropdown">
+    		<a class="nav-link dropdown-toggle" href="" id="navbar-account-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Accounts</a>
+			<ul class="dropdown-menu" aria-labelledby="navbar-account-dropdown">
+				<li><a ng-repeat="account in accounts" href="#!/account/{{account.ResourceIdentifier}}">{{account.AccountName}}</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a data-toggle="modal" data-target="#createAccountModal" href="">Add Account</a></li>
+       		</ul>
+        </div>
+		<div class="dropdown">
+        	<a class="nav-link dropdown-toggle" href="" id="navbar-budgets-dropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Budgets</a>
+        	<ul class="dropdown-menu" aria-labelledby="navbar-budgets-dropdown">
+				<li><a ng-repeat="budget in budgets" href="/#!/account/{{budget.ResourceIdentifier}}">{{budget.BudgetName}}</a></li>
+				<li role="separator" class="divider"></li>
+				<li><a data-toggle="modal" data-target="#createBudgetModal" href="">Create Budget</a></li>
+       		</ul>
+		</div>
+       	<a class="nav-link" id="logout-link" href="/logout">Log Out</a>
+ 	</div>
+  </nav>
 
-		</ul>
-		<ul>
-				<li class="form-inline my-2 my-lg-0 float-right">
-        				<a class="nav-link" href="/logout">Log Out</a>
-      				</li>
-    		</ul>
-  	</div>
-	</nav>
-
-	<div ng-view=""></div>
+  <div ng-view=""></div>
 </body>
 </html>
   

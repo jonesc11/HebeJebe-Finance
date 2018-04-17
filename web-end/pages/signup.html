@@ -7,7 +7,7 @@
     <!-- Load CSS, including Bootstrap -->
     <link rel="stylesheet" href="/resources/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/resources/css/bootstrap-grid.min.css" />
-    <link rel="stylesheet" href="/resources/css/bootstrap-reboot.min.css" />
+    <link rel="stylesheet" href="/resources/css/bootstrap-theme.min.css" />
     <link rel="stylesheet" href="/resources/css/style.css" />
     
     <!-- Load JavaScript, including AngularJS, jQuery, Bootstrap, Socket.io and Popper -->
@@ -22,6 +22,13 @@
     <title>HebeJebe Finance</title>
   </head>
 <body ng-controller="SignupCtrl"> 
+  <nav>
+  	<a class="navbar-brand" href="">H.J. Finance</a>
+  	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+       	<a class="nav-link" href="/login">Login</a>
+       	<a class="nav-link" href="/signup">Create an Account</a>
+ 	</div>
+  </nav>
 <!-- multistep form -->
   <!-- fieldsets -->
   <form id="msform" ng-submit="register()">

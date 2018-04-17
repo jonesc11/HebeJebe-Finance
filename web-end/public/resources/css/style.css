@@ -17,9 +17,6 @@
 /*custom font*/
 @import url(https://fonts.googleapis.com/css?family=Montserrat);
 
-/*basic reset*/
-* {margin: 0; padding: 0;}
-
 html {
 	height: 100%;
 	/*Image only BG fallback*/
@@ -28,6 +25,41 @@ html {
 body {
 	font-family: montserrat, arial, verdana;
 	background: #f1f7ee
+}
+
+nav {
+  height: 52px;
+  background-color: #67ba5d;
+  border-radius: 0;
+}
+
+.dropdown {
+  display: inline-block;
+}
+
+.nav-link {
+  padding: 16px;
+  color: #333;
+  position: relative;
+  display: inline-block;
+}
+
+.nav-link:hover, .nav-link:focus, .nav-link:active {
+  text-decoration: underline;
+  background-color: #b0bea9;
+  color: #000;
+}
+
+.navbar-brand {
+  color: #333;
+}
+
+.navbar-brand:hover, .navbar-brand:focus, .navbar-brand:active {
+  color: #000;
+}
+
+#logout-link {
+  float: right;
 }
 
 .btn:hover{
@@ -39,7 +71,6 @@ body {
 	background: #67ba5d;
 	border: #67ba5d;
 }
-
 
 .form-check{
 	margin: 0 10%;
@@ -71,8 +102,7 @@ h1 {
   float: right !important;
   font-family: FontAwesome;
   content: "\f068";
-  padding-left: 0px;
-  padding-right: 10px;
+  padding: 12px;
 }
 
 .panel-title > a.collapsed:before {
@@ -82,13 +112,42 @@ h1 {
 
 .card-header {
   background-color: #e8e8e8;
+  margin: 0;
+  padding: 0;
   border-radius: 6px;
-  padding 8px;
-  margin: 8px 0;
+}
+
+.card-header:hover {
+  background-color: #ccc;
+}
+
+.card-header a:hover, .card-header a:active, .card-header a:focus {
+  text-decoration: none;
+}
+
+.collapsed .row {
+  margin: 0;
+}
+
+.card {
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,.25);
+  box-shadow: 0 1px 2px 0 rgba(0,0,0,0.08), 0, 1px 5px 0 rgba(0,0,0,0.06) !important;
+  margin: 12px;
+}
+
+.card-header .row {
+  padding: 12px;
+  margin: 0;
+}
+
+.panel-title {
+  font-size: 24px;
 }
 
 #select-account {
-  margin: 12px;
+  margin: 24px 0 0 0;
+  float: right;
 }
 
 #home fieldset{
