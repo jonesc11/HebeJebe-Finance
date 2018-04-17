@@ -2,19 +2,21 @@ var app = angular.module("MyApp", ['ngRoute']);
 
 $(document).ready (function (app) {
 
-
 	app.config(["$routeProvider", function($routeProvider){
 		$routeProvider
 		.when("/", {
 			controller: 'HomeCtrl',
 			templateUrl: '/resources/views/home.html'
 		})
+		.when('/account', {
+			controller: 'AccountsController',
+			templateUrl: '/resources/views/account.html'
+		})
 		.when('/account/:id', {
 			controller: 'AccountsController',
 			templateUrl: '/resources/views/account.html'
 		})
 		.otherwise({redirectTo: "/"})
-
 	}]);
 
 	app.controller("NavBarCtrl", function($rootScope, $scope, $http){
