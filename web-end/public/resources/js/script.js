@@ -21,6 +21,34 @@ $(document).ready (function (app) {
 
 	app.controller("NavBarCtrl", function($rootScope, $scope, $http){
 
+		$http({
+  			method: 'GET',
+  			url: '/request/get/transactions',
+  			data: {
+  				"Limit": 30,
+			      }
+			}).
+			then(function(success) {
+				$scope.transactions = success.data.Transactions;
+			}).
+			then(function(error) {
+				// log error
+		});
+
+
+            	$http({
+                	method: 'GET',
+                	url: '/request/get/accounts',
+                	data: {
+                    		"Limit": 30
+                    		}
+                	}).then(function(success) {
+                    		$scope.accounts = success.data.Account;
+                	}).
+                	then(function(error) {
+                    		// log error
+        	});
+
 	});
 
 	app.controller('AccountsController', function ($rootScope, $scope, $http, $routeParams) {
@@ -86,22 +114,19 @@ $(document).ready (function (app) {
 		});
 
 
-        	var getAccounts = function () {
-            		$http({
-                		method: 'GET',
-                		url: '/request/get/accounts',
-                		data: {
-                    			"Limit": 30
+            	$http({
+                	method: 'GET',
+                	url: '/request/get/accounts',
+                	data: {
+                    		"Limit": 30
                     		}
                 	}).then(function(success) {
                     		$scope.accounts = success.data.Account;
                 	}).
                 	then(function(error) {
                     		// log error
-            		});
-        	};
+        	});
         
-        	getAccounts();
 
 		$scope.createTransaction = function(){
 	    	 $http({
