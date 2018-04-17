@@ -21,33 +21,33 @@
     
     <title>HebeJebe Finance</title>
   </head>
-<body> 
+<body ng-controller="SignupCtrl"> 
 <!-- multistep form -->
-<form id="msform" ng-controller="HomeCtrl" method="post" action="/signup">
   <!-- fieldsets -->
-  <fieldset ng-show="page1">
-    <h2 class="fs-title">Create your account</h2>
-    <h3 class="fs-subtitle">This is step 1</h3>
-    <input type="text" name="firstName" placeholder="First Name" ng-model="$scope.firstName"/>
-    <input type="text" name="lastName" placeholder="Last Name" ng-model="$scope.lastName"/>
-    <input type="text" name="email" placeholder="Email" ng-model="$scope.email"/>
-    <input type="password" name="pass" placeholder="Password" ng-model="$scope.pw"/>
-    <input type="password" name="cpass" placeholder="Confirm Password" ng-model="$scope.pwConf"/>
-    <input type="button" name="next" class="next action-button" value="Next" ng-click="nextOne()"/>
-  </fieldset>
-  <fieldset ng-show="page2">
-    <h2 class="fs-title">Account Info</h2>
-    <h3 class="fs-subtitle">Connect a Bank Account</h3>
-    <input type="text" name="accountName" placeholder="Account Name" ng-model="$scope.accountName"/>
-    <input type="number" step="0.01" name="accountAmount" placeholder="Account Amount" ng-moel="$scope.accountAmnt"/>
-    <select class="custom-select" id="accountType" name="accountType" ng-model="accountType">
-    	<option selected value="Checking">Checking</option>
-    	<option value="Savings">Savings</option>
-    	<option value="Trust">Trust</option>
-    </select>
-    <input type="button" name="previous" class="previous action-button" value="Previous" ng-click="prevTwo()"/>
-    <input type="button" name="submit" class="next action-button" value="Next" ng-click="register()"/>
-  </fieldset>
-</form>
+  <form id="msform" ng-submit="register()">
+    <fieldset ng-show="page1">
+      <h2 class="fs-title">Create your account</h2>
+        <h3 class="fs-subtitle">This is step 1</h3>
+      <input type="text" name="firstName" placeholder="First Name" ng-model="firstName"/>
+      <input type="text" name="lastName" placeholder="Last Name" ng-model="lastName"/>
+      <input type="text" name="email" placeholder="Email" ng-model="email"/>
+      <input type="password" name="pass" placeholder="Password" ng-model="pw"/>
+      <input type="password" name="cpass" placeholder="Confirm Password" ng-model="pwConf"/>
+      <input type="button" name="next" class="next action-button" value="Next" ng-click="nextOne()"/>
+    </fieldset>
+    <fieldset ng-show="page2">
+      <h2 class="fs-title">Account Info</h2>
+      <h3 class="fs-subtitle">Connect a Bank Account</h3>
+      <input type="text" name="accountName" placeholder="Account Name" ng-model="accountName"/>
+      <input type="number" step="0.01" name="accountAmount" placeholder="Account Amount" ng-model="accountAmnt"/>
+      <select class="custom-select" id="accountType" name="accountType" ng-model="accountType">
+        <option selected value="Checking">Checking</option>
+        <option value="Savings">Savings</option>
+        <option value="Trust">Trust</option>
+      </select>
+      <input type="button" name="previous" class="previous action-button" value="Previous" ng-click="prevTwo()"/>
+      <input type="button" name="submit" class="next action-button" value="Next" ng-click="register()"/>
+    </fieldset>
+  </form>
 </body>
 </html>

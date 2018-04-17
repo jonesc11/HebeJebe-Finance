@@ -53,7 +53,7 @@ $(document).ready (function (app) {
 
 	app.controller('AccountsController', function ($rootScope, $scope, $http, $routeParams) {
 		$scope.user = {};
-		$scope.account = {};
+		$scope.accountId = $routeParams.id;
 		$http({
 			method: 'GET',
 			url: '/request/get/user',
@@ -72,8 +72,11 @@ $(document).ready (function (app) {
 				}
 			}).then (function (response) {
 				$scope.accounts = response.data.Account;
+console.log ($scope.accounts);
 				var retInd1 = 0, retInd2 = 0;
 				for (var i = 0; i < $scope.accounts.length; ++i) {
+					if ($scope.accounts[i].ResourceIdentifier == $scope.accountId)
+						$scope.account = $scope.accounts[i];
 					$http({
 						url: '/request/get/transactions',
 						method: 'GET',
@@ -115,6 +118,22 @@ $(document).ready (function (app) {
 				}
 			});
 		});
+
+		$scope.selectAccountChange = function () {
+			if ($scope.accountId) {
+				$scope.noAccountSelected = false;
+				for (var i = 0; i < $scope.accounts.length; ++i) {
+					if ($scope.accounts[i].ResourceIdentifier == $scope.accountId) {
+						$scope.account = $scope.accounts[i];
+						break;
+					}
+				}
+				$routeParams.id = $scope.accountId;
+			} else {
+				$scope.noAccountSelected = true;
+				$scope.account = {};
+			}
+		}
 	});
 
 	app.controller("HomeCtrl", function($rootScope, $scope, $http){

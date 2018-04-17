@@ -1,34 +1,66 @@
 <div class="container">
   <div class="row">
-    <div class="col-8">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Amount</th>
-            <th>Balance</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="transactions in account.transactions">
-            <td>transaction.DateTime</td>
-            <td>transaction.Description</td>
-            <td>transaction.Amount</td>
-            <td>transaction.Account.Balance</td>
-            <td>
-              <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="table-dropdown-{{$index}}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown button</button>
-                <div class="dropdown-menu" aria-labelledby="table-dropdown-{{$index}}">
-                  <a class="dropdown-item" href="">Edit</a>
-                  <a class="dropdown-item" href="">Delete</a>
-                </div>
+    <div class="col-12">
+      <h1 class="dib">Accounts</h1>
+      <div class="float-right col-3 dib" id="select-account">
+        <select class="form-control" ng-change="selectAccountChange()" ng-model="accountId" ng-options="account.ResourceIdentifier as (account.AccountName) for account in accounts">
+          <option value="undefined" ng-selected="true">Select an account</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <div ng-show="noAccountSelected == false">
+        <div class="card-header" role="tab" id="account-heading">
+          <h5 class="mb-0 panel-title">
+            <a class="collapsed" data-toggle="collapse" href="" aria-expanded="false" aria-controls="account-collapse" data-target="#account-collapse">
+              <div class="row">
+                <div class="class-info-header col-12">View Transactions</div>
               </div>
-            <td>
-          </tr>
-        </tbody>
-      </table>
+            </a>
+          </h5>
+        </div>
+        <div id="account-collapse" class="collapse card-border" role="tabpanel" aria-labelledby="account-heading">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Balance</th>
+                <th><span class="glyphicon glyphicon-pencil"></span></th>
+                <th><span class="glyphicon glyphicon-trash"></span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="transaction in account.transactions | orderBy:'-DateTime'">
+                <td>{{transaction.DateTime}}</td>
+                <td>{{transaction.Description}}</td>
+                <td class="color-amount-{{transaction.TransactionType}}">{{transaction.Amount | currency}}</td>
+                <td>{{transaction.AccountBalanceAfter | currency}}</td>
+                <td><span class="glyphicon glyphicon-pencil"></span></td>
+                <td><span class="glyphicon glyphicon-trash"></span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-header" role="tab" id="subbalance-heading">
+          <h5 class="mb-0 panel-title">
+            <a class="collapsed" data-toggle="collapse" href="" aria-expanded="false" aria-controls="subbalance-collapse" data-target="#subbalance-collapse">
+              <div class="row">
+                <div class="class-info-header col-12">View Subbalances</div>
+              </div>
+            </a>
+          </h5>
+        </div>
+        <div id="subbalance-collapse" class="collapse card-border" role="tabpanel" aria-labelledby="subbalance-heading">
+          
+        </div>
+      </div>
+      <div ng-show="noAccountSelected == true" class="text-center" id="no-account-selected">
+        No account selected. Select an account from the dropdown on the right or <a data-toggle="modal" data-target="#createAccountModal" href="">create a new account here</a>.
+      </div>
     </div>
   </div>
 </div>

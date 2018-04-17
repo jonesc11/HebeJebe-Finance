@@ -1,3 +1,5 @@
+@import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css");
+
 * {
   margin: 0;
   padding: 0;
@@ -42,6 +44,51 @@ body {
 .form-check{
 	margin: 0 10%;
 	padding-left: 10px;
+}
+
+h1 {
+  width: auto;
+}
+
+.dib {
+  display: inline-block;
+}
+
+.color-amount-Income {
+  color: #068419;
+}
+
+.color-amount-Expense {
+  color: #b50e0e;
+}
+
+.color-amount-Transfer {
+  color: #0d72a5;
+}
+
+.panel-title > a:before {
+  padding: .75rem 1.25rem;
+  float: right !important;
+  font-family: FontAwesome;
+  content: "\f068";
+  padding-left: 0px;
+  padding-right: 10px;
+}
+
+.panel-title > a.collapsed:before {
+  float: right !important;
+  content: "\f067";
+}
+
+.card-header {
+  background-color: #e8e8e8;
+  border-radius: 6px;
+  padding 8px;
+  margin: 8px 0;
+}
+
+#select-account {
+  margin: 12px;
 }
 
 #home fieldset{

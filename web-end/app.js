@@ -111,7 +111,7 @@ app.post ('/signup', function (req, res) {
       }
     };
 
-    sendMessage (JSON.stringify (data2)).then (function (data) {
+    sendMessage (JSON.stringify (data2)).then (function (returnData2) {
       res.redirect ('/login');
     });
   });
@@ -303,9 +303,6 @@ function handleGetSubbalance (req, userRID) {
 /* Handles GetUser requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetUser (req, userRID) {
-  if ((req.body.ResourceIdentifier && req.body.ResourceIdentifer !== null && req.body.UserIdentifier && req.body.UserIdentifier !== null) || (!req.body.ResourceIdentifier || req.body.ResourceIdentifier === null && !req.body.UserIdentifier || req.body.UserIdentifier === null))
-    return { ErrorMessage: "ResourceIdentifier or UserIdentifier must be specified, but not both." };
-
   data = {
     Key: accessKey,
     Secret: secretKey,
