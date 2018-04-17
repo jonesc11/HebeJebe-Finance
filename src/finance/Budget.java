@@ -18,11 +18,11 @@ public class Budget {
 		
 	}
 	
-	public Budget(String n, double l, int d, double b) {
+	public Budget(String n, double l, int d, User u) {
 		this.name = n;
-		this.balance = b;
 		this.limit = l;
 		this.duration = d;
+		this.user = u;
 	}
 	
 	public double getLimit() { 

@@ -36,7 +36,10 @@ public class RecurringIncomeTest {
 	@Test
 	public void testSetLastUpdate() {
 		original.updateLastUpdated(d3);
-		assertEquals("fail on updateLastupdate() on recurringExpense", d3, original.getDate() );
+		assertEquals("fail on updateLastupdate() on recurringExpense", d3.getDay(), original.getLastUpdated().getDay() );
+		assertEquals("fail on updateLastupdate() on recurringExpense", d3.getMonth(), original.getLastUpdated().getMonth());
+		assertEquals("fail on updateLastupdate() on recurringExpense", d3.getYear(), original.getLastUpdated().getYear() );
+
 
 	}
 	
