@@ -33,6 +33,11 @@ nav {
   border-radius: 0;
 }
 
+.transactionButton {
+	display: inline-block;
+	float: right;
+}
+
 .dropdown {
   display: inline-block;
 }

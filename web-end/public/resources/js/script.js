@@ -32,11 +32,11 @@ $(document).ready (function (app) {
 			});
 		};
 
-       	$scope.createAccount = function () {
-           	$http ({
-               	method: 'POST',
-               	url: '/request/create/account',
-               	data: {
+       		$scope.createAccount = function () {
+           		$http ({
+               		method: 'POST',
+               		url: '/request/create/account',
+               		data: {
 					AccountName: $scope.createAccountName,
 					AccountBalance: $scope.createAccountBalance,
 					AccountType: $scope.createAccountType
@@ -48,13 +48,13 @@ $(document).ready (function (app) {
 				$("input[name=create-account-balance]").val("");
 			}).then (function (error) {
 			});
-        };
+        	};
 
 		$scope.createTransaction = function(){
-	    	$http({
-	  			method: 'POST',
-  				url: '/request/create/transaction',
-	  			data: {
+	    		$http({
+	  		method: 'POST',
+  			url: '/request/create/transaction',
+	  		data: {
   					"Limit": 30,
 					"TransactionType": $scope.transactionType, 
   					"Amount": $scope.amount,
@@ -78,10 +78,10 @@ $(document).ready (function (app) {
 		};
 
 		$scope.editTransaction = function () {
-			$http({
-				url: '/request/modify',
-				method: 'POST',
-				data: {
+		$http({
+			url: '/request/modify',
+			method: 'POST',
+			data: {
 					ResourceIdentifier: $rootScope.editingTrans.ResourceIdentifier,
 					Changes: [
 						{ Key: "AssociatedWith", Value: $rootScope.editingTrans.Account.AccountResourceIdentifier },
@@ -372,6 +372,21 @@ $rootScope.subbalance = {
        	}, function(error) {
       		// log error
     	});
+
+		$scope.getTotalBalance = function(){
+			if($scope.accounts == undefined){
+				return 0;
+			}
+			var totalBalance = 0;
+			for(var i=0; i< $scope.accounts.length; i++){
+				console.log("adding account balance");
+				totalBalance += $scope.accounts[i].LatestBalance;
+			}
+
+			return totalBalance;
+		};
+
+		$scope.totalBalance = $scope.getTotalBalance();
 
 		$scope.createTransaction = function(){
 	    	$http({
