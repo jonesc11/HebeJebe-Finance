@@ -3,15 +3,14 @@
     <div class="col-12">
       <h1 class="dib">Accounts</h1>
       <div class="float-right col-3 dib" id="select-account">
-        <select class="form-control" ng-change="selectAccountChange()" ng-model="accountId" ng-options="account.ResourceIdentifier as (account.AccountName) for account in accounts">
-          <option value="undefined" ng-selected="true">Select an account</option>
-        </select>
+        <select class="form-control" ng-change="selectAccountChange()" ng-model="accountId" ng-options="account.ResourceIdentifier as (account.AccountName) for account in accounts"></select>
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-12">
       <div ng-show="noAccountSelected == false">
+        <div class="card">
         <div class="card-header" role="tab" id="account-heading">
           <h5 class="mb-0 panel-title">
             <a class="collapsed" data-toggle="collapse" href="" aria-expanded="false" aria-controls="account-collapse" data-target="#account-collapse">
@@ -34,17 +33,22 @@
               </tr>
             </thead>
             <tbody>
+              <tr ng-show="!account.transactions || account.transactions.length == 0">
+                <td colspan="6" class="text-center">There are no transactions to show. Create one here!</td>
+              </tr>
               <tr ng-repeat="transaction in account.transactions | orderBy:'-DateTime'">
                 <td>{{transaction.DateTime}}</td>
                 <td>{{transaction.Description}}</td>
                 <td class="color-amount-{{transaction.TransactionType}}">{{transaction.Amount | currency}}</td>
                 <td>{{transaction.AccountBalanceAfter | currency}}</td>
-                <td><span class="glyphicon glyphicon-pencil"></span></td>
-                <td><span class="glyphicon glyphicon-trash"></span></td>
+                <td><a data-toggle="modal" data-target="#editTransactionModal" ng-click="$scope.editingTrans = transaction"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                <td><a data-toggle="modal" data-target="#deleteTransactionModal" ng-click="$scope.deletingTrans = transaction"><span class="glyphicon glyphicon-trash"></span></a></td>
               </tr>
             </tbody>
           </table>
         </div>
+        </div>
+        <div class="card">
         <div class="card-header" role="tab" id="subbalance-heading">
           <h5 class="mb-0 panel-title">
             <a class="collapsed" data-toggle="collapse" href="" aria-expanded="false" aria-controls="subbalance-collapse" data-target="#subbalance-collapse">
@@ -55,7 +59,29 @@
           </h5>
         </div>
         <div id="subbalance-collapse" class="collapse card-border" role="tabpanel" aria-labelledby="subbalance-heading">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Balance</th>
+                <th><span class="glyphicon glyphicon-pencil"></span></th>
+                <th><span class="glyphicon glyphicon-trash"></span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-show="!account.subbalances || account.subbalances.length == 0">
+                <td colspan="6" class="text-center">There are no transactions to show. Create one here!</td>
+              </tr>
+              <tr ng-repeat="subbalance in account.subbalances | orderBy:'SubBalanceName'">
+                <td>{{subbalance.SubBalanceName}}</td>
+                <td>{{subbalance.Balance}}</td>
+                <td><span class="glyphicon glyphicon-pencil"></span></td>
+                <td><span class="glyphicon glyphicon-trash"></span></td>
+              </tr>
+            </tbody>
+          </table>
           
+        </div>
         </div>
       </div>
       <div ng-show="noAccountSelected == true" class="text-center" id="no-account-selected">

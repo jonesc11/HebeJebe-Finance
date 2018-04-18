@@ -1,4 +1,9 @@
 <div class="container">
+	<div class="row">
+		<div class="col-12">
+			<div class="alert alert-danger" ng-show="errorMessage">{{errorMessage}}</div>
+		</div>
+	</div>
 	<div class = "row">
 	<div class="col-8">
 		<table class="table">
@@ -13,8 +18,11 @@
 				<th scope="col"></th>
     			</tr>
   		</thead>
-  		<tbody ng-repeat="transaction in transactions">
-    			<tr>
+  		<tbody> 
+			<tr ng-show="!transactions || transactions.length == 0">
+				<td class="text-center" colspan="7">No transactions found. <a href="" data-toggle="modal" data-target="#createTransactionModal">Create one here!</a></td>
+			</tr>
+    			<tr ng-repeat="transaction in transactions | orderBy:'DateTime'">
       				<td>{{transaction.DateTime}}</td>
  	                        <td>{{transaction.Description}}</td>
                                 <td>{{transaction.Amount}}</td>
@@ -36,8 +44,8 @@
 		<h4> Create Transaction </h4>
 			<div class="form-group">
 				<label>Account </label>
-				<select class="custom-select custom-select-lg mb-3" ng-model="transactionAccount">
-					<option ng-repeat="account in accounts" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
+				<select class="form-control custom-select custom-select-lg mb-3" ng-model="transactionAccount">
+					<option ng-repeat="account in accounts | orderBy:'AccountName'" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
 				</select>
 			</div>
 			
@@ -57,7 +65,7 @@
   			</div>
 			<div class="form-group">
 				<label> Transaction Type </label>
-				<select class="custom-select custom-select-lg mb-3" ng-model=transactionType>
+				<select class="form-control custom-select custom-select-lg mb-3" ng-model=transactionType>
   					<option selected value="Expense">Expense</option>
   					<option value="Income">Income</option>
 				</select>
@@ -70,8 +78,9 @@
   				<input type="checkbox" class="form-check-input" id="customCheck1"  ng-model="recurring">
   				<label class="custom-control-label" for="customCheck1">Recurring Transaction</label>
 			</div>
-			<div class="form-group">
-				<select class="custom-select custom-select-lg mb-3" ng-show="recurring" ng-model="transactionRecurInterval">
+			<div class="form-group" ng-show="recurring">
+				<label class="custom-control-label">Period</label>
+				<select class="form-control custom-select custom-select-lg mb-3" ng-model="transactionRecurInterval">
 					<option value="Daily">Daily</option>
 					<option value="Weekly">Weekly</option>
 					<option selected value="Monthly">Monthly</option>

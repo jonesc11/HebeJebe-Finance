@@ -19,8 +19,53 @@ $(document).ready (function (app) {
 		.otherwise({redirectTo: "/"})
 	}]);
 
-	app.controller("NavBarCtrl", function($rootScope, $scope, $http){
+	app.controller('ModalController', function ($rootScope, $scope, $http) {
+       	$scope.createAccount = function () {
+           	$http ({
+               	method: 'POST',
+               	url: '/request/create/account',
+               	data: {
+					AccountName: $scope.createAccountName,
+					AccountBalance: $scope.createAccountBalance,
+					AccountType: $scope.createAccountType
+				}
+			}).then (function (success) {
+				$rootScope.$broadcast('getAccounts');
+				$("#createAccountModal").modal('toggle');
+				$("input[name=create-account-name]").val("");
+				$("input[name=create-account-balance]").val("");
+			}).then (function (error) {
+			});
+        };
 
+		$scope.createTransaction = function(){
+	    	$http({
+	  			method: 'POST',
+  				url: '/request/create/transaction',
+	  			data: {
+  					"Limit": 30,
+					"TransactionType": $scope.transactionType, 
+  					"Amount": $scope.amount,
+  					"To": $scope.transactionType == 'Expense' ? null : $scope.transactionAccount,
+  					"From": $scope.transactionType == 'Income' ? null : $scope.transactionAccount,
+	  				"Description": $scope.transactionDescription,
+					"DateTime": $scope.transactionDate,
+  					"Category": "<string>",
+  					"AssociatedWith": $scope.transactionAccount,
+  					"Recurring": $scope.recurring,
+  					"RecurringUntil": null,
+ 	 				"RecurringFrequency": $scope.transactionRecurInterval,
+				}
+			}).
+			then(function(success) {
+				$('#createTransactionModal').modal('toggle');
+			}, function(error) {
+				// log error
+			});
+		};
+	});	
+
+	app.controller("NavBarCtrl", function($rootScope, $scope, $http){
 		$http({
   			method: 'GET',
   			url: '/request/get/transactions',
@@ -35,20 +80,31 @@ $(document).ready (function (app) {
 				// log error
 		});
 
+		$scope.$on('getAccounts', function () {
+			$http({
+				url: '/request/get/accounts',
+				method: 'GET',
+				data: {
+					Limit: 30
+				}
+			}).then (function (success) {
+				$scope.accounts = success.data.Account;
+			}, function (error) {
+				$scope.errorMessage = error.data.ErrorMessage;
+			});
+		});
 
-            	$http({
-                	method: 'GET',
-                	url: '/request/get/accounts',
-                	data: {
-                    		"Limit": 30
-                    		}
-                	}).then(function(success) {
-                    		$scope.accounts = success.data.Account;
-                	}).
-                	then(function(error) {
-                    		// log error
-        	});
-
+		$http({
+			method: 'GET',
+			url: '/request/get/accounts',
+			data: {
+				"Limit": 30
+			}
+		}).then(function(success) {
+			$scope.accounts = success.data.Account;
+		}, function(error) {
+			// log error
+		});
 	});
 
 	app.controller('AccountsController', function ($rootScope, $scope, $http, $routeParams) {
@@ -72,7 +128,6 @@ $(document).ready (function (app) {
 				}
 			}).then (function (response) {
 				$scope.accounts = response.data.Account;
-console.log ($scope.accounts);
 				var retInd1 = 0, retInd2 = 0;
 				for (var i = 0; i < $scope.accounts.length; ++i) {
 					if ($scope.accounts[i].ResourceIdentifier == $scope.accountId)
@@ -137,112 +192,81 @@ console.log ($scope.accounts);
 	});
 
 	app.controller("HomeCtrl", function($rootScope, $scope, $http){
-		$scope.page1 = true;
-		$scope.page2 = false;
-
-		$scope.nextOne = function(){
-			$scope.page1 = false
-			$scope.page2 = true
-		}	
-
-		$scope.prevTwo = function(){
-			$scope.page1 = true
-			$scope.page2 = false
-		}
-
-		$scope.register = function(){
+		$scope.$on ('getAccounts', function () {
 			$http({
-				method: 'POST',
-				url: '/signup',
+				url: '/request/get/accounts',
+				method: 'GET',
 				data: {
-					"firstName": $scope.firstName,
-					"lastName": $scope.lastName,
-					"email": $scope.email,
-					"pass": $scope.pw,
-					"accountName": $scope.accountName,
-					"accountAmount": $scope.accountAmnt,
-					"accountType": $scope.accountType
+					Limit: 30
 				}
-			})
-		};
+			}).then (function (success) {
+				$scope.accounts = success.data.Account;
+			}, function (error) {
+				$scope.errorMessage = error.data.ErrorMessage;
+			});
+		});
 
-
+		$scope.$on('getTransactions', function () {
+			$http({
+				url: '/request/get/transactions',
+				method: 'GET',
+				data: {
+					Limit: 30
+				}
+			}).then (function (success) {
+				$scope.transactions = success.data.Transactions;
+			}, function (error) {
+				$scope.errorMessage = error.data.ErrorMessage;
+			});
+		});
 
 		$http({
   			method: 'GET',
   			url: '/request/get/transactions',
   			data: {
   				"Limit": 30,
-			      }
-			}).
-			then(function(success) {
-				$scope.transactions = success.data.Transactions;
-			}).
-			then(function(error) {
-				// log error
+			}
+		}).
+		then(function(success) {
+			$scope.transactions = success.data.Transactions;
+		}, function(error) {
+			// log error
 		});
 
-
-            	$http({
-                	method: 'GET',
-                	url: '/request/get/accounts',
-                	data: {
-                    		"Limit": 30
-                    		}
-                	}).then(function(success) {
-                    		$scope.accounts = success.data.Account;
-                	}).
-                	then(function(error) {
-                    		// log error
-        	});
-        
+       	$http({
+           	method: 'GET',
+           	url: '/request/get/accounts',
+           	data: {
+           		"Limit": 30
+       		}
+      	}).then(function(success) {
+      		$scope.accounts = success.data.Account;
+       	}, function(error) {
+      		// log error
+    	});
 
 		$scope.createTransaction = function(){
-	    	 $http({
-  			method: 'POST',
-  			url: '/request/create/transaction',
-  			data: {
-  				"Limit": 30,
-				"TransactionType": $scope.transactionType, 
-  				"Amount": $scope.amount,
-  				"To": $scope.transactionType == 'Expense' ? null : $scope.transactionAccount,
-  				"From": $scope.transactionType == 'Income' ? null : $scope.transactionAccount,
-  				"Description": $scope.transactionDescription,
-  				"DateTime": $scope.transactionDate,
-  				"Category": "<string>",
-  				"AssociatedWith": $scope.transactionAccount,
-  				"Recurring": $scope.recurring,
-  				"RecurringUntil": null,
-  				"RecurringFrequency": $scope.transactionRecurInterval,
-			      }
-			}).
-				then(function(success) {
-			}).
-				then(function(error) {
+	    	$http({
+	  			method: 'POST',
+  				url: '/request/create/transaction',
+	  			data: {
+  					"Limit": 30,
+					"TransactionType": $scope.transactionType, 
+  					"Amount": $scope.amount,
+  					"To": $scope.transactionType == 'Expense' ? null : $scope.transactionAccount,
+  					"From": $scope.transactionType == 'Income' ? null : $scope.transactionAccount,
+	  				"Description": $scope.transactionDescription,
+					"DateTime": $scope.transactionDate,
+  					"Category": "<string>",
+  					"AssociatedWith": $scope.transactionAccount,
+  					"Recurring": $scope.recurring,
+  					"RecurringUntil": null,
+ 	 				"RecurringFrequency": $scope.transactionRecurInterval,
+				}
+			}).then(function(success) {
+			}, function(error) {
 				// log error
 			});
-
 		};
-        
-        	$scope.createAccount = function () {
-            	$http ({
-                	method: 'POST',
-                	url: '/request/create/account',
-                	data: {
-                    		AccountName: $scope.createAccountName,
-                    		AccountBalance: $scope.createAccountBalance,
-                    		AccountType: $scope.createAccountType
-                	}
-            	}).then (function (success) {
-                	console.log (success.data);
-                	getAccounts();
-                	$("#createAccountModal").modal('toggle');
-                	$("input[name=create-account-name]").val("");
-                	$("input[name=create-account-balance]").val("");
-            	}).then (function (error) {
-                	// log error
-            	});
-        };
-	});
-	 
+	}); 
 }(app));
