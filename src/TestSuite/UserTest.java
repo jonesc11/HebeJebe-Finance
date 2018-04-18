@@ -11,6 +11,7 @@ import org.junit.Test;
 import finance.Account;
 import finance.Date;
 import finance.Transaction;
+import finance.Transfer;
 import finance.User;
 import finance.FinanceUtilities.Period;
 
@@ -145,6 +146,7 @@ public class UserTest {
 
 		List<Transaction> test1 = test2.getTransactionHistory(account);
 		assertTrue(test1.size() == 1);
+		test2.checkRecurringTransactions();
 	}
 	
 	@Test
@@ -155,6 +157,16 @@ public class UserTest {
 
 		List<Transaction> test1 = test2.getTransactionHistory(account);
 		assertTrue(test1.size() == 0);
+	}
+	
+	@Test
+	public void addTransfer2Test() {
+		Account correct2 = new Account("Collin", "Checking", 1000);
+		String test = correct2.addRecurringExpense(20, "gas", "test", Period.WEEKLY, new Date(5, 4, 2018), new Date(5, 4, 2020) );
+		correct2.addRecurringIncome(20, "getting mail for grampa", "test", Period.WEEKLY, new Date(5, 4, 2018), new Date(5, 4, 2020) );
+		User test2 = new User("testing@tester.org", password, firstName, lastName, accounts);
+		accounts.put("test1", correct2);
+		test2.createTransfer(20, "from grams for birthday", "birthday", new Date(18, 4, 2018), "Collin", "Collin");
 	}
 
 }

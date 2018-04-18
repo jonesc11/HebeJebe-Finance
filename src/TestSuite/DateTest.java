@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import finance.Date;
+import finance.FinanceUtilities.Period;
 
 public class DateTest {
 	private int day = 30;
@@ -74,11 +75,18 @@ public class DateTest {
 		assertTrue("Fail on getYear()", year == correct.getYear());
 	}
 	
-	/*@Test
-	public void testDateCheckNull() {
-		Date(correct);
+	@Test
+	public void testDateCheckFormat() {
+		assertEquals(correct.format(), "2018-03-30");
 	}
-	*/
+	
+	@Test
+	public void testDateCheckFormatWithOptions() {
+		assertEquals(correct.format("yymmdd"), "yymmdd");
+		assertEquals(correct.format("yyyymmdd"), "yyyymmdd");
+		assertEquals(correct.format("yyyyymmdd"), "yyyyymmdd");
+	}
+	
 	
 	@Test
 	public void testDayIsLegal() {
@@ -149,6 +157,24 @@ public class DateTest {
 	public void testEquals() {
 		assertTrue(correct.equals(correct2));
 		assertFalse(correct.equals(earliest));
+	}
+	
+	@Test
+	public void testNull() {
+		new Date(null);
+	}
+	
+	@Test
+	public void testPeriodsBetween() {
+		correct.periodsBetween(correct2, Period.WEEKLY);
+		correct.periodsBetween(correct2, Period.DAILY);
+		correct.periodsBetween(correct2, Period.MONTHLY);
+		correct.periodsBetween(correct2, Period.YEARLY);
+		earliest.periodsBetween(nextLastest, Period.WEEKLY);
+		earliest.periodsBetween(nextLastest, Period.DAILY);
+		earliest.periodsBetween(nextLastest, Period.MONTHLY);
+		earliest.periodsBetween(nextLastest, Period.YEARLY);
+		earliest.periodsBetween(earliest, Period.YEARLY);
 	}
 	
 	
