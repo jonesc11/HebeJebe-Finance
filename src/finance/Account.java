@@ -2,6 +2,7 @@ package finance;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -55,8 +56,9 @@ public class Account implements IAccount {
 	
 	public double getTotal() {
 		double b = balance;
-		for (int i = 0; i < subBalances.size(); i++) {
-			b += subBalances.get(i).getBalance();
+		Iterator<String> keyitr = subBalances.keySet().iterator();
+		while (keyitr.hasNext()) {
+			b += subBalances.get(keyitr.next()).getBalance();
 		}
 		return b;
 	}
@@ -68,11 +70,11 @@ public class Account implements IAccount {
 	
 	public List<Transaction> getTransactionHistory() {
 		List<Transaction> allTransactions = new ArrayList<Transaction>(transactions.values());
-		for(int i = 0; i < subBalances.size(); i++) {
-			List<Transaction> temp = subBalances.get(i).getTransactionHistory();
-			for(int j = 0; j < temp.size(); j++) {
+		Iterator<String> keyitr = subBalances.keySet().iterator();
+		while (keyitr.hasNext()) {
+			List<Transaction> temp = subBalances.get(keyitr.next()).getTransactionHistory();
+			for (int j = 0; j < temp.size(); ++j)
 				allTransactions.add(temp.get(j));
-			}
 		}
 		return allTransactions;
 	}
@@ -180,8 +182,9 @@ public class Account implements IAccount {
 			
 		}
 		dbParser.updateBalance(this.resourceIdentifier, this.balance);
-		for(int i = 0; i < subBalances.size(); i++) {
-			subBalances.get(i).checkRecurringTransactions();
+		Iterator<String> keyitr = subBalances.keySet().iterator();
+		while (keyitr.hasNext()) {
+			subBalances.get(keyitr.next()).checkRecurringTransactions();
 		}
 	}
 
