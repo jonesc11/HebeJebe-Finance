@@ -6,7 +6,7 @@
       <div class="float-right col-3 dib" id="select-account">
         <strong>Choose an account:</strong> <select class="form-control" ng-change="selectAccountChange()" ng-model="accountId" ng-options="account.ResourceIdentifier as (account.AccountName) for account in accounts | orderBy:'AccountName'"></select>
       </div>
-      <div class="account-info">
+      <div class="account-info" ng-show="account">
         <strong>Balance:</strong> {{account.LatestBalance | currency}}<br/>
         <strong>Account Type:</strong> {{account.AccountType}}
       </div>
@@ -82,7 +82,7 @@
             </thead>
             <tbody>
               <tr ng-show="!account.subbalances || account.subbalances.length == 0">
-                <td colspan="6" class="text-center">There are no subbalances to show. <a href="" data-toggle="modal" data-target="#createSubbalanceModal">Create one here!</a></td>
+                <td colspan="6" class="text-center">There are no subbalances to show. <a href="" data-toggle="modal" data-target="#viewSubbalanceModal">Create one here!</a></td>
               </tr>
               <tr ng-repeat="subbalance in account.subbalances | orderBy:'SubBalanceName'" ng-click="viewSubbalance()">
                 <td>{{subbalance.SubBalanceName}}</td>
@@ -98,6 +98,8 @@
       </div>
       <div ng-show="noAccountSelected == true" class="text-center" id="no-account-selected">
         No account selected. Select an account from the dropdown on the right or <a data-toggle="modal" data-target="#createAccountModal" href="">create a new account here</a>.
+        <br/><br/>
+        <button style="margin:auto;" type="button" data-toggle="modal" data-target="#createAccountModal" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add Account</button>
       </div>
     </div>
   </div>

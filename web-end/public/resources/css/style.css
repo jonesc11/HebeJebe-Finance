@@ -78,14 +78,18 @@ nav {
   float: right;
 }
 
-.btn:hover{
+.btn-primary:hover{
 	background: #b0bea9;
 	border: #b0bea9;
 }
 
-.btn{
+.btn-primary{
 	background: #67ba5d;
 	border: #67ba5d;
+}
+
+#subbalance-edit-buttons {
+  text-align: center;
 }
 
 .form-check{

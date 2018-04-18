@@ -116,6 +116,24 @@ $(document).ready (function (app) {
 				// log error
 			});
 		};
+
+		$scope.editSubbalanceLoad = function () {
+			$('#viewSubbalanceModal').modal('toggle');
+			$('#editSubbalanceModal').modal('toggle');
+		};
+
+		$scope.deleteSubbalance = function () {
+			$http({
+				url: '/request/delete',
+				method: 'POST',
+				data: { ResourceIdentifier: $rootScope.subbalance }
+			}).then (function (success) {
+				$rootScope.$broadcast ('getSubbalances');
+				$('#viewSubbalanceModal').modal('toggle');
+			}, function (error) {
+				//log error
+			});
+		};
 	});	
 
 	app.controller("NavBarCtrl", function($rootScope, $scope, $http){
@@ -189,7 +207,19 @@ $(document).ready (function (app) {
 		$scope.editSubbalance = function () {
 			$rootScope.editingSub = this.subbalance;
 		};
-
+$rootScope.subbalance = {
+	SubBalanceName: 'Test Subbalance',
+	Balance: 14,
+	transactions: [{
+		TransactionType: 'Expense',
+		DateTime: new Date('2018-04-08'),
+		DateTimeString: '2018-04-08',
+		Amount: 4,
+		Description: 'Payment',
+		Category: 'Car',
+		SubBalance: { SubBalanceBalance: 14 }
+	}]
+};
 		$scope.user = {};
 		$scope.accountId = $routeParams.id;
 		$rootScope.accountResourceIdentifier = $routeParams.id;
