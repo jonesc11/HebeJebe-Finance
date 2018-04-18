@@ -20,6 +20,18 @@ $(document).ready (function (app) {
 	}]);
 
 	app.controller('ModalController', function ($rootScope, $scope, $http) {
+		$scope.deleteTransaction = function () {
+			$http({
+				url: '/request/delete',
+				method: 'POST',
+				data: { ResourceIdentifier: $rootScope.deletingTrans.ResourceIdentifier }
+			}).then (function (success) {
+				$('#deleteTransactionModal').modal('toggle');
+			}, function (error) {
+				// log error
+			});
+		};
+
        	$scope.createAccount = function () {
            	$http ({
                	method: 'POST',
@@ -61,6 +73,22 @@ $(document).ready (function (app) {
 				$('#createTransactionModal').modal('toggle');
 				$rootScope.$broadcast ('getTransactions');
 			}, function(error) {
+				// log error
+			});
+		};
+
+		$scope.createSubbalance = function () {
+			$http({
+				url: '/request/create/subbalance',
+				method: 'POST',
+				data: {
+					AccountResourceIdentifier: $rootScope.accountResourceIdentifier,
+					SubBalanceName: $scope.createSubbalanceName,
+					SubBalanceBalance: $scope.createSubbalanceBalance
+				}
+			}).then (function (success) {
+				$rootScope.$broadcast ('getSubbalances');
+			}, function (error) {
 				// log error
 			});
 		};
@@ -117,8 +145,29 @@ $(document).ready (function (app) {
 			$scope.getData();
 		});
 
+		$scope.$on ('getSubbalances', function () {
+			$scope.getData();
+		});
+
+		$scope.deleteTransaction = function () {
+			$rootScope.deletingTrans = this.transaction;
+		};
+
+		$scope.editTransaction = function () {
+			$rootScope.editingTrans = this.editingTrans;
+		};
+
+		$scope.deleteSubbalance = function () {
+			$rootScope.deletingSub = this.subbalance;
+		};
+
+		$scope.editSubbalance = function () {
+			$rootScope.editingSub = this.subbalance;
+		};
+
 		$scope.user = {};
 		$scope.accountId = $routeParams.id;
+		$rootScope.accountResourceIdentifier = $routeParams.id;
 		$scope.getData = function () {
 			$http({
 				method: 'GET',
@@ -145,7 +194,7 @@ $(document).ready (function (app) {
 						$http({
 							url: '/request/get/transactions',
 							method: 'GET',
-							data: {
+							params: {
 								GetFrom: $scope.accounts[i].ResourceIdentifier,
 								Limit: 200
 							}
@@ -157,11 +206,13 @@ $(document).ready (function (app) {
 						$http({
 							url: '/request/get/subbalance',
 							method: 'GET',
-							data: {
+							params: {
 								GetFrom: $scope.accounts[i].ResourceIdentifier
 							}
 						}).then (function (response) {
 							$scope.accounts[retInd2].subbalances = response.data.Subbalances;
+console.log (response);
+console.log ($scope.accounts);
 							if (!$scope.accounts[retInd2].subbalances)
 								return;
 							var retInd3 = 0;
@@ -169,7 +220,7 @@ $(document).ready (function (app) {
 								$http({
 									url: '/request/get/transactions',
 									method: 'GET',
-									data: {
+									params: {
 										GetFrom: $scope.accounts[retInd2].subbalances[retInd3].ResourceIdentifier,
 										Limit: 200
 									}
@@ -197,6 +248,7 @@ $(document).ready (function (app) {
 					}
 				}
 				$routeParams.id = $scope.accountId;
+				$rootScope.accountResourceIdentifier = $scope.accountId;
 			} else {
 				$scope.noAccountSelected = true;
 				$scope.account = {};
@@ -228,10 +280,12 @@ $(document).ready (function (app) {
 				}
 			}).then (function (success) {
 				$scope.transactions = success.data.Transactions;
+				$rootScope.$broadcast ('getTransactions');
 			}, function (error) {
 				$scope.errorMessage = error.data.ErrorMessage;
 			});
 		});
+
 
 		$http({
   			method: 'GET',

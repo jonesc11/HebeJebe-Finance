@@ -285,7 +285,7 @@ function handleGetSubbalance (req, userRID) {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
-    ActionType: "GetSubbalance",
+    ActionType: "GetSubBalance",
     Action: {
       Limit: req.query.Limit ? req.query.Limit : 25,
       ResourceIdentifier: req.query.ResourceIdentifier ? req.query.ResourceIdentifier : null,
