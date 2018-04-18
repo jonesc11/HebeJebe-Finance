@@ -50,7 +50,7 @@ $(document).ready (function (app) {
   					"From": $scope.transactionType == 'Income' ? null : $scope.transactionAccount,
 	  				"Description": $scope.transactionDescription,
 					"DateTime": $scope.transactionDate,
-  					"Category": "<string>",
+  					"Category": $scope.transactionCategory,
   					"AssociatedWith": $scope.transactionAccount,
   					"Recurring": $scope.recurring,
   					"RecurringUntil": null,
@@ -59,6 +59,7 @@ $(document).ready (function (app) {
 			}).
 			then(function(success) {
 				$('#createTransactionModal').modal('toggle');
+				$rootScope.$broadcast ('getTransactions');
 			}, function(error) {
 				// log error
 			});
@@ -108,71 +109,83 @@ $(document).ready (function (app) {
 	});
 
 	app.controller('AccountsController', function ($rootScope, $scope, $http, $routeParams) {
+		$scope.$on ('getTransactions', function () {
+			$scope.getData ();
+		});
+
+		$scope.$on ('getAccounts', function () {
+			$scope.getData();
+		});
+
 		$scope.user = {};
 		$scope.accountId = $routeParams.id;
-		$http({
-			method: 'GET',
-			url: '/request/get/user',
-			data: {}
-		}).then (function (response) {
-			$scope.user = response.data.User;
-			if ($routeParams.id)
-				$scope.noAccountSelected = false;
-			else
-				$scope.noAccountSelected = true;
+		$scope.getData = function () {
 			$http({
 				method: 'GET',
-				url: '/request/get/accounts',
-				data: {
-					GetFrom: $scope.user.ResourceIdentifier
-				}
+				url: '/request/get/user',
+				data: {}
 			}).then (function (response) {
-				$scope.accounts = response.data.Account;
-				var retInd1 = 0, retInd2 = 0;
-				for (var i = 0; i < $scope.accounts.length; ++i) {
-					if ($scope.accounts[i].ResourceIdentifier == $scope.accountId)
-						$scope.account = $scope.accounts[i];
-					$http({
-						url: '/request/get/transactions',
-						method: 'GET',
-						data: {
-							GetFrom: $scope.accounts[i].ResourceIdentifier,
-							Limit: 200
-						}
-					}).then (function (response) {
-						$scope.accounts[retInd1].transactions = response.data.Transactions;
-						retInd1++;
-					});
+				$scope.user = response.data.User;
+				if ($routeParams.id)
+					$scope.noAccountSelected = false;
+				else
+					$scope.noAccountSelected = true;
+				$http({
+					method: 'GET',
+					url: '/request/get/accounts',
+					data: {
+						GetFrom: $scope.user.ResourceIdentifier
+					}
+				}).then (function (response) {
+					$scope.accounts = response.data.Account;
+					var retInd1 = 0, retInd2 = 0;
+					for (var i = 0; i < $scope.accounts.length; ++i) {
+						if ($scope.accounts[i].ResourceIdentifier == $scope.accountId)
+							$scope.account = $scope.accounts[i];
+						$http({
+							url: '/request/get/transactions',
+							method: 'GET',
+							data: {
+								GetFrom: $scope.accounts[i].ResourceIdentifier,
+								Limit: 200
+							}
+						}).then (function (response) {
+							$scope.accounts[retInd1].transactions = response.data.Transactions;
+							retInd1++;
+						});
 
-					$http({
-						url: '/request/get/subbalance',
-						method: 'GET',
-						data: {
-							GetFrom: $scope.accounts[i].ResourceIdentifier
-						}
-					}).then (function (response) {
-						$scope.accounts[retInd2].subbalances = response.data.Subbalances;
-						if (!$scope.accounts[retInd2].subbalances)
-							return;
-						var retInd3 = 0;
-						for (var j = 0; j < $scope.accounts[retInd2].subbalances.length; ++j) {
-							$http({
-								url: '/request/get/transactions',
-								method: 'GET',
-								data: {
-									GetFrom: $scope.accounts[retInd2].subbalances[retInd3].ResourceIdentifier,
-									Limit: 200
-								}
-							}).then (function (response) {
-								$scope.accounts[retInd2].subbalances[retInd3].transactions = response.data.Transactions;
-								retInd3++;
-							});
-						}
-						retInd2++;
-					});
-				}
+						$http({
+							url: '/request/get/subbalance',
+							method: 'GET',
+							data: {
+								GetFrom: $scope.accounts[i].ResourceIdentifier
+							}
+						}).then (function (response) {
+							$scope.accounts[retInd2].subbalances = response.data.Subbalances;
+							if (!$scope.accounts[retInd2].subbalances)
+								return;
+							var retInd3 = 0;
+							for (var j = 0; j < $scope.accounts[retInd2].subbalances.length; ++j) {
+								$http({
+									url: '/request/get/transactions',
+									method: 'GET',
+									data: {
+										GetFrom: $scope.accounts[retInd2].subbalances[retInd3].ResourceIdentifier,
+										Limit: 200
+									}
+								}).then (function (response) {
+									$scope.accounts[retInd2].subbalances[retInd3].transactions = response.data.Transactions;
+									retInd3++;
+								});
+							}
+							retInd2++;
+						});
+					}
+				});
 			});
-		});
+		};
+
+		$scope.getData();
 
 		$scope.selectAccountChange = function () {
 			if ($scope.accountId) {
@@ -257,7 +270,7 @@ $(document).ready (function (app) {
   					"From": $scope.transactionType == 'Income' ? null : $scope.transactionAccount,
 	  				"Description": $scope.transactionDescription,
 					"DateTime": $scope.transactionDate,
-  					"Category": "<string>",
+  					"Category": $scope.transactionCategory,
   					"AssociatedWith": $scope.transactionAccount,
   					"Recurring": $scope.recurring,
   					"RecurringUntil": null,

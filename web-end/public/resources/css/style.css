@@ -50,6 +50,16 @@ nav {
   font-size: 24px;
 }
 
+.account-info {
+  font-size: 20px;
+  padding: 12px;
+}
+
+.float-buttons-right {
+  display: inline-block;
+  float: right;
+}
+
 .nav-link:hover, .nav-link:focus, .nav-link:active {
   text-decoration: underline;
   background-color: #b0bea9;

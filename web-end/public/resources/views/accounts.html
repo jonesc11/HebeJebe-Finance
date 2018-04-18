@@ -1,15 +1,27 @@
 <div class="container">
   <div class="row">
     <div class="col-12">
-      <h1 class="dib">Accounts</h1>
+      <h1 class="dib" ng-show="!account">Accounts</h1>
+      <h1 class="dib" ng-show="account">Account: {{account.AccountName}}</h1>
       <div class="float-right col-3 dib" id="select-account">
-        <select class="form-control" ng-change="selectAccountChange()" ng-model="accountId" ng-options="account.ResourceIdentifier as (account.AccountName) for account in accounts"></select>
+        <select class="form-control" ng-change="selectAccountChange()" ng-model="accountId" ng-options="account.ResourceIdentifier as (account.AccountName) for account in accounts | orderBy:'AccountName'"></select>
+      </div>
+      <div class="account-info">
+        <strong>Balance:</strong> {{account.LatestBalance | currency}}<br/>
+        <strong>Account Type:</strong> {{account.AccountType}}
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-12">
       <div ng-show="noAccountSelected == false">
+        <div>
+          <button type="button" data-toggle="modal" data-target="#createAccountModal" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add Account</button>
+          <div class="float-buttons-right">
+            <button type="button" data-toggle="modal" data-target="#createSubbalanceModal" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add Subbalance</button>
+            <button type="button" data-toggle="modal" data-target="#createTransactionModal" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add Transaction</button>
+          </div>
+        </div>
         <div class="card">
         <div class="card-header" role="tab" id="account-heading">
           <h5 class="mb-0 panel-title">
@@ -34,7 +46,7 @@
             </thead>
             <tbody>
               <tr ng-show="!account.transactions || account.transactions.length == 0">
-                <td colspan="6" class="text-center">There are no transactions to show. Create one here!</td>
+                <td colspan="6" class="text-center">There are no transactions to show. <a href="" data-toggle="modal" data-target="#createTransactionModal">Create one here!</a></td>
               </tr>
               <tr ng-repeat="transaction in account.transactions | orderBy:'-DateTime'">
                 <td>{{transaction.DateTime}}</td>
@@ -70,7 +82,7 @@
             </thead>
             <tbody>
               <tr ng-show="!account.subbalances || account.subbalances.length == 0">
-                <td colspan="6" class="text-center">There are no transactions to show. Create one here!</td>
+                <td colspan="6" class="text-center">There are no transactions to show. <a href="" data-toggle="modal" data-target="#createSubbalanceModal">Create one here!</a></td>
               </tr>
               <tr ng-repeat="subbalance in account.subbalances | orderBy:'SubBalanceName'">
                 <td>{{subbalance.SubBalanceName}}</td>
