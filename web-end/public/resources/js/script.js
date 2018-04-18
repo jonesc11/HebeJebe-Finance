@@ -227,9 +227,10 @@ $rootScope.subbalance = {
 			$http({
 				method: 'GET',
 				url: '/request/get/user',
-				data: {}
+				params: {}
 			}).then (function (response) {
 				$scope.user = response.data.User;
+console.log(response.data)
 				if ($routeParams.id)
 					$scope.noAccountSelected = false;
 				else
@@ -237,7 +238,7 @@ $rootScope.subbalance = {
 				$http({
 					method: 'GET',
 					url: '/request/get/accounts',
-					data: {
+					params: {
 						GetFrom: $scope.user.ResourceIdentifier
 					}
 				}).then (function (response) {

@@ -37,7 +37,7 @@
       				<td>{{transaction.DateTime}}</td>
  	                        <td>{{transaction.Description}}</td>
                                 <td class="color-amount-{{transaction.TransactionType}}">{{transaction.Amount | currency}}</td>
-      				<td>{{transaction.Account.AccountName}}</td>
+      				<td><a href="/#!/account/{{transaction.Account.AccountResourceIdentifier}}">{{transaction.Account.AccountName}}</a></td>
       				<td>{{transaction.AccountBalanceAfter | currency}}</td>
 				<td data-toggle="modal" data-target="#editTransactionModal" ng-click="$scope.editingTrans = transaction"> 
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 
