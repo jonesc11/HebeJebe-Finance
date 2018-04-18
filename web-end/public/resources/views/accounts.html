@@ -49,11 +49,11 @@
                 <td colspan="6" class="text-center">There are no transactions to show. <a href="" data-toggle="modal" data-target="#createTransactionModal">Create one here!</a></td>
               </tr>
               <tr ng-repeat="transaction in account.transactions | orderBy:'-DateTime'">
-                <td>{{transaction.DateTime}}</td>
+                <td>{{transaction.DateTimeString}}</td>
                 <td>{{transaction.Description}}</td>
                 <td class="color-amount-{{transaction.TransactionType}}">{{transaction.Amount | currency}}</td>
                 <td>{{transaction.AccountBalanceAfter | currency}}</td>
-                <td><a data-toggle="modal" data-target="#editTransactionModal" ng-click="$rootScope.editingTrans = transaction"><span class="glyphicon glyphicon-pencil"></span></a></td>
+                <td><a data-toggle="modal" data-target="#editTransactionModal" ng-click="editTransaction()"><span class="glyphicon glyphicon-pencil"></span></a></td>
                 <td><a data-toggle="modal" data-target="#deleteTransactionModal" ng-click="deleteTransaction()"><span class="glyphicon glyphicon-trash"></span></a></td>
               </tr>
             </tbody>

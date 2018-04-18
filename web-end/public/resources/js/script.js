@@ -77,6 +77,30 @@ $(document).ready (function (app) {
 			});
 		};
 
+		$scope.editTransaction = function () {
+			$http({
+				url: '/request/modify',
+				method: 'POST',
+				data: {
+					ResourceIdentifier: $rootScope.editingTrans.ResourceIdentifier,
+					Changes: [
+						{ Key: "AssociatedWith", Value: $rootScope.editingTrans.Account.AccountResourceIdentifier },
+						{ Key: 'Description', Value: $rootScope.editingTrans.Description },
+						{ Key: 'Category', Value: $rootScope.editingTrans.Category },
+						{ Key: 'Amount', Value: $rootScope.editingTrans.Amount },
+						{ Key: 'TransactionType', Value: $rootScope.editingTrans.TransactionType },
+						{ Key: 'DateTime', Value: $rootScope.editingTrans.DateTime },
+						{ Key: 'Recurring', Value: $rootScope.editingTrans.Recurring },
+						{ Key: 'RecurringFrequency', Value: $rootScope.editingTrans.RecurringFrequency }
+					]
+				}
+			}).then (function (success) {
+				$rootScope.$broadcast ('getTransactions');
+			}, function (error) {
+				// log error
+			});
+		};
+
 		$scope.createSubbalance = function () {
 			$http({
 				url: '/request/create/subbalance',
@@ -154,7 +178,8 @@ $(document).ready (function (app) {
 		};
 
 		$scope.editTransaction = function () {
-			$rootScope.editingTrans = this.editingTrans;
+			$rootScope.editingTrans = this.transaction;
+			$rootScope.editingTrans.DateTime = new Date (this.transaction.DateTime);
 		};
 
 		$scope.deleteSubbalance = function () {
@@ -200,6 +225,10 @@ $(document).ready (function (app) {
 							}
 						}).then (function (response) {
 							$scope.accounts[retInd1].transactions = response.data.Transactions;
+							for (var j = 0; j < $scope.accounts[retInd1].transactions.length; ++j) {
+								$scope.accounts[retInd1].transactions[j].DateTime = new Date ($scope.accounts[retInd1].transactions[j].DateTime);
+								$scope.accounts[retInd1].transactions[j].DateTimeString = $scope.accounts[retInd1].transactions[j].DateTime.getFullYear() + '-' + ($scope.accounts[retInd1].transactions[j].DateTime.getMonth() + 1) + '-' + $scope.accounts[retInd1].transactions[j].DateTime.getDate();
+							}
 							retInd1++;
 						});
 
@@ -211,8 +240,6 @@ $(document).ready (function (app) {
 							}
 						}).then (function (response) {
 							$scope.accounts[retInd2].subbalances = response.data.Subbalances;
-console.log (response);
-console.log ($scope.accounts);
 							if (!$scope.accounts[retInd2].subbalances)
 								return;
 							var retInd3 = 0;
@@ -226,6 +253,10 @@ console.log ($scope.accounts);
 									}
 								}).then (function (response) {
 									$scope.accounts[retInd2].subbalances[retInd3].transactions = response.data.Transactions;
+									for (var k = 0; k < $scope.accounts[retInd1].transactions.length; ++k) {
+										$scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime = new Date ($scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime);
+										$scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTimeString = $scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime.getFullYear() + '-' + ($scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime.getMonth() + 1) + '-' + $scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime.getDate();
+									}
 									retInd3++;
 								});
 							}
