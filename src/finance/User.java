@@ -17,6 +17,7 @@ public class User {
 	private String lastName;
 	private String salt;
 	private Map<String, Account> accounts;
+	private Map<String, Budget> budgets;
 	private String resourceIdentifier;
 	
 	public User(String e, String pw, String s, String fn, String ln) {
@@ -26,6 +27,7 @@ public class User {
 		this.firstName = fn;
 		this.lastName = ln;
 		this.accounts = new HashMap<String, Account>();
+		this.budgets = new HashMap<String, Budget>();
 	}
 	
 	public User(String e, String pw, String fn, String ln, Map<String, Account> a) {
@@ -84,16 +86,31 @@ public class User {
 	public String createAccount(String name, String type, double balance) {
 		Account account = new Account(name, type, balance);
 		
-		//A really poor way of creating a unique ResourceIdentifier for the new Account
-		int i = 0;
-		while(accounts.get("a" + i) != null)
-			i++;
+		int ri = Parser.getNextAccountRI();
 		
-		String newIdentifier = "a" + i;
+		String newIdentifier = "a" + ri;
 		
 		account.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, account);
 		accounts.put(newIdentifier, account);
+		Parser.setNextAccountRI(ri+1);
+		
+		return newIdentifier;
+	}
+	
+	public String createBudget(String name, double limit, int duration) {
+		Budget budget = new Budget(name, limit, duration, this);
+		
+		//A really poor way of creating a unique ResourceIdentifier for the new Account
+		int i = 0;
+		while(budgets.get("b" + i) != null)
+			i++;
+		
+		String newIdentifier = "b" + i;
+		
+		budget.setResourceIdentifier(newIdentifier);
+		Parser.addResource(newIdentifier, budget);
+		budgets.put(newIdentifier, budget);
 		
 		return newIdentifier;
 	}
@@ -152,11 +169,15 @@ public class User {
 		
 		Transfer newTransfer = new Transfer(a, n, c, d, fromRI, toRI, from.getBalance(), to.getBalance());
 		
-		String identifier = from.addTransfer(newTransfer);
-		to.addTransfer(newTransfer);
-		newTransfer.setResourceIdentifier(identifier);
+		int ri = Parser.getNextTransactionRI();
+		String newIdentifier = "t" + ri;
+		newTransfer.setResourceIdentifier(newIdentifier);
+		Parser.setNextTransactionRI(ri+1);
 		
-		return identifier;
+		from.addTransfer(newTransfer);
+		to.addTransfer(newTransfer);
+		
+		return newIdentifier;
 	}
 	
 	/*

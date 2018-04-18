@@ -31,6 +31,10 @@ public class RecurringExpense extends Expense {
 		lastUpdated = d;
 	}
 	
+	public Date getLastUpdated() {
+		return lastUpdated;
+	}
+	
 	public double amountByDate(Date d) {
 		int periods = d.periodsBetween(lastUpdated, period);
 		return periods * amount;
