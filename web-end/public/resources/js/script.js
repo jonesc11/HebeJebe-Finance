@@ -558,6 +558,7 @@ $(document).ready (function (app) {
 
 
 		$scope.createSavings = function(){
+						
 			$http({
            			method: 'POST',
            			url: '/request/create/savingsplan',
@@ -577,6 +578,16 @@ $(document).ready (function (app) {
 		}
 
 		$scope.createOrModifySavings = function(){
+			if($scope.newName == "" || $scope.newName == undefined){
+				alert("You must enter a savings plan name");
+				return;
+			}
+
+			if($scope.newAmount < 0){
+				alert("Savings Plans amount cannot be negative");
+				return;
+			}
+
 			if($scope.SavingsPlan == undefined || $scope.SavingsPlan.SavingsPlanName == undefined){
 				$scope.createSavings();
 			}else{
