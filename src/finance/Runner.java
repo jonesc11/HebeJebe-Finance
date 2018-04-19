@@ -9,7 +9,7 @@ Main function for initializing the server client and site.
 
 public class Runner {
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) {
     	dbParser.initDB();
     	dbParser.readFromDB();
         startServer();

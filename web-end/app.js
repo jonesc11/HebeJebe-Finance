@@ -138,6 +138,8 @@ app.get ('/request/:reqType/:resType', function (req, res) {
     data = handleGetUser (req, userRID);
   else if (requestType === 'get' && resourceType === 'budget')
     data = handleGetBudgets (req, userRID);
+  else if (requestType === 'get' && resourceType === 'projection')
+    data = handleGetProjection (req, userRID);
 
   if (data.ErrorMessage) {
     res.send (data);
@@ -175,7 +177,7 @@ app.post ('/request/:reqType/:resType', function (req, res) {
 });
 
 app.post ('/request/modify', function (req, res) {
-  var userRID = "u0";//req.cookies.accountRI;
+  var userRID = req.session.user.rid;
   var data = handleModifyResource (req, userRID);
 
   if (data.ErrorMessage) {
@@ -187,7 +189,7 @@ app.post ('/request/modify', function (req, res) {
 });
 
 app.post ('/request/delete', function (req, res) {
-  var userRID = "u0";//req.cookies.accountRI;
+  var userRID = req.session.user.rid;
   data = handleDeleteResource (req, userRID);
 
   if (data.ErrorMessage) {
@@ -197,6 +199,24 @@ app.post ('/request/delete', function (req, res) {
     sendMessage (JSON.stringify (data)).then (function (data) { res.send (data); res.status (data.ErrorMessage ? 400 : 200)});
   }
 });
+
+function handleGetProjection (req, userRID) {
+  if (!req.query.ProjectionDate || req.query.ProjectionDate === null)
+    return { ErrorMessage: "ProjectionDate must be defined." };
+  
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: "GetProjection",
+    Action: {
+      ProjectionDate: req.query.ProjectionDate,
+      GetFrom: req.query.GetFrom ? req.query.GetFrom : userRID
+    }
+  };
+
+  return data;
+}
 
 function handleDeleteResource (req, userRID) {
   if (req.body.ResourceIdentifier === undefined || req.body.ResourceIdentifier === null)

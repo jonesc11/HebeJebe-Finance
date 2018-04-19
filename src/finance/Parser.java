@@ -806,7 +806,6 @@ public class Parser {
 			}
 		}
 	}
-	
 	public static void modifySavingsPlan(String identifier, JSONArray changes) throws JSONException {
 		SavingsPlan savingsPlan = getSavingsPlan(identifier);
 		

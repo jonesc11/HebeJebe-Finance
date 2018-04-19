@@ -32,11 +32,11 @@ $(document).ready (function (app) {
 			});
 		};
 
-       	$scope.createAccount = function () {
-           	$http ({
-               	method: 'POST',
-               	url: '/request/create/account',
-               	data: {
+       		$scope.createAccount = function () {
+           		$http ({
+               		method: 'POST',
+               		url: '/request/create/account',
+               		data: {
 					AccountName: $scope.createAccountName,
 					AccountBalance: $scope.createAccountBalance,
 					AccountType: $scope.createAccountType
@@ -48,13 +48,14 @@ $(document).ready (function (app) {
 				$("input[name=create-account-balance]").val("");
 			}).then (function (error) {
 			});
-        };
+        	};
+
 
 		$scope.createTransaction = function(){
-	    	$http({
-	  			method: 'POST',
-  				url: '/request/create/transaction',
-	  			data: {
+	    		$http({
+	  		method: 'POST',
+  			url: '/request/create/transaction',
+	  		data: {
   					"Limit": 30,
 					"TransactionType": $scope.transactionType, 
   					"Amount": $scope.amount,
@@ -118,8 +119,27 @@ $(document).ready (function (app) {
 		};
 
 		$scope.editSubbalanceLoad = function () {
-			$('#viewSubbalanceModal').modal('toggle');
-			$('#editSubbalanceModal').modal('toggle');
+			$('#viewSubbalanceModal').modal('hide');
+			$('#editSubbalanceModal').modal('show');
+		};
+
+		$scope.editSubbalance = function () {
+			$http({
+				url: '/request/modify',
+				method: 'POST',
+				data: {
+					ResourceIdentifier: $rootScope.subbalance.ResourceIdentifier,
+					Changes: [
+						{ Key: 'Balance', Value: $rootScope.subbalance.Balance },
+						{ Key: 'SubBalanceName', Value: $rootScope.subbalance.SubBalanceName }
+					]
+				}
+			}).then (function (success) {
+				$rootScope.$broadcast ('getSubbalances');
+				$('#editSubbalanceModal').modal('hide');
+			}, function (error) {
+				// log error
+			});
 		};
 
 		$scope.deleteSubbalance = function () {
@@ -129,10 +149,15 @@ $(document).ready (function (app) {
 				data: { ResourceIdentifier: $rootScope.subbalance }
 			}).then (function (success) {
 				$rootScope.$broadcast ('getSubbalances');
-				$('#viewSubbalanceModal').modal('toggle');
+				$('#deleteSubbalanceModal').modal('hide');
 			}, function (error) {
 				//log error
 			});
+		};
+
+		$scope.deleteSubbalanceLoad = function () {
+			$('#viewSubbalanceModal').modal('hide');
+			$('#deleteSubbalanceModal').modal('show');
 		};
 	});	
 
@@ -227,9 +252,10 @@ $rootScope.subbalance = {
 			$http({
 				method: 'GET',
 				url: '/request/get/user',
-				data: {}
+				params: {}
 			}).then (function (response) {
 				$scope.user = response.data.User;
+console.log(response.data)
 				if ($routeParams.id)
 					$scope.noAccountSelected = false;
 				else
@@ -237,7 +263,7 @@ $rootScope.subbalance = {
 				$http({
 					method: 'GET',
 					url: '/request/get/accounts',
-					data: {
+				params: {
 						GetFrom: $scope.user.ResourceIdentifier
 					}
 				}).then (function (response) {
@@ -347,6 +373,19 @@ $rootScope.subbalance = {
 			});
 		});
 
+		$http({
+  			method: 'GET',
+  			url: '/request/get/savingsplan',
+  			data: {
+  				"Limit": 30,
+			}
+		}).
+		then(function(success) {
+			$scope.SavingsPlan = success.data.SavingsPlan;
+		}, function(error) {
+			// log error
+		});
+
 
 		$http({
   			method: 'GET',
@@ -372,6 +411,48 @@ $rootScope.subbalance = {
        	}, function(error) {
       		// log error
     	});
+
+		$scope.getProjection = function(){
+
+		console.log("getting projection")
+		$scope.showProjection = true;
+		$http({
+           		method: 'GET',
+           		url: '/request/get/projection',
+           		params: {
+				"ProjectionDate": $scope.projectionDate
+       			}
+
+      		}).then(function(success) {
+			console.log("got projection")
+      			$scope.projection = success.data;
+			console.log($scope.projection)
+       		}, function(error) {
+      			// log error
+    		});
+
+
+		};
+		
+		$scope.getTotalBalance = function(){
+			if($scope.accounts == undefined){
+				return 0;
+			}
+			var totalBalance = 0;
+			for(var i=0; i< $scope.accounts.length; i++){
+				console.log("adding account balance");
+				totalBalance += $scope.accounts[i].LatestBalance;
+			}
+
+			return totalBalance;
+		};
+			
+		$scope.addMoney = function(){
+			$scope.SavingsPlan.Balance += moneyToAdd;
+			$scope.moneyToAddAcc.AccountBalance -= moneyToAdd;
+		};
+
+		$scope.totalBalance = $scope.getTotalBalance();
 
 		$scope.createTransaction = function(){
 	    	$http({

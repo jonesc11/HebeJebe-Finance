@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-12">
       <h1 class="dib" ng-show="!account">Accounts</h1>
-      <h1 class="dib" ng-show="account">Account: {{account.AccountName}}</h1>
+     <h1 class="dib" ng-show="account">Account: {{account.AccountName}} <button class="btn btn-danger" ng-click="deleteAccountLoad()"><span class="glyphicon glyphicon-remove"></span> Delete Account</button></h1>
       <div class="float-right col-3 dib" id="select-account">
         <strong>Choose an account:</strong> <select class="form-control" ng-change="selectAccountChange()" ng-model="accountId" ng-options="account.ResourceIdentifier as (account.AccountName) for account in accounts | orderBy:'AccountName'"></select>
       </div>
