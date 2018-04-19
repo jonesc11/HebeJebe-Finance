@@ -119,8 +119,27 @@ $(document).ready (function (app) {
 		};
 
 		$scope.editSubbalanceLoad = function () {
-			$('#viewSubbalanceModal').modal('toggle');
-			$('#editSubbalanceModal').modal('toggle');
+			$('#viewSubbalanceModal').modal('hide');
+			$('#editSubbalanceModal').modal('show');
+		};
+
+		$scope.editSubbalance = function () {
+			$http({
+				url: '/request/modify',
+				method: 'POST',
+				data: {
+					ResourceIdentifier: $rootScope.subbalance.ResourceIdentifier,
+					Changes: [
+						{ Key: 'Balance', Value: $rootScope.subbalance.Balance },
+						{ Key: 'SubBalanceName', Value: $rootScope.subbalance.SubBalanceName }
+					]
+				}
+			}).then (function (success) {
+				$rootScope.$broadcast ('getSubbalances');
+				$('#editSubbalanceModal').modal('hide');
+			}, function (error) {
+				// log error
+			});
 		};
 
 		$scope.deleteSubbalance = function () {
@@ -130,10 +149,15 @@ $(document).ready (function (app) {
 				data: { ResourceIdentifier: $rootScope.subbalance }
 			}).then (function (success) {
 				$rootScope.$broadcast ('getSubbalances');
-				$('#viewSubbalanceModal').modal('toggle');
+				$('#deleteSubbalanceModal').modal('hide');
 			}, function (error) {
 				//log error
 			});
+		};
+
+		$scope.deleteSubbalanceLoad = function () {
+			$('#viewSubbalanceModal').modal('hide');
+			$('#deleteSubbalanceModal').modal('show');
 		};
 	});	
 

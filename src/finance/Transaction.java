@@ -36,4 +36,29 @@ public abstract class Transaction {
 	public void setResourceIdentifier(String identifier) {
 		resourceIdentifier = identifier;
 	}
+	
+	public void updateAmount(double a) {
+		this.amount = a;
+		dbParser.updateTransaction(this.resourceIdentifier, "Amount", this.amount);
+	}
+	
+	public void updateName(String n) {
+		this.name = n;
+		dbParser.updateTransaction(this.resourceIdentifier, "Description", this.name);
+	}
+	
+	public void updateDate(Date d) {
+		this.date = d;
+		dbParser.updateTransaction(this.resourceIdentifier, "DateTime", this.date.format());
+	}
+	
+	public void updateCategory(String c) {
+		this.category = c;
+		dbParser.updateTransaction(this.resourceIdentifier, "Category", this.category);
+	}
+	
+	public void updateParent(String parentRI) {
+		this.parentIdentifier = parentRI;
+		dbParser.updateTransaction(this.resourceIdentifier, "ParentIdentifier", this.parentIdentifier);
+	}
 }

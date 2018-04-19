@@ -259,7 +259,10 @@ public class dbParser {
 			newTransaction.append("Recurring", false);
 		}
 		
-		transactions.insertOne(newTransaction);
+		try {
+			transactions.insertOne(newTransaction);
+		} catch(Exception e) {
+		}
 	}
 	
 	public static void insertAccount(Account a, String pIdentifier) {
@@ -329,8 +332,28 @@ public class dbParser {
 		}
 	}
 	
+	public static void updateUser(String identifier, String key, String value) {
+		MongoCollection<Document> accounts = db.getCollection("users");
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set(key, value));
+	}
+	
+	public static void updateAccount(String identifier, String key, String value) {
+		MongoCollection<Document> accounts = db.getCollection("accounts");
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set(key, value));
+	}
+	
 	public static void updateBalance(String identifier, double balance) {
 		MongoCollection<Document> accounts = db.getCollection("accounts");
-		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("Balance", balance));
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("LatestBalance", balance));
+	}
+	
+	public static void updateTransaction(String identifier, String key, String value) {
+		MongoCollection<Document> accounts = db.getCollection("transactions");
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set(key, value));
+	}
+	
+	public static void updateTransaction(String identifier, String key, double value) {
+		MongoCollection<Document> accounts = db.getCollection("transactions");
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set(key, value));
 	}
 }

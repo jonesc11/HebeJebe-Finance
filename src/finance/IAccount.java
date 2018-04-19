@@ -10,6 +10,7 @@ public interface IAccount {
 	public void setResourceIdentifier(String identifier);
 	public String getName();
 	public double getBalance();
+	public void updateBalance(double b);
 	public List<Transaction> getTransactionHistory();
 	public String addSingleIncome(double a, String n, String c, Date d);
 	public String addRecurringIncome(double a, String n, String c, Period p, Date d1, Date d2);

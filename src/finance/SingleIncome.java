@@ -16,5 +16,16 @@ public class SingleIncome extends Income {
 	public double getBalanceAfter() {
 		return balanceAfter;
 	}
+	
+	public void updateAmount(double a) {
+		IAccount parent = (IAccount)Parser.getResource(this.parentIdentifier);
+		parent.updateBalance(parent.getBalance() - (this.amount - a));
+		this.amount = a;
+		dbParser.updateTransaction(this.resourceIdentifier, "Amount", this.amount);
+	}
+	
+	public void updateParent(String parentRI) {
+		IAccount oldParent = (IAccount)Parser.getResource(parentRI);
+	}
 
 }

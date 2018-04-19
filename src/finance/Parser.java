@@ -52,6 +52,12 @@ public class Parser {
 		return (Account) resources.get(identifier);
 	}
 	
+	public static SubBalance getSubBalance (String identifier) {
+		if (!identifier.substring(0, 1).equals("sb"))
+			return null;
+		return (SubBalance) resources.get(identifier);
+	}
+	
 	public static void addResource (String identifier, Object resource) {
 		resources.put(identifier, resource);
 	}
@@ -97,6 +103,9 @@ public class Parser {
 		}
 		else if(actionType.equals("GetUser")) {
 			response = parseGetUsers(action);
+		}
+		else if(actionType.equals("GetProjection")) {
+			response = parseGetProjection(action);
 		}
 		else if(actionType.equals("CreateUser")) {
 			response = parseCreateUser (action);
@@ -149,11 +158,13 @@ public class Parser {
 		if(parentRI.charAt(0) == 'a') {
 			if(type.equals("Income")) {
 				if(recurring) {
-					String endDateString = action.getString("RecurringUntil");
-					int endYear = Integer.parseInt(endDateString.substring(0,4));
-					int endMonth = Integer.parseInt(endDateString.substring(5,7));
-					int endDay = Integer.parseInt(endDateString.substring(8, 10));
-					endDate = DateFactory.getDate(endDay, endMonth, endYear);
+					if(action.isNull("RecurringUntil")) {
+						String endDateString = action.getString("RecurringUntil");
+						int endYear = Integer.parseInt(endDateString.substring(0,4));
+						int endMonth = Integer.parseInt(endDateString.substring(5,7));
+						int endDay = Integer.parseInt(endDateString.substring(8, 10));
+						endDate = DateFactory.getDate(endDay, endMonth, endYear);
+					}
 					Period period;
 					if(action.getInt("RecurringFrequency") == 30) {
 						period = Period.MONTHLY;
@@ -270,7 +281,6 @@ public class Parser {
 		
 		response.put("ResourceIdentifier", "u" + ri);
 		response.put("UserIdentifier", email);
-		response.put("Password", password);
 		response.put("FirstName", firstName);
 		response.put("LastName", lastName);
 		
@@ -399,7 +409,8 @@ public class Parser {
 				o.put("ResourceIdentifier", a.getResourceIdentifier());
 				o.put("AccountName", a.getName());
 				o.put("AccountType", a.getType());
-				o.put("LatestBalance", a.getTotal());
+				o.put("LatestBalance", a.getBalance());
+				o.put("LatestTotal", a.getTotal());
 				o.put("LatestTransactions", Parser.getTransactionsJSONArray(a.getResourceIdentifier(), 25));
 				
 				accounts.put(o);
@@ -418,7 +429,8 @@ public class Parser {
 			o.put("ResourceIdentifier", a.getResourceIdentifier());
 			o.put("AccountName", a.getName());
 			o.put("AccountType", a.getType());
-			o.put("LatestBalance", a.getTotal());
+			o.put("LatestBalance", a.getBalance());
+			o.put("LatestTotal", a.getTotal());
 			o.put("LatestTransactions", Parser.getTransactionsJSONArray(a.getResourceIdentifier(), 25));
 			
 			accounts.put(o);
@@ -440,8 +452,8 @@ public class Parser {
 			else {
 				limit = action.getInt("Limit");
 			}
-			User user = Parser.getUser(action.getString("GetFrom"));
-			List<String> subBalanceList = user.getSubBalanceResourceIdentifiers();
+			Account account = Parser.getAccount(action.getString("GetFrom"));
+			List<String> subBalanceList = account.getSubBalanceResourceIdentifiers();
 			
 			for(int i = 0; i < limit; i++) {
 				SubBalance sb = (SubBalance)Parser.getResource(subBalanceList.get(i));
@@ -593,7 +605,32 @@ public class Parser {
 		return response;
 	}
 	
-	public static  JSONObject parseLogin(JSONObject action) throws JSONException {
+	public static JSONObject parseGetProjection(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		String resourceIdentifier = action.getString("GetFrom");
+		double projection = 0;
+		String dateString = action.getString("ProjectionDate");
+		int year = Integer.parseInt(dateString.substring(0,4));
+		int month = Integer.parseInt(dateString.substring(5,7));
+		int day = Integer.parseInt(dateString.substring(8, 10));
+		Date d = DateFactory.getDate(day, month, year);
+		
+		if(resourceIdentifier.substring(0, 1).equals("u")) {
+			projection = Parser.getUser(resourceIdentifier).getProjection(d);
+		} else if(resourceIdentifier.substring(0, 1).equals("a")) {
+			projection = Parser.getAccount(resourceIdentifier).getProjection(d);
+		} else if(resourceIdentifier.substring(0, 2).equals("sb")) {
+			projection = Parser.getSubBalance(resourceIdentifier).getProjection(d);
+		}
+		
+		response.put("ResourceIdentifier", resourceIdentifier);
+		response.put("ProjectionDate", d.format());
+		response.put("ProjectedBalance", projection);
+		
+		return response;
+	}
+	
+	public static JSONObject parseLogin(JSONObject action) throws JSONException {
 		JSONObject response = new JSONObject();
 		String resourceIdentifier = dbParser.verifyLogin(action.getString("UserIdentifier"), action.getString("Password"));
 		
@@ -612,6 +649,96 @@ public class Parser {
 		}
 		
 		return response;
+	}
+	
+	public static JSONObject parseModify(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		String resourceIdentifier = action.getString("ResourceIdentifier");
+		JSONArray changes = action.getJSONArray("Changes");
+		
+		if(resourceIdentifier.substring(0, 1).equals("u")) {
+			modifyUser(resourceIdentifier, changes);
+		} else if(resourceIdentifier.substring(0, 1).equals("a")) {
+			modifyAccount(resourceIdentifier, changes);
+		} else if(resourceIdentifier.substring(0, 1).equals("t")) {
+			modifySubBalance(resourceIdentifier, changes);
+		} else if(resourceIdentifier.substring(0, 2).equals("sb")) {
+			modifyTransactions(resourceIdentifier, changes);
+		}
+		
+		return response;
+	}
+	
+	public static void modifyUser(String identifier, JSONArray changes) throws JSONException {
+		User user = getUser(identifier);
+		
+		for(int i = 0; i < changes.length(); i++) {
+			String key = changes.getJSONObject(i).getString("Key");
+			String value = changes.getJSONObject(i).getString("Value");
+			
+			if(key.equals("UserIdentifier")) {
+				user.updateEmail(value);
+			} else if(key.equals("FirstName")) {
+				user.updateFirstName(value);
+			} else if(key.equals("LastName")) {
+				user.updateLastName(value);
+			} else if(key.equals("Password")) {
+				String salt = getSaltString();
+				user.updatePassword(value, salt);
+			}
+		}
+	}
+	
+	public static void modifyAccount(String identifier, JSONArray changes) throws JSONException {
+		Account account = getAccount(identifier);
+		
+		for(int i = 0; i < changes.length(); i++) {
+			String key = changes.getJSONObject(i).getString("Key");
+			
+			if(key.equals("AccountName")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				account.updateName(value);
+			} else if(key.equals("AccountType")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				account.updateType(value);
+			} 
+			else if(key.equals("AccountBalance")) {
+				Double value = changes.getJSONObject(i).getDouble("Value");
+				account.updateBalance(value);
+			} 
+		}
+	}
+	
+	public static void modifySubBalance(String identifier, JSONArray changes) throws JSONException {
+		SubBalance subbalance = getSubBalance(identifier);
+		
+		for(int i = 0; i < changes.length(); i++) {
+			String key = changes.getJSONObject(i).getString("Key");
+			
+			if(key.equals("SubBalanceName")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				subbalance.updateName(value);
+			} else if(key.equals("SubBalanceBalance")) {
+				double value = changes.getJSONObject(i).getDouble("Value");
+				subbalance.updateBalance(value);
+			} 
+		}
+	}
+	
+	public static void modifyTransactions(String identifier, JSONArray changes) throws JSONException {
+		Transaction transaction = getTransaction(identifier);
+		
+		for(int i = 0; i < changes.length(); i++) {
+			String key = changes.getJSONObject(i).getString("Key");
+			
+			if(key.equals("Amount")) {
+				Double value = changes.getJSONObject(i).getDouble("Value");
+				transaction.updateAmount(value);
+			} else if(key.equals("SubBalanceBalance")) {
+				double value = changes.getJSONObject(i).getDouble("Value");
+				//transaction.updateBalance(value);
+			} 
+		}
 	}
 	
 	public static JSONArray getTransactionsJSONArray(String identifier, int limit) throws JSONException {
@@ -742,7 +869,7 @@ public class Parser {
 		nextUserRI = numUsers + 1;
 		
 		int numAccounts = 0, numSubBalances = 0, numTransactions = 0;
-		List<Object> resourceList = new ArrayList<Object>(resources.keySet());
+		List<Object> resourceList = new ArrayList<Object>(resources.values());
 		for(int i = 0; i < resourceList.size(); i++) {
 			if(resourceList.get(i) instanceof Account) {
 				numAccounts++;
@@ -756,6 +883,8 @@ public class Parser {
 		nextAccountRI = numAccounts + 1;
 		nextSubBalanceRI = numSubBalances + 1;
 		nextTransactionRI = numTransactions + 1;
+		
+		System.out.println("Account: " + nextAccountRI);
 	}
 	
 	private static String getSaltString() {

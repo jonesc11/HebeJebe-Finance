@@ -214,7 +214,7 @@
         </div>
       </div>
     </div>
-    <!-- Create Subbalance Modal -->
+    <!-- Edit Subbalance Modal -->
     <div class="modal fade" id="editSubbalanceModal" tabindex="-1" role="dialog" aria-labelledby="editSubbalance" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -227,7 +227,7 @@
           <div class="modal-body">
             <label>Subbalance Name</label>
             <input class="form-control" type="text" ng-model="subbalance.SubBalanceName" placeholder="Subbalance Name" />
-            <label>Starting Balance</label>
+            <label>Balance</label>
             <input class="form-control" type="number" ng-model="subbalance.Balance" placeholder="Balance" />
           </div>
           <div class="modal-footer">
@@ -279,16 +279,30 @@
             </table>
             <br/><br/>
             <div id="subbalance-edit-buttons">
-              <button type="button" data-toggle="modal" data-target="#editSubbalanceModal" ng-click="editSubbalanceLoad()" class="btn btn-primary">
+              <button type="button"ng-click="editSubbalanceLoad()" class="btn btn-primary">
                 <span class="glyphicon glyphicon-pencil"></span> Edit Subbalance
               </button>
-              <button type="button" ng-click="deleteSubbalance()" class="btn btn-danger">
+              <button type="button" ng-click="deleteSubbalanceLoad()" class="btn btn-danger">
                 <span class="glyphicon glyphicon-remove"></span> Delete Subbalance
               </button>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Delete Subbalance Modal --!>
+    <div class="modal fade" id="deleteSubbalanceModal" tabindex="-1" role="dialog" aria-labelledby="deleteSubbalanceModal" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <label> Are you sure you want to delete {{subbalance.Description}}?</label>
+            <div class="float-buttons-right">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
+              <button type="button" class="btn btn-primary" ng-click="deleteSubbalance()">Yes</button>
+            </div>
           </div>
         </div>
       </div>
