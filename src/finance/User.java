@@ -173,6 +173,7 @@ public class User {
 		}
 		else {
 			transactionRI = acc.addSingleExpense(a, n, c, d1);
+			if (budget != null)
 			budget.updateBalance(budget.getBalance() + a);
 		}
 		
