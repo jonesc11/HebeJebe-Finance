@@ -128,6 +128,8 @@ public class Parser {
 			response = parseCreateBudget(action);
 		} else if(actionType.equals("CreateSavingsPlan")) {
 			response = parseCreateSavingsPlan(action);
+		} else if(actionType.equals("AddToSavingsPlan")) {
+			response = parseAddToSavingsPlan (action);
 		} else if(actionType.equals("Login")) {
 			response = parseLogin (action);
 		}

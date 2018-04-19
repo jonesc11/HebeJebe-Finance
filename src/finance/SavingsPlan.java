@@ -55,7 +55,7 @@ public class SavingsPlan {
 	
 	public void updateAmount(double a) {
 		this.amount = a;
-		dbParser.updateUser(this.parentIdentifier, "SavingsPlanAmount", this.amount;
+		//dbParser.updateUser(this.parentIdentifier, "SavingsPlanAmount", this.amount;
 	}
 	
 	public void updateBalance(double b) {
