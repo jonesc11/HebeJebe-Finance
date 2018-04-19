@@ -147,6 +147,7 @@ public class User {
 		
 		budget.setResourceIdentifier(this.resourceIdentifier.replaceAll("u", "b"));
 		Parser.addResource(budget.getResourceIdentifier(), budget);
+		dbParser.insertBudget(this.resourceIdentifier, budget);
 		
 		return budget.getResourceIdentifier();
 	}
@@ -172,7 +173,7 @@ public class User {
 		}
 		else {
 			transactionRI = acc.addSingleExpense(a, n, c, d1);
-			budget.updateBalance(a);
+			budget.updateBalance(budget.getBalance() + a);
 		}
 		
 		return transactionRI;
@@ -304,6 +305,7 @@ public class User {
 		
 		savingsPlan.setResourceIdentifier(this.resourceIdentifier.replaceAll("u", "sp"));
 		Parser.addResource(savingsPlan.getResourceIdentifier(), savingsPlan);
+		dbParser.insertSavingsPlan(this.resourceIdentifier, savingsPlan);
 		
 		return savingsPlan.getResourceIdentifier();
 	}
