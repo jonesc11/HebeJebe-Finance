@@ -9,18 +9,28 @@ import com.mongodb.client.model.Updates;
 import finance.FinanceUtilities.Period;
 
 import java.util.Iterator;
+
 import org.bson.Document;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
 import java.util.Map;
 import java.util.HashMap;
 
 public class dbParser {
 	
-	private static MongoClient mongo = new MongoClient("http://ec2-18-217-228-55.us-east-2.compute.amazonaws.com", 27017);
-	private static MongoCredential credentials = MongoCredential.createCredential("", "finance", "".toCharArray());
-	private static MongoDatabase db = mongo.getDatabase("finance");
+	private static MongoClient mongo = null;
+	private static MongoDatabase db = null;
+	
+	public static void initDB() {
+		ServerAddress serverAddress = new ServerAddress ("ec2-18-217-228-55.us-east-2.compute.amazonaws.com", 27017) ;
+		MongoCredential credentials = MongoCredential.createCredential("finance", "finance", "Finance".toCharArray()) ;	
+		
+		mongo = new MongoClient(serverAddress, credentials, MongoClientOptions.builder().build());
+		db = mongo.getDatabase("finance");
+	}
 	
 	public static void readFromDB() {
 		MongoCollection<Document> users = db.getCollection("users");

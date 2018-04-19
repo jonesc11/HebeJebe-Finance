@@ -31,6 +31,10 @@ public class RecurringIncome extends Income {
 		return period;
 	}
 	
+	public Date getLastUpdated() {
+		return lastUpdated;
+	}
+	
 	public void updateLastUpdated(Date d) {
 		lastUpdated = d;
 	}

@@ -32,7 +32,7 @@ public class DateTest {
 			   new Date(wrongDay, month, year);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: day is an illegal value for the month & year: " + wrongDay);
+				assertNotNull(e.getMessage());
 			}
 	}
 	
@@ -42,7 +42,7 @@ public class DateTest {
 			   new Date(day, wrongMonth, year);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: month is an illegal value: " + wrongMonth);
+				assertNotNull(e.getMessage());
 			}
 	}
 	
@@ -52,7 +52,8 @@ public class DateTest {
 			   new Date(day, -19, year);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: month is an illegal value: " + wrongMonth);
+				assertNotNull(e.getMessage());
+				
 			}
 	}
 	
@@ -62,7 +63,7 @@ public class DateTest {
 			   new Date(day, month, wrongYear);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: year is an illegal value: " + wrongYear);
+				assertNotNull(e.getMessage());
 			}
 	}
 	
@@ -85,55 +86,55 @@ public class DateTest {
 			   new Date(31, 4, year);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: day is an illegal value for the month & year: " +"31");
+			   assertNotNull(e.getMessage());
 			}
 		try{
 			   new Date(33, 7, year);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: day is an illegal value for the month & year: " + "33");
+				assertNotNull(e.getMessage());
 			}
 		try{
 			   Date test1 = new Date(31, 7, year);
 			   assertNotNull(test1);
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: day is an illegal value for the month & year: " + wrongDay);
+				assertNotNull(e.getMessage());
 			}
 		try{
 			   new Date(wrongDay, month, year);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: day is an illegal value for the month & year: " + wrongDay);
+				assertNotNull(e.getMessage());
 			}
 		try{
 			   new Date(-1, month, year);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: day is an illegal value for the month & year: " + "-1");
+				assertNotNull(e.getMessage());
 			}
 		try{
 			   new Date(31, 2, year);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: day is an illegal value for the month & year: " + "-1");
+				assertNotNull(e.getMessage());
 			}
 		try{
 			   new Date(29, 2, year);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: day is an illegal value for the month & year: " + "-1");
+				assertNotNull(e.getMessage());
 			}
 		try{
 			   new Date(29, 2, 2011);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: day is an illegal value for the month & year: " + "29");
+				assertNotNull(e.getMessage());
 			}
 		try{
 			   new Date(29, 2, 3000);
 			   fail(); // FAIL when no exception is thrown
 			} catch (IllegalArgumentException e) {
-			   assert(e.getMessage() == "Date: day is an illegal value for the month & year: " + "29");
+				assertNotNull(e.getMessage());
 			}
 	}
 	

@@ -3,6 +3,7 @@ package finance;
 import java.util.Map;
 import java.util.Random;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.String;
@@ -16,6 +17,7 @@ public class User {
 	private String lastName;
 	private String salt;
 	private Map<String, Account> accounts;
+	private Map<String, Budget> budgets;
 	private String resourceIdentifier;
 	
 	public User(String e, String pw, String s, String fn, String ln) {
@@ -25,6 +27,7 @@ public class User {
 		this.firstName = fn;
 		this.lastName = ln;
 		this.accounts = new HashMap<String, Account>();
+		this.budgets = new HashMap<String, Budget>();
 	}
 	
 	public User(String e, String pw, String fn, String ln, Map<String, Account> a) {
@@ -113,6 +116,23 @@ public class User {
 		Parser.addResource(newIdentifier, account);
 		accounts.put(newIdentifier, account);
 		Parser.setNextAccountRI(ri+1);
+		
+		return newIdentifier;
+	}
+	
+	public String createBudget(String name, double limit, int duration) {
+		Budget budget = new Budget(name, limit, duration, this);
+		
+		//A really poor way of creating a unique ResourceIdentifier for the new Account
+		int i = 0;
+		while(budgets.get("b" + i) != null)
+			i++;
+		
+		String newIdentifier = "b" + i;
+		
+		budget.setResourceIdentifier(newIdentifier);
+		Parser.addResource(newIdentifier, budget);
+		budgets.put(newIdentifier, budget);
 		
 		return newIdentifier;
 	}
@@ -227,8 +247,9 @@ public class User {
 	}
 	
 	public void checkRecurringTransactions() {
-		for(int i = 0; i < accounts.size(); i++) {
-			accounts.get(i).checkRecurringTransactions();
+		Iterator<String> keys = accounts.keySet().iterator();
+		while (keys.hasNext()) {
+			accounts.get(keys.next()).checkRecurringTransactions();
 		}
 	}
 	
