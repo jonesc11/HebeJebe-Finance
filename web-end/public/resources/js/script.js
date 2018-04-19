@@ -411,7 +411,6 @@ $(document).ready (function (app) {
 		}).
 		then(function(success) {
 			$scope.Budget = success.data.Budget;
-console.log (success.data);
 			console.log($scope.Budget);
 			$scope.budgetPercent = ($scope.Budget.Balance / $scope.Budget.Limit) * 100;
 		}, function(error) {
