@@ -140,6 +140,8 @@ app.get ('/request/:reqType/:resType', function (req, res) {
     data = handleGetBudgets (req, userRID);
   else if (requestType === 'get' && resourceType === 'projection')
     data = handleGetProjection (req, userRID);
+  else if (requestType === 'get' && resourceType === 'savingsplan')
+    data = handleGetSavingsPlan (req, userRID);
 
   if (data.ErrorMessage) {
     res.send (data);
@@ -220,11 +222,25 @@ function handleGetProjection (req, userRID) {
   return data;
 }
 
+function handleGetSavingsPlan (req, userRID) {
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: 'GetSavingsPlan',
+    Action: {
+      GetFrom: req.query.GetFrom ? req.query.GetFrom : userRID
+    }
+  };
+
+  return data;
+}
+
 function handleDeleteResource (req, userRID) {
   if (req.body.ResourceIdentifier === undefined || req.body.ResourceIdentifier === null)
     return { ErrorMessage: "ResourceIdentifier must be defined." };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -240,7 +256,7 @@ function handleDeleteResource (req, userRID) {
 /* Handles GetTransaction requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetTransactions (req, userRID) {
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -264,7 +280,7 @@ function handleGetTransactions (req, userRID) {
 /* Handles GetBudgets requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetBudgets (req, userRID) {
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -281,7 +297,7 @@ function handleGetBudgets (req, userRID) {
 /* Handles GetAccounts requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetAccounts (req, userRID) {
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -303,7 +319,7 @@ function handleGetAccounts (req, userRID) {
 /* Handles GetSubbalance requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetSubbalance (req, userRID) {
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -325,7 +341,7 @@ function handleGetSubbalance (req, userRID) {
 /* Handles GetUser requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetUser (req, userRID) {
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -347,7 +363,7 @@ function handleCreateAccount (req, userRID) {
   if (!req.body.AccountType || req.body.AccountType === null)
     return { ErrorMessage: "Account type must be specified." };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -371,7 +387,7 @@ function handleCreateBudget (req, userRID) {
   if (!req.body.Duration || req.body.Duration == null)
     return { ErrorMessage: 'A budget duration must be applied.' };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -400,7 +416,7 @@ function handleCreateTransaction (req, userRID) {
   if (req.body.Recurring === true && (!req.body.RecurringFrequency || req.body.RecurringFrequency === null))
     return { ErrorMessage: "Recurring transactions must have specified Recurring Frequency periods." };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -435,7 +451,7 @@ function handleCreateUser (req, userRID) {
   if (!req.body.LastName || req.body.LastName === null)
     return { ErrorMessage: "Last name must be specified." };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -459,7 +475,7 @@ function handleCreateSubbalance (req, userRID) {
   if (!req.body.SubBalanceName || req.body.SubBalanceName === null)
     return { ErrorMessage: "Subbalance must have a name." };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -487,7 +503,7 @@ function handleModifyResource (req, userRID) {
       return { ErrorMessage: "Changes is not present or incorrectly formatted." };
   }
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
