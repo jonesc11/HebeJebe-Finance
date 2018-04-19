@@ -2,6 +2,7 @@ package finance;
 
 public abstract class Transaction {
 	
+	//features all inherited classes have
 	protected double amount;
 	protected String name;
 	protected Date date;
@@ -9,6 +10,7 @@ public abstract class Transaction {
 	protected String resourceIdentifier;
 	protected String parentIdentifier;
 	
+	//getters and setters
 	public double getAmount() { 
 		return amount; 
 	}

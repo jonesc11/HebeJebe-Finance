@@ -5,8 +5,6 @@ import finance.FinanceUtilities.Period;
 /**
  * A date class represents a date. This object is immutable, and you will be able to get the formatted date
  * as well as the individual integer values of the date.
- * 
- * @author jonesc11
  *
  */
 
@@ -293,6 +291,14 @@ public class Date {
 		}
 	}
 	
+	/*
+	 * @requires none 
+	 * @throws none 
+	 * @modifies none
+	 * @effects finds if a date is equal to another date
+	 * @returns boolean of whether a date is equal
+	 * @param Object o - object being compared too (mostly likely a date object)
+	 */
 	@Override
 	public boolean equals(Object o) {
 		if (o == null)
@@ -306,6 +312,14 @@ public class Date {
 		return false;
 	}
 	
+	/*
+	 * @requires none 
+	 * @throws none 
+	 * @modifies none
+	 * @effects create a custom hash code for our dates
+	 * @returns int hash code
+	 * @param none
+	 */
 	@Override
 	public int hashCode() {
 		return this.year * this.month ^ (this.day * 47);
