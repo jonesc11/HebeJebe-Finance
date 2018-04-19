@@ -6,6 +6,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import java.lang.String;
 import java.security.MessageDigest;
+import java.time.LocalDateTime;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -98,38 +99,28 @@ public class Parser {
 		// Issues: Currently ignores NextTokens and ResourceIdentifier
 		if(actionType.equals("GetTransactions")) {
 			response = parseGetTransactions(action);
-		}
-		// Second case: GetAccount
-		// Returns a JSONObject containing a JSONObject that includes information about the specified Account.
-		// Issues: Currently ignores NextTokens.
-		else if(actionType.equals("GetAccounts")) {
+		} else if(actionType.equals("GetAccounts")) {
 			response = parseGetAccounts(action);
-		}
-		else if(actionType.equals("GetSubBalance")) {
+		} else if(actionType.equals("GetSubBalance")) {
 			response = parseGetSubBalance(action);
-		}
-		else if(actionType.equals("GetUser")) {
+		} else if(actionType.equals("GetUser")) {
 			response = parseGetUsers(action);
-		}
-		else if(actionType.equals("GetProjection")) {
+		} else if(actionType.equals("GetSavingsPlan")) {
+			response = parseGetSavingsPlan(action);
+		} else if(actionType.equals("GetProjection")) {
 			response = parseGetProjection(action);
-		}
-		else if(actionType.equals("CreateUser")) {
+		} else if(actionType.equals("CreateUser")) {
 			response = parseCreateUser (action);
-		}
-		else if(actionType.equals("CreateAccount")) {
+		} else if(actionType.equals("CreateAccount")) {
 			response = parseCreateAccount (action);
-		}
-		else if(actionType.equals("CreateSubBalance")) {
+		} else if(actionType.equals("CreateSubBalance")) {
 			response = parseCreateSubBalance (action);
-		}
-		//Creates a new transaction, associates it with the appropriate user and account/sub-balance
-		//Issues: Currently doesn't work with Transfers.
-		else if(actionType.equals("CreateTransaction")) {
+		} else if(actionType.equals("CreateTransaction")) {
 			User user = users.get(request.getString("AccountId"));
 			response = parseCreateTransaction (action, user);
-		}
-		else if(actionType.equals("Login")) {
+		} else if(actionType.equals("CreateSavingsPlan")) {
+			response = parseCreateSavingsPlan(action);
+		} else if(actionType.equals("Login")) {
 			response = parseLogin (action);
 		}
 					 
@@ -700,6 +691,33 @@ public class Parser {
 			
 			u.checkRecurringTransactions();
 		}
+		
+		return response;
+	}
+	
+	public static JSONObject parseAddToSavingsPlan(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		JSONObject savingsPlanObject = new JSONObject();
+		User user = getUser(action.getString("UserResourceIdentifier"));
+		SavingsPlan savingsPlan = user.getSavingsPlan();
+		Account account = getAccount(action.getString("AccountResourceIdentifier"));
+		double amount = action.getDouble("Amount");
+		LocalDateTime now = LocalDateTime.now();
+		Date d = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
+		
+		savingsPlan.updateBalance(savingsPlan.getBalance() + amount);
+		account.addSingleExpense(amount, "Savings", "Savings", d);
+		
+		savingsPlanObject.put("SavingsPlanResourceIdentifier", savingsPlan.getResourceIdentifier());
+		savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
+		savingsPlanObject.put("SavingsPlanAmount", savingsPlan.getAmount());
+		savingsPlanObject.put("SavingsPlanBalance", savingsPlan.getBalance());
+		savingsPlanObject.put("SavingsPlanDate", savingsPlan.getDate().format());
+		
+		response.put("UserResourceIdentifier", user.getResourceIdentifier());
+		response.put("AccountResourceIdentifier", account.getResourceIdentifier());
+		response.put("AmountAdded", amount);
+		response.put("SavingsPlan", savingsPlanObject);
 		
 		return response;
 	}
