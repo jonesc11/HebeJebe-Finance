@@ -169,6 +169,10 @@ app.post ('/request/:reqType/:resType', function (req, res) {
     data = handleCreateSubbalance (req, userRID);
   else if (requestType === 'create' && resourceType === 'budget')
     data = handleCreateBudget (req, userRID);
+  else if (requestType === 'create' && resourceType === 'savingsplan')
+    data = handleCreateSavingsPlan (req, userRID);
+  else if (requestType === 'addto' && resourceType === 'savingsplan')
+    data = handleAddToSavingsPlan (req, userRID);
 
   if (data.ErrorMessage) {
     res.send (data);
@@ -202,6 +206,8 @@ app.post ('/request/delete', function (req, res) {
   }
 });
 
+/* Handles GetProjection requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
 function handleGetProjection (req, userRID) {
   if (!req.query.ProjectionDate || req.query.ProjectionDate === null)
     return { ErrorMessage: "ProjectionDate must be defined." };
@@ -222,6 +228,31 @@ function handleGetProjection (req, userRID) {
   return data;
 }
 
+/* Handles AddToSavingsPlan requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleAddToSavingsPlan (req, userRID) {
+  if (!req.body.AccountResourceIdentifier || req.body.AccountResourceIdentifier === null)
+    return { ErrorMessage: "AccountResourceIdentifier must be specified." };
+  if (!req.body.Amount || req.body.Amount === null)
+    return { ErrorMessage: "Amount must be specified." };
+
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: 'AddToSavingsPlan',
+    Action: {
+      UserResourceIdentifier: req.body.UserResourceIdentifier ? req.body.UserResourceIdentifier : userRID,
+      AccountResourceIdentifier: req.body.AccountResourceIdentifier,
+      Amount: req.body.Amount
+    }
+  };
+
+  return data;
+}
+
+/* Handles GetSavingsPlan requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
 function handleGetSavingsPlan (req, userRID) {
   var data = {
     Key: accessKey,
@@ -236,6 +267,32 @@ function handleGetSavingsPlan (req, userRID) {
   return data;
 }
 
+/* Handles CreateSavingsPlan requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleCreateSavingsPlan (req, userRID) {
+  if (!req.body.SavingsPlanName || req.body.SavingsPlanName === null)
+    return { ErrorMessage: "SavingsPlanName must be defined." };
+  if (!req.body.SavingsPlanAmount || req.body.SavingsPlanAmount === null)
+    return { ErrorMessage: "SavingsPlanAmount must be defined." };
+  if (!req.body.SavingsPlanDate || req.body.SavingsPlanDate === null)
+    return { ErrorMessage: "SavingsPlanDate must be defined." };
+
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: 'CreateSavingsPlan',
+    Action: {
+      SavingsPlanName: req.body.SavingsPlanName,
+      UserResourceIdentifier: req.body.UserResourceIdentifier ? req.body.UserResourceIdentifier : userRID,
+      SavingsPlanAmount: req.body.SavingsPlanAmount,
+      SavingsPlanDate: req.body.SavingsPlanDate
+    }
+  }
+}
+
+/* Handles DeleteResource requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
 function handleDeleteResource (req, userRID) {
   if (req.body.ResourceIdentifier === undefined || req.body.ResourceIdentifier === null)
     return { ErrorMessage: "ResourceIdentifier must be defined." };
@@ -507,7 +564,7 @@ function handleModifyResource (req, userRID) {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
-    ActionType: "ModifyResource",
+    ActionType: "Modify",
     Action: {
       ResourceIdentifier: req.body.ResourceIdentifier,
       Changes: req.body.Changes
