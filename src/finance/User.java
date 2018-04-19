@@ -29,6 +29,7 @@ public class User {
 		this.budgets = new HashMap<String, Budget>();
 	}
 	
+	//ablitly to create a user that already has an account
 	public User(String e, String pw, String fn, String ln, Map<String, Account> a) {
 		email = e;
 		password = pw;
@@ -37,6 +38,7 @@ public class User {
 		accounts = a;
 	}
 	
+	//general getters
 	public String getResourceIdentifier () {
 		return this.resourceIdentifier;
 	}
@@ -96,7 +98,16 @@ public class User {
 		
 		return newIdentifier;
 	}
-	
+	/*
+	 * @requires Account is != null, name.len() > 0, limit > 0
+	 * @throws none 
+	 * @modifies the specified User
+	 * @effects Creates a budget on the user. 
+	 * @returns String of a resourceIdentifier 
+	 * @param name - a name used to refer to the budget
+	 * @param limit - the limit to spending
+	 * @param duration - The period in which the budget exsists in days
+	 */
 	public String createBudget(String name, double limit, int duration) {
 		Budget budget = new Budget(name, limit, duration, this);
 		
@@ -162,6 +173,19 @@ public class User {
 		return transactionRI;
 	}
 	
+	/*
+	 * @requires Account is != null, name.len() > 0, category.len() > 0, Date != Null, fromRI.len() > 0, toRI.len() > 0
+	 * @throws none 
+	 * @modifies the specified Accounts
+	 * @effects Creates an transfer on the specified accounts. 
+	 * @returns String of transfer ReseorceID
+	 * @param name - a name used to refer to the transfer
+	 * @param a - the amount of the transfer
+	 * @param c - the category of the transfer
+	 * @param d - date of the transfer
+	 * @param fromRI - RI of the of the account the money is being taken from
+	 * @param toRI - RI of the account the money is going to
+	 */
 	public String createTransfer(double a, String n, String c, Date d, String fromRI, String toRI) {
 		Account from = getAccount(fromRI);
 		Account to = getAccount(toRI);
@@ -223,6 +247,14 @@ public class User {
 		return a.getTransactionHistory();
 	}
 	
+	/*
+	 * @requires none
+	 * @throws none
+	 * @modifies accounts recurring transactions 
+	 * @effects updates all accounts to recurring transactions
+	 * @returns none
+
+	 */
 	public void checkRecurringTransactions() {
 		for(int i = 0; i < accounts.size(); i++) {
 			accounts.get(i).checkRecurringTransactions();
