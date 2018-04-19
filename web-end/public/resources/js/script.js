@@ -414,6 +414,23 @@ console.log(response.data)
     	});
 
 
+		$scope.getProjection = function(){
+		$scope.showProjection = true;
+		$http({
+           		method: 'GET',
+           		url: '/request/get/projection',
+           		data: {
+           			"Limit": 30
+       			}
+
+      		}).then(function(success) {
+      			$scope.projection = success.data.Projection;
+       		}, function(error) {
+      			// log error
+    		});
+
+
+		};
 		
 		$scope.getTotalBalance = function(){
 			if($scope.accounts == undefined){

@@ -45,6 +45,16 @@ nav {
 }
 
 
+.projections{
+	float:right;
+	display:inline;
+}
+
+.projectionInput{
+	width:40%;
+	display:inline;
+}
+
 .progress-bar-vertical {
   width: 20px;
   min-height: 100px;
@@ -65,7 +75,7 @@ nav {
 
 .transactionButton {
 	display: inline-block;
-	float: right;
+	float: left;
 }
 
 .dropdown {
