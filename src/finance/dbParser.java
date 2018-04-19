@@ -179,7 +179,7 @@ public class dbParser {
 					} else {
 						period = Period.DAILY;
 					}
-					Date endDate = new Date(0, 0, 0);
+					Date endDate = new Date(1, 1, 1);
 					t = new RecurringIncome(amount, name, category, period, date, endDate, pIdentifier);
 					t.setResourceIdentifier(identifier);
 				} else {
