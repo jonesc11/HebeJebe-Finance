@@ -8,11 +8,13 @@ import java.util.Map;
 public class Budget {
 	
 	protected double limit;
-	protected String name;
+	protected String description;
 	protected int duration;
-	protected String resourceIdentifier;
 	protected double balance;
-	protected User user;
+	protected Date startDate;
+	protected Date endDate;
+	protected String resourceIdentifier;
+	protected String parentIdentifier;
 	
 	public Budget() {
 		
@@ -29,11 +31,13 @@ public class Budget {
 	 * @param int d - duration of the budget in days
 	 * @param User u - user making the budget
 	 */
-	public Budget(String n, double l, int d, User u) {
-		this.name = n;
+	public Budget(String desc, double l, int dur, String parentRI, Date d1, Date d2) {
+		this.description = desc;
 		this.limit = l;
-		this.duration = d;
-		this.user = u;
+		this.duration = dur;
+		this.parentIdentifier = parentRI;
+		this.startDate = d1;
+		this.endDate = d2;
 	}
 	
 	//getters
@@ -41,8 +45,8 @@ public class Budget {
 		return limit; 
 	}
 	
-	public String getName() { 
-		return name; 
+	public String getDescription() { 
+		return description; 
 	}
 	
 	public int getDuration() {
@@ -54,16 +58,23 @@ public class Budget {
 	}
 	
 	public void setResourceIdentifier(String identifier) {
-		resourceIdentifier = identifier;
+		this.resourceIdentifier = identifier;
 	}
 	
 	public double getBalance() {
-		return user.getBalance();
+		return balance;
 	}
 	
-	public List<Transaction> getTransactionHistory() {
-		return user.getTransactionHistory();
+	public Date getStartDate() {
+		return startDate;
 	}
 	
+	public Date getEndDate() {
+		return endDate;
+	}
+	
+	public void updateBalance(double b) {
+		balance = b;
+	}
 	
 }

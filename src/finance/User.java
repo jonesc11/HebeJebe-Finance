@@ -3,6 +3,7 @@ package finance;
 import java.util.Map;
 import java.util.Random;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.String;
@@ -16,8 +17,9 @@ public class User {
 	private String lastName;
 	private String salt;
 	private Map<String, Account> accounts;
-	private Map<String, Budget> budgets;
 	private String resourceIdentifier;
+	private Budget budget;
+	private SavingsPlan savingsPlan;
 	
 	public User(String e, String pw, String s, String fn, String ln) {
 		this.email = e;
@@ -26,7 +28,8 @@ public class User {
 		this.firstName = fn;
 		this.lastName = ln;
 		this.accounts = new HashMap<String, Account>();
-		this.budgets = new HashMap<String, Budget>();
+		this.budget = null;
+		this.savingsPlan = null;
 	}
 	
 	//ablitly to create a user that already has an account
@@ -55,8 +58,38 @@ public class User {
 		return lastName;
 	}
 	
+	public SavingsPlan getSavingsPlan() {
+		return savingsPlan;
+	}
+	
+	public Budget getBudget() {
+		return budget;
+	}
+	
 	public void setResourceIdentifier (String identifier) {
 		this.resourceIdentifier = identifier;
+	}
+	
+	public void updateEmail(String e) {
+		this.email = e;
+		dbParser.updateUser(this.resourceIdentifier, "UserIdentifier", this.email);
+	}
+	
+	public void updateFirstName(String fn) {
+		this.firstName = fn;
+		dbParser.updateUser(this.resourceIdentifier, "FirstName", this.firstName);
+	}
+	
+	public void updateLastName(String ln) {
+		this.lastName = ln;
+		dbParser.updateUser(this.resourceIdentifier, "LastName", this.lastName);
+	}
+	
+	public void updatePassword(String pw, String s) {
+		this.salt = s;
+		dbParser.updateUser(this.resourceIdentifier, "Salt", this.salt);
+		this.password = this.salt + Parser.getSHA256Hash(pw);
+		dbParser.updateUser(this.resourceIdentifier, "Password", this.password);
 	}
 	
 	public double getBalance() {
@@ -108,21 +141,15 @@ public class User {
 	 * @param limit - the limit to spending
 	 * @param duration - The period in which the budget exsists in days
 	 */
-	public String createBudget(String name, double limit, int duration) {
-		Budget budget = new Budget(name, limit, duration, this);
 		
-		//A really poor way of creating a unique ResourceIdentifier for the new Account
-		int i = 0;
-		while(budgets.get("b" + i) != null)
-			i++;
+	public String createBudget(String desc, double l, int dur, Date d1, Date d2) {
+		budget = new Budget(desc, l, dur, this.resourceIdentifier, d1, d2);
 		
-		String newIdentifier = "b" + i;
+		budget.setResourceIdentifier(this.resourceIdentifier.replaceAll("u", "b"));
+		Parser.addResource(budget.getResourceIdentifier(), budget);
+		dbParser.insertBudget(this.resourceIdentifier, budget);
 		
-		budget.setResourceIdentifier(newIdentifier);
-		Parser.addResource(newIdentifier, budget);
-		budgets.put(newIdentifier, budget);
-		
-		return newIdentifier;
+		return budget.getResourceIdentifier();
 	}
 	
 	/*
@@ -146,6 +173,7 @@ public class User {
 		}
 		else {
 			transactionRI = acc.addSingleExpense(a, n, c, d1);
+			budget.updateBalance(budget.getBalance() + a);
 		}
 		
 		return transactionRI;
@@ -256,9 +284,30 @@ public class User {
 
 	 */
 	public void checkRecurringTransactions() {
-		for(int i = 0; i < accounts.size(); i++) {
-			accounts.get(i).checkRecurringTransactions();
+		Iterator<String> keys = accounts.keySet().iterator();
+		while (keys.hasNext()) {
+			accounts.get(keys.next()).checkRecurringTransactions();
 		}
+	}
+	
+	public double getProjection(Date d) {
+		double amount = 0;
+		Iterator<Account> iter = accounts.values().iterator();
+		while(iter.hasNext()) {
+			Account a = iter.next();
+			amount += a.getProjection(d);
+		}
+		return amount;
+	}
+	
+	public String createSavingsPlan(String n, double a, Date d) {
+		savingsPlan = new SavingsPlan(n, a, d, this.resourceIdentifier);
+		
+		savingsPlan.setResourceIdentifier(this.resourceIdentifier.replaceAll("u", "sp"));
+		Parser.addResource(savingsPlan.getResourceIdentifier(), savingsPlan);
+		dbParser.insertSavingsPlan(this.resourceIdentifier, savingsPlan);
+		
+		return savingsPlan.getResourceIdentifier();
 	}
 
 }
