@@ -381,12 +381,13 @@ console.log(response.data)
 		$http({
   			method: 'GET',
   			url: '/request/get/savingsplan',
-  			data: {
+  			params: {
   				"Limit": 30,
 			}
 		}).
 		then(function(success) {
-console.log (success.data);
+			console.log ("savings plan:")
+			console.log(success.data);
 			$scope.SavingsPlan = success.data;
 			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount)
 		}, function(error) {
@@ -402,7 +403,8 @@ console.log (success.data);
 		}).
 		then(function(success) {
 			$scope.Budget = success.data;
-			$scope.budgetPercent = ($scope.Budget.Balance / $scope.SavingsPlan.Amount)
+			console.log($scope.Budget);
+			$scope.budgetPercent = ($scope.Budget.Balance / $scope.Budget.Amount)
 		}, function(error) {
 			// log error
 		});
@@ -455,15 +457,45 @@ console.log (success.data);
 
 		};
 
+
+		$scope.createSavings = function(){
+			$http({
+           			method: 'POST',
+           			url: '/request/create/savingsplan',
+           			data: {
+					SavingsPlanName: $scope.newName,
+					SavingsPlanAmount: $scope.newAmount,
+					SavingsPlanDate: $scope.newDate
+       				}
+      			}).then(function(success) {
+				$scope.SavingsPlan = success.data;
+				console.log("created a savings plan")
+       			}, function(error) {
+      			// log error
+    			});
+
+
+		}
+
+		$scope.createOrModifySavings = function(){
+			if($scope.SavingsPlan == undefined){
+				$scope.createSavings();
+			}else{
+
+				$scope.modifySavings();
+			}
+
+		}
+
 		$scope.modifySavings = function(){
 			$http({
            			method: 'POST',
            			url: '/request/modify',
            			data: {
 					"Changes": [{
-							"Date": newDate,
-							"Amount": newAmount,
-							"SavingsPlanName": newName
+							"Date": $scope.newDate,
+							"Amount": $scope.newAmount,
+							"SavingsPlanName": $scope.newName
 						}]
        				}
       			}).then(function(success) {
@@ -493,8 +525,8 @@ console.log (success.data);
            			url: '/request/addTo/savingsPlan',
            			data: {
 					"Changes": [{
-							"Amount": moneyToAdd,
-							"Account": moneyToAddAcc
+							"Amount": $scope.moneyToAdd,
+							"Account": $scope.moneyToAddAcc
 						}]
        				}
       			}).then(function(success) {

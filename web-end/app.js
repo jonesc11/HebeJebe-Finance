@@ -288,6 +288,7 @@ function handleCreateSavingsPlan (req, userRID) {
       SavingsPlanDate: req.body.SavingsPlanDate
     }
   }
+  return data;
 }
 
 /* Handles DeleteResource requests. Given input from AngularJS, convert it into valid input
@@ -340,10 +341,9 @@ function handleGetBudgets (req, userRID) {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
-    ActionType: 'GetBudgets',
+    ActionType: 'GetBudget',
     Action: {
-      Limit: req.query.Limit ? req.query.Limit : 25,
-      ResourceIdentifier: req.query.ResourceIdentifier ? req.query.ResourceIdentifier : null
+      UserResourceIdentifier: req.query.ResourceIdentifier ? req.query.ResourceIdentifier : userRID
     }
   };
 
