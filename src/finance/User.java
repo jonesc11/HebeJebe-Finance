@@ -55,6 +55,28 @@ public class User {
 		this.resourceIdentifier = identifier;
 	}
 	
+	public void updateEmail(String e) {
+		this.email = e;
+		dbParser.updateUser(this.resourceIdentifier, "UserIdentifier", this.email);
+	}
+	
+	public void updateFirstName(String fn) {
+		this.firstName = fn;
+		dbParser.updateUser(this.resourceIdentifier, "FirstName", this.firstName);
+	}
+	
+	public void updateLastName(String ln) {
+		this.lastName = ln;
+		dbParser.updateUser(this.resourceIdentifier, "LastName", this.lastName);
+	}
+	
+	public void updatePassword(String pw, String s) {
+		this.salt = s;
+		dbParser.updateUser(this.resourceIdentifier, "Salt", this.salt);
+		this.password = this.salt + Parser.getSHA256Hash(pw);
+		dbParser.updateUser(this.resourceIdentifier, "Password", this.password);
+	}
+	
 	public double getBalance() {
 		double balance = 0;
 		
@@ -208,6 +230,14 @@ public class User {
 		for(int i = 0; i < accounts.size(); i++) {
 			accounts.get(i).checkRecurringTransactions();
 		}
+	}
+	
+	public double getProjection(Date d) {
+		double amount = 0;
+		for(int i = 0; i < accounts.size(); i++) {
+			amount += accounts.get(i).getProjection(d);
+		}
+		return amount;
 	}
 
 }
