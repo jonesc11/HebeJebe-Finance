@@ -242,5 +242,22 @@ public class Account implements IAccount {
 		}
 		return balance + amount;
 	}
+	
+	public void delete() {
+		Iterator<Transaction> tIter = transactions.values().iterator();
+		while(tIter.hasNext()) {
+			Transaction t = tIter.next();
+			t.delete();
+		}
+		
+		Iterator<IAccount> sbIter = subBalances.values().iterator();
+		while(sbIter.hasNext()) {
+			IAccount sb = sbIter.next();
+			sb.delete();
+		}
+		
+		Parser.removeResource(this.resourceIdentifier);
+		dbParser.deleteAccount(this.resourceIdentifier);
+	}
 
 }

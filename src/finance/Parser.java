@@ -22,7 +22,6 @@ public class Parser {
 	private static int nextAccountRI;
 	private static int nextSubBalanceRI;
 	private static int nextTransactionRI;
-	private static int nextSavingsPlanRI;
 	
 	//Helper function to make a JSONArray into a Java List object.
 	public static List<String> JSONArrayToList(JSONArray a) throws JSONException {
@@ -74,6 +73,14 @@ public class Parser {
 	
 	public static void addResource (String identifier, Object resource) {
 		resources.put(identifier, resource);
+	}
+	
+	public static void removeUser(String identifier) {
+		users.remove(identifier);
+	}
+	
+	public static void removeResource(String identifier) {
+		resources.remove(identifier);
 	}
 	
 	/**
@@ -134,6 +141,8 @@ public class Parser {
 			response = parseAddToSavingsPlan (action);
 		} else if(actionType.equals("Login")) {
 			response = parseLogin (action);
+		} else if(actionType.equals("Delete")) {
+			response = parseDelete(action);
 		}
 					 
 		return response.toString();
@@ -913,6 +922,29 @@ public class Parser {
 				savingsPlan.updateDate(d);
 			}
 		}
+	}
+	
+	public static JSONObject parseDelete(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		String resourceIdentifier = action.getString("ResourceIdentifier");
+		
+		if(resourceIdentifier.substring(0, 1).equals("u")) {
+			getUser(resourceIdentifier).delete();
+		} else if(resourceIdentifier.substring(0, 1).equals("a")) {
+			getAccount(resourceIdentifier).delete();
+		} else if(resourceIdentifier.substring(0, 2).equals("sb")) {
+			getSubBalance(resourceIdentifier).delete();
+		} else if(resourceIdentifier.substring(0, 1).equals("t")) {
+			getTransaction(resourceIdentifier).delete();
+		} else if(resourceIdentifier.substring(0, 1).equals("sp")) {
+			getUser(resourceIdentifier.replaceAll("sb", "u")).deleteSavingsPlan();
+		} else if(resourceIdentifier.substring(0, 1).equals("b")) {
+			getUser(resourceIdentifier.replaceAll("b", "u")).deleteBudget();
+		}
+		
+		response.put("ResourceIdentifier", resourceIdentifier);
+		
+		return response;
 	}
 	
 	public static JSONArray getTransactionsJSONArray(String identifier, int limit) throws JSONException {

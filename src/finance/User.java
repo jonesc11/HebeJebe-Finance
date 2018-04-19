@@ -276,5 +276,27 @@ public class User {
 		
 		return savingsPlan.getResourceIdentifier();
 	}
+	
+	public void deleteSavingsPlan() {
+		Parser.removeResource(this.savingsPlan.getResourceIdentifier());
+		dbParser.deleteSavingsPlan(this.resourceIdentifier);
+		this.savingsPlan = null;
+	}
+	
+	public void deleteBudget() {
+		Parser.removeResource(this.budget.getResourceIdentifier());
+		dbParser.deleteBudget(this.resourceIdentifier);
+		this.budget = null;
+	}
+	
+	public void delete() {
+		for(int i = 0; i < accounts.size(); i++) {
+			accounts.get(i).delete();
+		}
+		Parser.removeResource(savingsPlan.getResourceIdentifier());
+		Parser.removeResource(budget.getResourceIdentifier());
+		Parser.removeUser(this.resourceIdentifier);
+		dbParser.deleteUser(this.resourceIdentifier);
+	}
 
 }

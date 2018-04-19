@@ -412,4 +412,29 @@ public class dbParser {
 		MongoCollection<Document> accounts = db.getCollection("transactions");
 		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set(key, value));
 	}
+	
+	public static void deleteUser(String identifier) {
+		MongoCollection<Document> users = db.getCollection("users");
+		users.deleteOne(Filters.eq("ResourceIdentifier", identifier));
+	}
+	
+	public static void deleteAccount(String identifier) {
+		MongoCollection<Document> users = db.getCollection("accounts");
+		users.deleteOne(Filters.eq("ResourceIdentifier", identifier));
+	}
+	
+	public static void deleteTransaction(String identifier) {
+		MongoCollection<Document> users = db.getCollection("transactions");
+		users.deleteOne(Filters.eq("ResourceIdentifier", identifier));
+	}
+	
+	public static void deleteSavingsPlan(String identifier) {
+		MongoCollection<Document> users = db.getCollection("users");
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlan", false));
+	}
+	
+	public static void deleteBudget(String identifier) {
+		MongoCollection<Document> users = db.getCollection("users");
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("Budget", false));
+	}
 }

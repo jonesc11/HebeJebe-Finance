@@ -61,4 +61,9 @@ public abstract class Transaction {
 		this.parentIdentifier = parentRI;
 		dbParser.updateTransaction(this.resourceIdentifier, "ParentIdentifier", this.parentIdentifier);
 	}
+	
+	public void delete() {
+		Parser.removeResource(this.resourceIdentifier);
+		dbParser.deleteTransaction(this.resourceIdentifier);
+	}
 }
