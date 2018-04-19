@@ -21,6 +21,7 @@ public class Parser {
 	private static int nextAccountRI;
 	private static int nextSubBalanceRI;
 	private static int nextTransactionRI;
+	private static int nextSavingsPlanRI;
 	
 	//Helper function to make a JSONArray into a Java List object.
 	public static List<String> JSONArrayToList(JSONArray a) throws JSONException {
@@ -56,6 +57,12 @@ public class Parser {
 		if (!identifier.substring(0, 1).equals("sb"))
 			return null;
 		return (SubBalance) resources.get(identifier);
+	}
+	
+	public static SavingsPlan getSavingsPlan (String identifier) {
+		if (!identifier.substring(0, 1).equals("sp"))
+			return null;
+		return (SavingsPlan) resources.get(identifier);
 	}
 	
 	public static void addResource (String identifier, Object resource) {
@@ -242,6 +249,7 @@ public class Parser {
 		
 		return response;
 	}
+	
 	public static JSONObject parseCreateSubBalance(JSONObject action) throws JSONException {
 		JSONObject response = new JSONObject();
 		
@@ -284,6 +292,30 @@ public class Parser {
 		response.put("FirstName", firstName);
 		response.put("LastName", lastName);
 		
+		return response;
+	}
+	
+	public static JSONObject parseCreateSavingsPlan(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		
+		User user = getUser(action.getString("UserResourceIdentifier"));
+		String name = action.getString("SavingsPlanName");
+		double amount = action.getDouble("SavingsPlanAmount");
+		String dateString = action.getString("SavingsPlanDate");
+		int year = Integer.parseInt(dateString.substring(0,4));
+		int month = Integer.parseInt(dateString.substring(5,7));
+		int day = Integer.parseInt(dateString.substring(8, 10));
+		Date date = DateFactory.getDate(day, month, year);
+		
+		String identifier = user.createSavingsPlan(name, amount, date);
+		SavingsPlan savingsPlan = getSavingsPlan(identifier);
+		
+		response.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
+		response.put("UserResourceIdentifier", user.getResourceIdentifier());
+		response.put("SavingsPlanName", savingsPlan.getName());
+		response.put("SavingsPlanAmount", savingsPlan.getAmount());
+		response.put("SavingsPlanDate", savingsPlan.getDate().format());
+				
 		return response;
 	}
 	
@@ -605,6 +637,25 @@ public class Parser {
 		return response;
 	}
 	
+	public static JSONObject parseGetSavingsPlan(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		JSONObject savingsPlanObject = new JSONObject();
+		
+		User user = getUser(action.getString("GetFrom"));
+		SavingsPlan savingsPlan = user.getSavingsPlan();
+		
+		savingsPlanObject.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
+		savingsPlanObject.put("UserResourceIdentifier", user.getResourceIdentifier());
+		savingsPlanObject.put("SavingsPlanname", savingsPlan.getName());
+		savingsPlanObject.put("Amount", savingsPlan.getAmount());
+		savingsPlanObject.put("Balance", savingsPlan.getBalance());
+		savingsPlanObject.put("Date", savingsPlan.getDate().format());
+		
+		response.put("SavingsPlan", savingsPlanObject);
+		
+		return response;
+	}
+	
 	public static JSONObject parseGetProjection(JSONObject action) throws JSONException {
 		JSONObject response = new JSONObject();
 		String resourceIdentifier = action.getString("GetFrom");
@@ -734,7 +785,7 @@ public class Parser {
 			String key = changes.getJSONObject(i).getString("Key");
 			
 			if(key.equals("Amount")) {
-				Double value = changes.getJSONObject(i).getDouble("Value");
+				double value = changes.getJSONObject(i).getDouble("Value");
 				transaction.updateAmount(value);
 			} else if(key.equals("Description")) {
 				String value = changes.getJSONObject(i).getString("Value");
@@ -752,6 +803,32 @@ public class Parser {
 				int day = Integer.parseInt(value.substring(8, 10));
 				Date d = DateFactory.getDate(day, month, year);
 				transaction.updateDate(d);
+			}
+		}
+	}
+	
+	public static void modifySavingsPlan(String identifier, JSONArray changes) throws JSONException {
+		SavingsPlan savingsPlan = getSavingsPlan(identifier);
+		
+		for(int i = 0; i < changes.length(); i++) {
+			String key = changes.getJSONObject(i).getString("Key");
+			
+			if(key.equals("SavingsPlanName")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				savingsPlan.updateName(value);
+			} else if(key.equals("Amount")) {
+				double value = changes.getJSONObject(i).getDouble("Value");
+				savingsPlan.updateAmount(value);
+			} else if(key.equals("Balance")) {
+				double value = changes.getJSONObject(i).getDouble("Value");
+				savingsPlan.updateBalance(value);
+			} else if(key.equals("Date")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				int year = Integer.parseInt(value.substring(0,4));
+				int month = Integer.parseInt(value.substring(5,7));
+				int day = Integer.parseInt(value.substring(8, 10));
+				Date d = DateFactory.getDate(day, month, year);
+				savingsPlan.updateDate(d);
 			}
 		}
 	}

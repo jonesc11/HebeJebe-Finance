@@ -19,6 +19,7 @@ public class User {
 	private Map<String, Account> accounts;
 	private Map<String, Budget> budgets;
 	private String resourceIdentifier;
+	private SavingsPlan savingsPlan;
 	
 	public User(String e, String pw, String s, String fn, String ln) {
 		this.email = e;
@@ -28,6 +29,7 @@ public class User {
 		this.lastName = ln;
 		this.accounts = new HashMap<String, Account>();
 		this.budgets = new HashMap<String, Budget>();
+		this.savingsPlan = null;
 	}
 	
 	public User(String e, String pw, String fn, String ln, Map<String, Account> a) {
@@ -52,6 +54,10 @@ public class User {
 	
 	public String getLastName() {
 		return lastName;
+	}
+	
+	public SavingsPlan getSavingsPlan() {
+		return savingsPlan;
 	}
 	
 	public void setResourceIdentifier (String identifier) {
@@ -255,10 +261,21 @@ public class User {
 	
 	public double getProjection(Date d) {
 		double amount = 0;
-		for(int i = 0; i < accounts.size(); i++) {
-			amount += accounts.get(i).getProjection(d);
+		Iterator<Account> iter = accounts.values().iterator();
+		while(iter.hasNext()) {
+			Account a = iter.next();
+			amount += a.getProjection(d);
 		}
 		return amount;
+	}
+	
+	public String createSavingsPlan(String n, double a, Date d) {
+		savingsPlan = new SavingsPlan(n, a, d, this.resourceIdentifier);
+		
+		savingsPlan.setResourceIdentifier(this.resourceIdentifier.replaceAll("u", "sp"));
+		Parser.addResource(savingsPlan.getResourceIdentifier(), savingsPlan);
+		
+		return savingsPlan.getResourceIdentifier();
 	}
 
 }
