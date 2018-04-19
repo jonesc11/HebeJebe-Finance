@@ -203,9 +203,7 @@ app.post ('/request/delete', function (req, res) {
 function handleGetProjection (req, userRID) {
   if (!req.query.ProjectionDate || req.query.ProjectionDate === null)
     return { ErrorMessage: "ProjectionDate must be defined." };
-  if (!req.query.GetFrom || req.query.GetFrom === null)
-    return { ErrorMessage: "GetFrom must be defined." };
-
+  
   var data = {
     Key: accessKey,
     Secret: secretKey,
@@ -213,7 +211,7 @@ function handleGetProjection (req, userRID) {
     ActionType: "GetProjection",
     Action: {
       ProjectionDate: req.query.ProjectionDate,
-      GetFrom: req.query.GetFrom
+      GetFrom: req.query.GetFrom ? req.query.GetFrom : userRID
     }
   };
 
