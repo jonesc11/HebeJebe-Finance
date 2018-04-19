@@ -374,7 +374,7 @@ public class dbParser {
 		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlanName", savingsPlan.getName()));
 		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlanAmount", savingsPlan.getAmount()));
 		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlanBalance", savingsPlan.getBalance()));
-		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlan", savingsPlan.getDate().format()));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlanDate", savingsPlan.getDate().format()));
 	}
 	
 	public static void insertBudget(String identifier, Budget budget) {
