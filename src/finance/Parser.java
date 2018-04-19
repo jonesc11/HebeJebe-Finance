@@ -113,6 +113,8 @@ public class Parser {
 			response = parseGetUsers(action);
 		} else if(actionType.equals("GetSavingsPlan")) {
 			response = parseGetSavingsPlan(action);
+		} else if(actionType.equals("GetBudget")) {
+			response = parseGetBudget(action);
 		} else if(actionType.equals("GetProjection")) {
 			response = parseGetProjection(action);
 		} else if(actionType.equals("CreateUser")) {
