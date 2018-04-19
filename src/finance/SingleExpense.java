@@ -37,4 +37,20 @@ public class SingleExpense extends Expense {
 		return balanceAfter;
 	}
 	
+	public void updateAmount(double a) {
+		IAccount parent = (IAccount)Parser.getResource(this.parentIdentifier);
+		parent.updateBalance(parent.getBalance() + (this.amount - a));
+		this.amount = a;
+		dbParser.updateTransaction(this.resourceIdentifier, "Amount", this.amount);
+	}
+	
+	public void updateParent(String parentRI) {
+		IAccount oldParent = (IAccount)Parser.getResource(this.parentIdentifier);
+		oldParent.updateBalance(oldParent.getBalance() + this.amount);
+		IAccount newParent = (IAccount)Parser.getResource(parentRI);
+		newParent.updateBalance(newParent.getBalance() - this.amount);
+		this.parentIdentifier = parentRI;
+		dbParser.updateTransaction(this.resourceIdentifier, "ParentIdentifier", this.parentIdentifier);
+	}
+	
 }

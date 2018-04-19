@@ -3,6 +3,7 @@ package finance;
 import java.util.Map;
 import java.util.Random;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.lang.String;
@@ -18,6 +19,7 @@ public class User {
 	private Map<String, Account> accounts;
 	private Map<String, Budget> budgets;
 	private String resourceIdentifier;
+	private SavingsPlan savingsPlan;
 	
 	public User(String e, String pw, String s, String fn, String ln) {
 		this.email = e;
@@ -27,6 +29,7 @@ public class User {
 		this.lastName = ln;
 		this.accounts = new HashMap<String, Account>();
 		this.budgets = new HashMap<String, Budget>();
+		this.savingsPlan = null;
 	}
 	
 	//ablitly to create a user that already has an account
@@ -55,8 +58,34 @@ public class User {
 		return lastName;
 	}
 	
+	public SavingsPlan getSavingsPlan() {
+		return savingsPlan;
+	}
+	
 	public void setResourceIdentifier (String identifier) {
 		this.resourceIdentifier = identifier;
+	}
+	
+	public void updateEmail(String e) {
+		this.email = e;
+		dbParser.updateUser(this.resourceIdentifier, "UserIdentifier", this.email);
+	}
+	
+	public void updateFirstName(String fn) {
+		this.firstName = fn;
+		dbParser.updateUser(this.resourceIdentifier, "FirstName", this.firstName);
+	}
+	
+	public void updateLastName(String ln) {
+		this.lastName = ln;
+		dbParser.updateUser(this.resourceIdentifier, "LastName", this.lastName);
+	}
+	
+	public void updatePassword(String pw, String s) {
+		this.salt = s;
+		dbParser.updateUser(this.resourceIdentifier, "Salt", this.salt);
+		this.password = this.salt + Parser.getSHA256Hash(pw);
+		dbParser.updateUser(this.resourceIdentifier, "Password", this.password);
 	}
 	
 	public double getBalance() {
@@ -256,9 +285,29 @@ public class User {
 
 	 */
 	public void checkRecurringTransactions() {
-		for(int i = 0; i < accounts.size(); i++) {
-			accounts.get(i).checkRecurringTransactions();
+		Iterator<String> keys = accounts.keySet().iterator();
+		while (keys.hasNext()) {
+			accounts.get(keys.next()).checkRecurringTransactions();
 		}
+	}
+	
+	public double getProjection(Date d) {
+		double amount = 0;
+		Iterator<Account> iter = accounts.values().iterator();
+		while(iter.hasNext()) {
+			Account a = iter.next();
+			amount += a.getProjection(d);
+		}
+		return amount;
+	}
+	
+	public String createSavingsPlan(String n, double a, Date d) {
+		savingsPlan = new SavingsPlan(n, a, d, this.resourceIdentifier);
+		
+		savingsPlan.setResourceIdentifier(this.resourceIdentifier.replaceAll("u", "sp"));
+		Parser.addResource(savingsPlan.getResourceIdentifier(), savingsPlan);
+		
+		return savingsPlan.getResourceIdentifier();
 	}
 
 }

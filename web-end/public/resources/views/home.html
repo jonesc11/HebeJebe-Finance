@@ -1,4 +1,9 @@
 <div class="container">
+	<div class="row">
+		<div class="col-12">
+			<div class="alert alert-danger" ng-show="errorMessage">{{errorMessage}}</div>
+		</div>
+	</div>
 	<div class = "row">
 	<div class="col-8">
 		<table class="table">
@@ -9,44 +14,58 @@
       				<th scope="col">Amount (colored)</th>
       				<th scope="col">Account</th>
       				<th scope="col">Account Total</th>
-				<th scope="col">Action Button</th>
+				<th scope="col"></th>
+				<th scope="col"></th>
     			</tr>
   		</thead>
-  		<tbody ng-repeat="transaction in transactions">
-    			<tr>
+  		<tbody> 
+			<tr ng-show="!transactions || transactions.length == 0">
+				<td class="text-center" colspan="7">No transactions found. <a href="" data-toggle="modal" data-target="#createTransactionModal">Create one here!</a></td>
+			</tr>
+    			<tr ng-repeat="transaction in transactions | orderBy:'DateTime'">
       				<td>{{transaction.DateTime}}</td>
  	                        <td>{{transaction.Description}}</td>
                                 <td>{{transaction.Amount}}</td>
       				<td>{{transaction.account.name}}</td>
       				<td>{{transaction.account.total}}</td>
-				<td>ACTION</td>
+				<td data-toggle="modal" data-target="#editTransactionModal" ng-click="$scope.editingTrans = transaction"> 
+					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 
+				</td>
+				<td data-toggle="modal" data-target="#deleteTransactionModal" ng-click="$scope.deletingTrans = transaction"> 
+					<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> 
+				</td>
     			</tr>
   		</tbody>
 		</table>    
 	</div>
-	<div class="col-4" ng-controller="HomeCtrl">
+	<div class="col-4 addTransaction" ng-controller="HomeCtrl">
 		<form id = "home">
 		<fieldset>
-		<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createAccountModal">Add Account</button>
-		</br>
-		<button type="button" class="btn btn-primary">Budgets</button>
-		</br>
-		<label> Create Transaction </label>
+		<h4> Create Transaction </h4>
 			<div class="form-group">
-				<select class="custom-select custom-select-lg mb-3" ng-model="transactionAccount">
-					<option ng-repeat="account in accounts" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
+				<label>Account </label>
+				<select class="form-control custom-select custom-select-lg mb-3" ng-model="transactionAccount">
+					<option ng-repeat="account in accounts | orderBy:'AccountName'" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
 				</select>
 			</div>
+			
   			<div class="form-group">
     				<label for="transactionName">Description</label>
     				<input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Description" ng-model="transactionDescription">
   			</div>
+			
+			<div class="form-group">
+    				<label for="transactionCategory">Category</label>
+    				<input type="text" class="form-control" id="name1" aria-describedby="transactionCategory" placeholder="Category" ng-model="transactionCategory">
+  			</div>
+
   			<div class="form-group">
 				<label for="exampleInputEmail1">Transaction Amount</label>
     				<input type="number" class="form-control" id="name1" aria-describedby="transactionAmount" placeholder="Amount" ng-model="amount">
   			</div>
 			<div class="form-group">
-				<select class="custom-select custom-select-lg mb-3" ng-model=transactionType>
+				<label> Transaction Type </label>
+				<select class="form-control custom-select custom-select-lg mb-3" ng-model=transactionType>
   					<option selected value="Expense">Expense</option>
   					<option value="Income">Income</option>
 				</select>
@@ -59,8 +78,9 @@
   				<input type="checkbox" class="form-check-input" id="customCheck1"  ng-model="recurring">
   				<label class="custom-control-label" for="customCheck1">Recurring Transaction</label>
 			</div>
-			<div class="form-group">
-				<select class="custom-select custom-select-lg mb-3" ng-show="recurring" ng-model="transactionRecurInterval">
+			<div class="form-group" ng-show="recurring">
+				<label class="custom-control-label">Period</label>
+				<select class="form-control custom-select custom-select-lg mb-3" ng-model="transactionRecurInterval">
 					<option value="Daily">Daily</option>
 					<option value="Weekly">Weekly</option>
 					<option selected value="Monthly">Monthly</option>
@@ -71,63 +91,6 @@
 
 	</fieldset>
 	</form>
-        <div class="modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-labelledby="createAccountLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="createAccountLabel">Create an Account</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <label for="create-account-name">Account Name</label>
-                <input class="form-control" type="text" name="create-account-name" ng-model="createAccountName" placeholder="Account Name" />
-                <label for="create-account-balance">Account Balance</label>
-                <input class="form-control" type="text" name="create-account-balance" ng-model="createAccountBalance" placeholder="Account Balance" />
-                <label for="create-account-type">Account Type</label>
-                <select class="custom-select custom-select-lg mb-3" ng-model="createAccountType" name="create-account-type">
-                  <option value="Savings">Savings</option>
-                  <option value="Checking">Checking</option>
-                  <option value="Trust">Trust</option>
-                </select>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" ng-click="createAccount()">Create Account</button>
-              </div>
-            </div>
-          </div>
-        </div>
-	<div class="modal fade" id="createBudgetModal" tabindex="-1" role="dialog" aria-labelledby="createBudgetLabel" aria-hidden="true">
-          <div class="modal-dialog" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="createBudgetLabel">Create a Budget</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <label for="create-budget-description">Description</label>
-                <input class="form-control" type="text" name="create-budget-name" ng-model="createBudgetDescription" placeholder="Budget Description" />
-                <label for="create-budget-balance">Budget Limit</label>
-                <input class="form-control" type="number" name="create-budget-limit" ng-model="createBudgetLimit" placeholder="Budget Limit" />
-		<div class="inline1">
-                <label for="create-budget-date">Duration</label>
-                <input class="form-control" type="number" name="create-budget-duration" ng-model="createBudgetDuration" placeholder="Budget Duration" /> 
-		</div>
-		<div class="inline2">
-                <label>&nbsp; days</label>
-		</div>
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" ng-click="createBudget()">Create Budget</button>
-              </div>
-            </div>
-          </div>
-        </div>
 	</div>	<!-- end col div -->
 	</div> <!-- end row div -->
 	</div> <!-- end container div -->

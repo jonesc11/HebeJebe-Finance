@@ -2,6 +2,7 @@ package finance;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ public class Account implements IAccount {
 	private String resourceIdentifier;
 	private Map<String, IAccount> subBalances;
 	private Map<String, Transaction> transactions;
+	private Map<String, Transaction> recurringTransactions;
 	
 	public Account(String n, String t, double b) {
 		this.name = n;
@@ -23,6 +25,7 @@ public class Account implements IAccount {
 		this.balance = b;
 		this.transactions = new HashMap<String, Transaction>();
 		this.subBalances = new HashMap<String, IAccount>();
+		this.recurringTransactions = new HashMap<String, Transaction>();
 	}
 	
 	public Account(String n, String t, double b, Map<String, Transaction> tr, Map<String, IAccount> sb) {
@@ -31,6 +34,7 @@ public class Account implements IAccount {
 		this.balance = b;
 		this.transactions = tr;
 		this.subBalances = sb;
+		this.recurringTransactions = new HashMap<String, Transaction>();
 	}
 	
 	public String getResourceIdentifier () {
@@ -53,10 +57,26 @@ public class Account implements IAccount {
 		return balance;
 	}
 	
+	public void updateBalance(double b) {
+		this.balance = b;
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
+	}
+	
+	public void updateName(String n) {
+		this.name = n;
+		dbParser.updateAccount(this.resourceIdentifier, "AccountName", this.name);
+	}
+	
+	public void updateType(String t) {
+		this.type = t;
+		dbParser.updateAccount(this.resourceIdentifier, "AccountType", this.type);
+	}
+	
 	public double getTotal() {
 		double b = balance;
-		for (int i = 0; i < subBalances.size(); i++) {
-			b += subBalances.get(i).getBalance();
+		Iterator<String> keyitr = subBalances.keySet().iterator();
+		while (keyitr.hasNext()) {
+			b += subBalances.get(keyitr.next()).getBalance();
 		}
 		return b;
 	}
@@ -68,11 +88,11 @@ public class Account implements IAccount {
 	
 	public List<Transaction> getTransactionHistory() {
 		List<Transaction> allTransactions = new ArrayList<Transaction>(transactions.values());
-		for(int i = 0; i < subBalances.size(); i++) {
-			List<Transaction> temp = subBalances.get(i).getTransactionHistory();
-			for(int j = 0; j < temp.size(); j++) {
+		Iterator<String> keyitr = subBalances.keySet().iterator();
+		while (keyitr.hasNext()) {
+			List<Transaction> temp = subBalances.get(keyitr.next()).getTransactionHistory();
+			for (int j = 0; j < temp.size(); ++j)
 				allTransactions.add(temp.get(j));
-			}
 		}
 		return allTransactions;
 	}
@@ -89,6 +109,7 @@ public class Account implements IAccount {
 		Parser.addResource(newIdentifier, sb);
 		subBalances.put(newIdentifier, sb);
 		Parser.setNextSubBalanceRI(ri+1);
+		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 		
 		return newIdentifier;
 	}
@@ -117,7 +138,7 @@ public class Account implements IAccount {
 		
 		newIncome.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newIncome);
-		transactions.put(newIdentifier, newIncome);
+		recurringTransactions.put(newIdentifier, newIncome);
 		Parser.setNextTransactionRI(ri+1);
 		
 		return newIdentifier;
@@ -147,7 +168,7 @@ public class Account implements IAccount {
 		
 		newExpense.setResourceIdentifier(newIdentifier);
 		Parser.addResource(newIdentifier, newExpense);
-		transactions.put(newIdentifier, newExpense);
+		recurringTransactions.put(newIdentifier, newExpense);
 		Parser.setNextTransactionRI(ri+1);
 		
 		return newIdentifier;
@@ -167,8 +188,8 @@ public class Account implements IAccount {
 	public void checkRecurringTransactions() {
 		LocalDateTime now = LocalDateTime.now();
 		Date d = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
-		for(int i = 0; i < transactions.size(); i++) {
-			Transaction t = transactions.get(i);
+		for(int i = 0; i < recurringTransactions.size(); i++) {
+			Transaction t = recurringTransactions.get(i);
 			if(t instanceof RecurringIncome) {
 				this.balance += ((RecurringIncome)t).amountByDate(d);
 				((RecurringIncome)t).updateLastUpdated(d);
@@ -180,9 +201,46 @@ public class Account implements IAccount {
 			
 		}
 		dbParser.updateBalance(this.resourceIdentifier, this.balance);
-		for(int i = 0; i < subBalances.size(); i++) {
-			subBalances.get(i).checkRecurringTransactions();
+		Iterator<String> keyitr = subBalances.keySet().iterator();
+		while (keyitr.hasNext()) {
+			subBalances.get(keyitr.next()).checkRecurringTransactions();
 		}
+	}
+	
+	public double getProjection(Date d) {
+		double amount = 0;
+		for(int i = 0; i < transactions.size(); i++) {
+			Transaction t = transactions.get(i);
+			if(t instanceof RecurringIncome) {
+				amount += ((RecurringIncome)t).amountByDate(d);
+				((RecurringIncome)t).updateLastUpdated(d);
+			}
+			else if(t instanceof RecurringExpense) {
+				amount -= ((RecurringExpense)t).amountByDate(d);
+				((RecurringExpense)t).updateLastUpdated(d);
+			}
+		}
+		return balance + amount;
+	}
+	
+	public double getTotalProjection(Date d) {
+		double amount = 0;
+		for(int i = 0; i < transactions.size(); i++) {
+			Transaction t = transactions.get(i);
+			if(t instanceof RecurringIncome) {
+				amount += ((RecurringIncome)t).amountByDate(d);
+				((RecurringIncome)t).updateLastUpdated(d);
+			}
+			else if(t instanceof RecurringExpense) {
+				amount -= ((RecurringExpense)t).amountByDate(d);
+				((RecurringExpense)t).updateLastUpdated(d);
+			}
+		}
+		
+		for(int i = 0; i < subBalances.size(); i++) {
+			amount += ((SubBalance) subBalances.get(i)).getProjection(d);
+		}
+		return balance + amount;
 	}
 
 }

@@ -9,18 +9,28 @@ import com.mongodb.client.model.Updates;
 import finance.FinanceUtilities.Period;
 
 import java.util.Iterator;
+
 import org.bson.Document;
 import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 
 import java.util.Map;
 import java.util.HashMap;
 
 public class dbParser {
 	
-	private static MongoClient mongo = new MongoClient("http://ec2-18-217-228-55.us-east-2.compute.amazonaws.com", 27017);
-	private static MongoCredential credentials = MongoCredential.createCredential("", "finance", "".toCharArray());
-	private static MongoDatabase db = mongo.getDatabase("finance");
+	private static MongoClient mongo = null;
+	private static MongoDatabase db = null;
+	
+	public static void initDB() {
+		ServerAddress serverAddress = new ServerAddress ("ec2-18-217-228-55.us-east-2.compute.amazonaws.com", 27017) ;
+		MongoCredential credentials = MongoCredential.createCredential("finance", "finance", "Finance".toCharArray()) ;	
+		
+		mongo = new MongoClient(serverAddress, credentials, MongoClientOptions.builder().build());
+		db = mongo.getDatabase("finance");
+	}
 	
 	public static void readFromDB() {
 		MongoCollection<Document> users = db.getCollection("users");
@@ -249,7 +259,10 @@ public class dbParser {
 			newTransaction.append("Recurring", false);
 		}
 		
-		transactions.insertOne(newTransaction);
+		try {
+			transactions.insertOne(newTransaction);
+		} catch(Exception e) {
+		}
 	}
 	
 	public static void insertAccount(Account a, String pIdentifier) {
@@ -319,8 +332,28 @@ public class dbParser {
 		}
 	}
 	
+	public static void updateUser(String identifier, String key, String value) {
+		MongoCollection<Document> accounts = db.getCollection("users");
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set(key, value));
+	}
+	
+	public static void updateAccount(String identifier, String key, String value) {
+		MongoCollection<Document> accounts = db.getCollection("accounts");
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set(key, value));
+	}
+	
 	public static void updateBalance(String identifier, double balance) {
 		MongoCollection<Document> accounts = db.getCollection("accounts");
-		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("Balance", balance));
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("LatestBalance", balance));
+	}
+	
+	public static void updateTransaction(String identifier, String key, String value) {
+		MongoCollection<Document> accounts = db.getCollection("transactions");
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set(key, value));
+	}
+	
+	public static void updateTransaction(String identifier, String key, double value) {
+		MongoCollection<Document> accounts = db.getCollection("transactions");
+		accounts.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set(key, value));
 	}
 }
