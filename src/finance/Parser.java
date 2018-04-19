@@ -614,17 +614,19 @@ public class Parser {
 		int month = Integer.parseInt(dateString.substring(5,7));
 		int day = Integer.parseInt(dateString.substring(8, 10));
 		Date d = DateFactory.getDate(day, month, year);
+		response.put("ResourceIdentifier", resourceIdentifier);
+		response.put("ProjectionDate", d.format());
 		
 		if(resourceIdentifier.substring(0, 1).equals("u")) {
 			projection = Parser.getUser(resourceIdentifier).getProjection(d);
 		} else if(resourceIdentifier.substring(0, 1).equals("a")) {
 			projection = Parser.getAccount(resourceIdentifier).getProjection(d);
+			double projectedTotal = Parser.getAccount(resourceIdentifier).getTotalProjection(d);
+			response.put("ProjectedTotal", projectedTotal);
 		} else if(resourceIdentifier.substring(0, 2).equals("sb")) {
 			projection = Parser.getSubBalance(resourceIdentifier).getProjection(d);
 		}
 		
-		response.put("ResourceIdentifier", resourceIdentifier);
-		response.put("ProjectionDate", d.format());
 		response.put("ProjectedBalance", projection);
 		
 		return response;
@@ -734,10 +736,23 @@ public class Parser {
 			if(key.equals("Amount")) {
 				Double value = changes.getJSONObject(i).getDouble("Value");
 				transaction.updateAmount(value);
-			} else if(key.equals("SubBalanceBalance")) {
-				double value = changes.getJSONObject(i).getDouble("Value");
-				//transaction.updateBalance(value);
-			} 
+			} else if(key.equals("Description")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				transaction.updateName(value);
+			} else if(key.equals("Category")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				transaction.updateCategory(value);
+			} else if(key.equals("AssociatedWith")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				transaction.updateParent(value);
+			} else if(key.equals("Date")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				int year = Integer.parseInt(value.substring(0,4));
+				int month = Integer.parseInt(value.substring(5,7));
+				int day = Integer.parseInt(value.substring(8, 10));
+				Date d = DateFactory.getDate(day, month, year);
+				transaction.updateDate(d);
+			}
 		}
 	}
 	

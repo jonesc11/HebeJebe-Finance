@@ -25,6 +25,7 @@ public class Account implements IAccount {
 		this.balance = b;
 		this.transactions = new HashMap<String, Transaction>();
 		this.subBalances = new HashMap<String, IAccount>();
+		this.recurringTransactions = new HashMap<String, Transaction>();
 	}
 	
 	public Account(String n, String t, double b, Map<String, Transaction> tr, Map<String, IAccount> sb) {
@@ -33,6 +34,7 @@ public class Account implements IAccount {
 		this.balance = b;
 		this.transactions = tr;
 		this.subBalances = sb;
+		this.recurringTransactions = new HashMap<String, Transaction>();
 	}
 	
 	public String getResourceIdentifier () {

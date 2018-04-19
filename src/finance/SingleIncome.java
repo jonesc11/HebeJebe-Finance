@@ -25,7 +25,12 @@ public class SingleIncome extends Income {
 	}
 	
 	public void updateParent(String parentRI) {
-		IAccount oldParent = (IAccount)Parser.getResource(parentRI);
+		IAccount oldParent = (IAccount)Parser.getResource(this.parentIdentifier);
+		oldParent.updateBalance(oldParent.getBalance() - this.amount);
+		IAccount newParent = (IAccount)Parser.getResource(parentRI);
+		newParent.updateBalance(newParent.getBalance() + this.amount);
+		this.parentIdentifier = parentRI;
+		dbParser.updateTransaction(this.resourceIdentifier, "ParentIdentifier", this.parentIdentifier);
 	}
 
 }
