@@ -48,7 +48,7 @@
     			<tr ng-repeat="transaction in transactions | orderBy:'DateTime'">
       				<td>{{transaction.DateTime}}</td>
  	                        <td>{{transaction.Description}}</td>
-                               <td class="color-amount-{{transaction.TransactionType}}">{{transaction.Amount | currency}}</td>
+                               	<td class="color-amount-{{transaction.TransactionType}}">{{transaction.Amount | currency}}</td>
       				<td><a href="/#!/account/{{transaction.Account.AccountResourceIdentifier}}">{{transaction.Account.AccountName}}</a></td>
       				<td>{{transaction.AccountBalanceAfter | currency}}</td>
 				<td data-toggle="modal" data-target="#editTransactionModal" ng-click="$scope.editingTrans = transaction"> 
@@ -62,7 +62,8 @@
 		</table>    
 	</div>
 	<div class="col-6">
-	<h3> Budgets </h3>	
+	<h3> Budgets: {{Budget.Description}} </h3>	
+	<h5> {{Budget.StartDate}} - {{Budget.EndDate}} </h5>
 	<div class="progress">
   		<div class="progress-bar" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
 	</div>	
@@ -91,8 +92,8 @@
 
 
 	<div class="form-group">
-		Saving <input type="number" class="form-control editSavings"  placeholder="SavingsPlan.SavingsPlanName"> For <input type="text" class="form-control editSavings"  placeholder="SavingsPlan.Amount"> By <input type="date" class="form-control editSavings"  placeholder="SavingsPlan.Date"> 
-		<button type="button" class="btn btn-primary editSavings"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+		Saving <input type="number" class="form-control editSavings" placeholder="SavingsPlan.SavingsPlanName" ng-model="newName"> For <input type="text" class="form-control editSavings"  placeholder="SavingsPlan.Amount" ng-model="newAmount"> By <input type="date" class="form-control editSavings"  placeholder="SavingsPlan.Date" ng-model="newDate"> 
+		<button type="button" class="btn btn-primary editSavings" ng-click="modifySavings()"><span class="glyphicon glyphicon-thumbs-up"></span></button>
         </div>
 
 

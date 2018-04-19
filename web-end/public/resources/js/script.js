@@ -396,7 +396,7 @@ console.log(response.data)
 		}).
 		then(function(success) {
 			$scope.Budget = success.data;
-			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount)
+			$scope.budgetPercent = ($scope.Budget.Balance / $scope.SavingsPlan.Amount)
 		}, function(error) {
 			// log error
 		});
@@ -448,6 +448,24 @@ console.log(response.data)
 
 
 		};
+
+		$scope.modifySavings = function(){
+			$http({
+           			method: 'POST',
+           			url: '/request/modify',
+           			data: {
+					"Changes": [{
+							"Date": newDate,
+							"Amount": newAmount,
+							"SavingsPlanName": newName
+						}]
+       				}
+      			}).then(function(success) {
+
+       			}, function(error) {
+      			// log error
+    			});
+		}
 		
 		$scope.getTotalBalance = function(){
 			if($scope.accounts == undefined){
@@ -464,6 +482,21 @@ console.log(response.data)
 
 			
 		$scope.addMoney = function(){
+			$http({
+           			method: 'POST',
+           			url: '/request/addTo/savingsPlan',
+           			data: {
+					"Changes": [{
+							"Amount": moneyToAdd,
+							"Account": moneyToAddAcc
+						}]
+       				}
+      			}).then(function(success) {
+
+       			}, function(error) {
+      			// log error
+    			});
+
 			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount)
 		};
 
