@@ -229,7 +229,7 @@ public class Parser {
 		response.put("AssociatedWith", parentRI);
 		response.put("Recurring", recurring);
 		if(recurring) {
-			response.put("RecurringUntil", endDate.format());
+			//response.put("RecurringUntil", endDate.format());
 			response.put("RecurringInterval", action.getString("RecurringInterval"));
 		}
 		
@@ -391,7 +391,7 @@ public class Parser {
 			transaction.put("Category", t.getCategory());
 			if (allTransactions.get(i) instanceof RecurringIncome) {
 				transaction.put("Recurring", true);
-				transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
+				//transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
 				if(((RecurringIncome)t).getPeriod() == Period.DAILY) {
 					transaction.put("RecurringInterval", 1);
 				} else if(((RecurringIncome)t).getPeriod() == Period.WEEKLY) {
@@ -403,7 +403,7 @@ public class Parser {
 				}
 			} else if (t instanceof RecurringExpense) {
 				transaction.put("Recurring", true);
-				transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
+				//transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
 				if(((RecurringExpense)t).getPeriod() == Period.DAILY) {
 					transaction.put("RecurringInterval", 1);
 				} else if(((RecurringExpense)t).getPeriod() == Period.WEEKLY) {
@@ -600,7 +600,7 @@ public class Parser {
 				transaction.put("Category", t.getCategory());
 				if (t instanceof RecurringIncome) {
 					transaction.put("Recurring", true);
-					transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
+					//transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
 					if(((RecurringIncome)t).getPeriod() == Period.DAILY)
 						transaction.put("RecurringInterval", 1);
 					else if(((RecurringIncome)t).getPeriod() == Period.MONTHLY)
@@ -620,7 +620,7 @@ public class Parser {
 				transaction.put("Category", t.getCategory());
 				if (t instanceof RecurringExpense) {
 					transaction.put("Recurring", true);
-					transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
+					//transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
 					if(((RecurringExpense)t).getPeriod() == Period.DAILY)
 						transaction.put("RecurringInterval", 1);
 					else if(((RecurringExpense)t).getPeriod() == Period.MONTHLY)
@@ -982,7 +982,7 @@ public class Parser {
 				transaction.put("Recurring", false);
 			} else if(t instanceof RecurringIncome) {
 				transaction.put("Recurring", true);
-				transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
+				//transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
 				if(((RecurringIncome)t).getPeriod() == Period.DAILY) {
 					transaction.put("RecurringInterval", 1);
 				} else if(((RecurringIncome)t).getPeriod() == Period.WEEKLY) {
@@ -994,7 +994,7 @@ public class Parser {
 				}
 			} else if(t instanceof RecurringExpense) {
 				transaction.put("Recurring", true);
-				transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
+				//transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
 				if(((RecurringExpense)t).getPeriod() == Period.DAILY) {
 					transaction.put("RecurringInterval", 1);
 				} else if(((RecurringExpense)t).getPeriod() == Period.WEEKLY) {
