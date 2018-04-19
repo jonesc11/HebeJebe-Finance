@@ -17,8 +17,9 @@ public class User {
 	private String lastName;
 	private String salt;
 	private Map<String, Account> accounts;
-	private Map<String, Budget> budgets;
 	private String resourceIdentifier;
+	private Budget budget;
+	private SavingsPlan savingsPlan;
 	
 	public User(String e, String pw, String s, String fn, String ln) {
 		this.email = e;
@@ -27,7 +28,8 @@ public class User {
 		this.firstName = fn;
 		this.lastName = ln;
 		this.accounts = new HashMap<String, Account>();
-		this.budgets = new HashMap<String, Budget>();
+		this.budget = null;
+		this.savingsPlan = null;
 	}
 	
 	public User(String e, String pw, String fn, String ln, Map<String, Account> a) {
@@ -52,6 +54,14 @@ public class User {
 	
 	public String getLastName() {
 		return lastName;
+	}
+	
+	public SavingsPlan getSavingsPlan() {
+		return savingsPlan;
+	}
+	
+	public Budget getBudget() {
+		return budget;
 	}
 	
 	public void setResourceIdentifier (String identifier) {
@@ -120,21 +130,13 @@ public class User {
 		return newIdentifier;
 	}
 	
-	public String createBudget(String name, double limit, int duration) {
-		Budget budget = new Budget(name, limit, duration, this);
+	public String createBudget(String desc, double l, int dur, Date d1, Date d2) {
+		budget = new Budget(desc, l, dur, this.resourceIdentifier, d1, d2);
 		
-		//A really poor way of creating a unique ResourceIdentifier for the new Account
-		int i = 0;
-		while(budgets.get("b" + i) != null)
-			i++;
+		budget.setResourceIdentifier(this.resourceIdentifier.replaceAll("u", "b"));
+		Parser.addResource(budget.getResourceIdentifier(), budget);
 		
-		String newIdentifier = "b" + i;
-		
-		budget.setResourceIdentifier(newIdentifier);
-		Parser.addResource(newIdentifier, budget);
-		budgets.put(newIdentifier, budget);
-		
-		return newIdentifier;
+		return budget.getResourceIdentifier();
 	}
 	
 	/*
@@ -158,6 +160,7 @@ public class User {
 		}
 		else {
 			transactionRI = acc.addSingleExpense(a, n, c, d1);
+			budget.updateBalance(a);
 		}
 		
 		return transactionRI;
@@ -255,10 +258,21 @@ public class User {
 	
 	public double getProjection(Date d) {
 		double amount = 0;
-		for(int i = 0; i < accounts.size(); i++) {
-			amount += accounts.get(i).getProjection(d);
+		Iterator<Account> iter = accounts.values().iterator();
+		while(iter.hasNext()) {
+			Account a = iter.next();
+			amount += a.getProjection(d);
 		}
 		return amount;
+	}
+	
+	public String createSavingsPlan(String n, double a, Date d) {
+		savingsPlan = new SavingsPlan(n, a, d, this.resourceIdentifier);
+		
+		savingsPlan.setResourceIdentifier(this.resourceIdentifier.replaceAll("u", "sp"));
+		Parser.addResource(savingsPlan.getResourceIdentifier(), savingsPlan);
+		
+		return savingsPlan.getResourceIdentifier();
 	}
 
 }

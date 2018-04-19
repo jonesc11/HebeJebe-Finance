@@ -6,6 +6,7 @@ import javax.xml.bind.DatatypeConverter;
 
 import java.lang.String;
 import java.security.MessageDigest;
+import java.time.LocalDateTime;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +22,7 @@ public class Parser {
 	private static int nextAccountRI;
 	private static int nextSubBalanceRI;
 	private static int nextTransactionRI;
+	private static int nextSavingsPlanRI;
 	
 	//Helper function to make a JSONArray into a Java List object.
 	public static List<String> JSONArrayToList(JSONArray a) throws JSONException {
@@ -58,6 +60,18 @@ public class Parser {
 		return (SubBalance) resources.get(identifier);
 	}
 	
+	public static SavingsPlan getSavingsPlan (String identifier) {
+		if (!identifier.substring(0, 1).equals("sp"))
+			return null;
+		return (SavingsPlan) resources.get(identifier);
+	}
+	
+	public static Budget getBudget (String identifier) {
+		if (!identifier.substring(0, 1).equals("b"))
+			return null;
+		return (Budget) resources.get(identifier);
+	}
+	
 	public static void addResource (String identifier, Object resource) {
 		resources.put(identifier, resource);
 	}
@@ -91,38 +105,30 @@ public class Parser {
 		// Issues: Currently ignores NextTokens and ResourceIdentifier
 		if(actionType.equals("GetTransactions")) {
 			response = parseGetTransactions(action);
-		}
-		// Second case: GetAccount
-		// Returns a JSONObject containing a JSONObject that includes information about the specified Account.
-		// Issues: Currently ignores NextTokens.
-		else if(actionType.equals("GetAccounts")) {
+		} else if(actionType.equals("GetAccounts")) {
 			response = parseGetAccounts(action);
-		}
-		else if(actionType.equals("GetSubBalance")) {
+		} else if(actionType.equals("GetSubBalance")) {
 			response = parseGetSubBalance(action);
-		}
-		else if(actionType.equals("GetUser")) {
+		} else if(actionType.equals("GetUser")) {
 			response = parseGetUsers(action);
-		}
-		else if(actionType.equals("GetProjection")) {
+		} else if(actionType.equals("GetSavingsPlan")) {
+			response = parseGetSavingsPlan(action);
+		} else if(actionType.equals("GetProjection")) {
 			response = parseGetProjection(action);
-		}
-		else if(actionType.equals("CreateUser")) {
+		} else if(actionType.equals("CreateUser")) {
 			response = parseCreateUser (action);
-		}
-		else if(actionType.equals("CreateAccount")) {
+		} else if(actionType.equals("CreateAccount")) {
 			response = parseCreateAccount (action);
-		}
-		else if(actionType.equals("CreateSubBalance")) {
+		} else if(actionType.equals("CreateSubBalance")) {
 			response = parseCreateSubBalance (action);
-		}
-		//Creates a new transaction, associates it with the appropriate user and account/sub-balance
-		//Issues: Currently doesn't work with Transfers.
-		else if(actionType.equals("CreateTransaction")) {
+		} else if(actionType.equals("CreateTransaction")) {
 			User user = users.get(request.getString("AccountId"));
 			response = parseCreateTransaction (action, user);
-		}
-		else if(actionType.equals("Login")) {
+		} else if(actionType.equals("CreateBudget")) {
+			response = parseCreateBudget(action);
+		} else if(actionType.equals("CreateSavingsPlan")) {
+			response = parseCreateSavingsPlan(action);
+		} else if(actionType.equals("Login")) {
 			response = parseLogin (action);
 		}
 					 
@@ -242,6 +248,7 @@ public class Parser {
 		
 		return response;
 	}
+	
 	public static JSONObject parseCreateSubBalance(JSONObject action) throws JSONException {
 		JSONObject response = new JSONObject();
 		
@@ -284,6 +291,53 @@ public class Parser {
 		response.put("FirstName", firstName);
 		response.put("LastName", lastName);
 		
+		return response;
+	}
+	
+	public static JSONObject parseCreateBudget(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		
+		User user = getUser(action.getString("UserResourceIdentifier"));
+		double limit = action.getDouble("Limit");
+		String description = action.getString("Description");
+		int duration = action.getInt("Duration");
+		LocalDateTime now = LocalDateTime.now();
+		Date d1 = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
+		Date d2 = DateFactory.getDate(now.getDayOfMonth() + duration, now.getMonthValue(), now.getYear());
+		
+		String identifier = user.createBudget(description, limit, duration, d1, d2);
+		Budget budget = getBudget(identifier);
+		
+		response.put("ResourceIdentifier", budget.getResourceIdentifier());
+		response.put("UserResourceIdentifier", user.getResourceIdentifier());
+		response.put("Limit", budget.getLimit());
+		response.put("Description", budget.getDescription());
+		response.put("Duration", budget.getDuration());
+				
+		return response;
+	}
+	
+	public static JSONObject parseCreateSavingsPlan(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		
+		User user = getUser(action.getString("UserResourceIdentifier"));
+		String name = action.getString("SavingsPlanName");
+		double amount = action.getDouble("SavingsPlanAmount");
+		String dateString = action.getString("SavingsPlanDate");
+		int year = Integer.parseInt(dateString.substring(0,4));
+		int month = Integer.parseInt(dateString.substring(5,7));
+		int day = Integer.parseInt(dateString.substring(8, 10));
+		Date date = DateFactory.getDate(day, month, year);
+		
+		String identifier = user.createSavingsPlan(name, amount, date);
+		SavingsPlan savingsPlan = getSavingsPlan(identifier);
+		
+		response.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
+		response.put("UserResourceIdentifier", user.getResourceIdentifier());
+		response.put("SavingsPlanName", savingsPlan.getName());
+		response.put("SavingsPlanAmount", savingsPlan.getAmount());
+		response.put("SavingsPlanDate", savingsPlan.getDate().format());
+				
 		return response;
 	}
 	
@@ -605,6 +659,46 @@ public class Parser {
 		return response;
 	}
 	
+	public static JSONObject parseGetBudget(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		JSONObject budgetObject = new JSONObject();
+		
+		User user = getUser(action.getString("UserResourceIdentifier"));
+		Budget budget = user.getBudget();
+		
+		budgetObject.put("ResourceIdentifier", budget.getResourceIdentifier());
+		budgetObject.put("UserResourceIdentifier", user.getResourceIdentifier());
+		budgetObject.put("Limit", budget.getLimit());
+		budgetObject.put("Description", budget.getDescription());
+		budgetObject.put("Balance", budget.getBalance());
+		budgetObject.put("Duration", budget.getDuration());
+		budgetObject.put("StartDate", budget.getStartDate().format());
+		budgetObject.put("EndDate", budget.getEndDate().format());
+		
+		response.put("Budget", budgetObject);
+		
+		return response;
+	}
+	
+	public static JSONObject parseGetSavingsPlan(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		JSONObject savingsPlanObject = new JSONObject();
+		
+		User user = getUser(action.getString("GetFrom"));
+		SavingsPlan savingsPlan = user.getSavingsPlan();
+		
+		savingsPlanObject.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
+		savingsPlanObject.put("UserResourceIdentifier", user.getResourceIdentifier());
+		savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
+		savingsPlanObject.put("Amount", savingsPlan.getAmount());
+		savingsPlanObject.put("Balance", savingsPlan.getBalance());
+		savingsPlanObject.put("Date", savingsPlan.getDate().format());
+		
+		response.put("SavingsPlan", savingsPlanObject);
+		
+		return response;
+	}
+	
 	public static JSONObject parseGetProjection(JSONObject action) throws JSONException {
 		JSONObject response = new JSONObject();
 		String resourceIdentifier = action.getString("GetFrom");
@@ -614,17 +708,19 @@ public class Parser {
 		int month = Integer.parseInt(dateString.substring(5,7));
 		int day = Integer.parseInt(dateString.substring(8, 10));
 		Date d = DateFactory.getDate(day, month, year);
+		response.put("ResourceIdentifier", resourceIdentifier);
+		response.put("ProjectionDate", d.format());
 		
 		if(resourceIdentifier.substring(0, 1).equals("u")) {
 			projection = Parser.getUser(resourceIdentifier).getProjection(d);
 		} else if(resourceIdentifier.substring(0, 1).equals("a")) {
 			projection = Parser.getAccount(resourceIdentifier).getProjection(d);
+			double projectedTotal = Parser.getAccount(resourceIdentifier).getTotalProjection(d);
+			response.put("ProjectedTotal", projectedTotal);
 		} else if(resourceIdentifier.substring(0, 2).equals("sb")) {
 			projection = Parser.getSubBalance(resourceIdentifier).getProjection(d);
 		}
 		
-		response.put("ResourceIdentifier", resourceIdentifier);
-		response.put("ProjectionDate", d.format());
 		response.put("ProjectedBalance", projection);
 		
 		return response;
@@ -647,6 +743,33 @@ public class Parser {
 			
 			u.checkRecurringTransactions();
 		}
+		
+		return response;
+	}
+	
+	public static JSONObject parseAddToSavingsPlan(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		JSONObject savingsPlanObject = new JSONObject();
+		User user = getUser(action.getString("UserResourceIdentifier"));
+		SavingsPlan savingsPlan = user.getSavingsPlan();
+		Account account = getAccount(action.getString("AccountResourceIdentifier"));
+		double amount = action.getDouble("Amount");
+		LocalDateTime now = LocalDateTime.now();
+		Date d = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
+		
+		savingsPlan.updateBalance(savingsPlan.getBalance() + amount);
+		account.addSingleExpense(amount, "Savings", "Savings", d);
+		
+		savingsPlanObject.put("SavingsPlanResourceIdentifier", savingsPlan.getResourceIdentifier());
+		savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
+		savingsPlanObject.put("SavingsPlanAmount", savingsPlan.getAmount());
+		savingsPlanObject.put("SavingsPlanBalance", savingsPlan.getBalance());
+		savingsPlanObject.put("SavingsPlanDate", savingsPlan.getDate().format());
+		
+		response.put("UserResourceIdentifier", user.getResourceIdentifier());
+		response.put("AccountResourceIdentifier", account.getResourceIdentifier());
+		response.put("AmountAdded", amount);
+		response.put("SavingsPlan", savingsPlanObject);
 		
 		return response;
 	}
@@ -732,12 +855,51 @@ public class Parser {
 			String key = changes.getJSONObject(i).getString("Key");
 			
 			if(key.equals("Amount")) {
-				Double value = changes.getJSONObject(i).getDouble("Value");
-				transaction.updateAmount(value);
-			} else if(key.equals("SubBalanceBalance")) {
 				double value = changes.getJSONObject(i).getDouble("Value");
-				//transaction.updateBalance(value);
-			} 
+				transaction.updateAmount(value);
+			} else if(key.equals("Description")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				transaction.updateName(value);
+			} else if(key.equals("Category")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				transaction.updateCategory(value);
+			} else if(key.equals("AssociatedWith")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				transaction.updateParent(value);
+			} else if(key.equals("Date")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				int year = Integer.parseInt(value.substring(0,4));
+				int month = Integer.parseInt(value.substring(5,7));
+				int day = Integer.parseInt(value.substring(8, 10));
+				Date d = DateFactory.getDate(day, month, year);
+				transaction.updateDate(d);
+			}
+		}
+	}
+	
+	public static void modifySavingsPlan(String identifier, JSONArray changes) throws JSONException {
+		SavingsPlan savingsPlan = getSavingsPlan(identifier);
+		
+		for(int i = 0; i < changes.length(); i++) {
+			String key = changes.getJSONObject(i).getString("Key");
+			
+			if(key.equals("SavingsPlanName")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				savingsPlan.updateName(value);
+			} else if(key.equals("Amount")) {
+				double value = changes.getJSONObject(i).getDouble("Value");
+				savingsPlan.updateAmount(value);
+			} else if(key.equals("Balance")) {
+				double value = changes.getJSONObject(i).getDouble("Value");
+				savingsPlan.updateBalance(value);
+			} else if(key.equals("Date")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				int year = Integer.parseInt(value.substring(0,4));
+				int month = Integer.parseInt(value.substring(5,7));
+				int day = Integer.parseInt(value.substring(8, 10));
+				Date d = DateFactory.getDate(day, month, year);
+				savingsPlan.updateDate(d);
+			}
 		}
 	}
 	
