@@ -61,7 +61,7 @@ public class Parser {
 	}
 	
 	public static SavingsPlan getSavingsPlan (String identifier) {
-		if (!identifier.substring(0, 1).equals("sp"))
+		if (!identifier.substring(0, 2).equals("sp"))
 			return null;
 		return (SavingsPlan) resources.get(identifier);
 	}
