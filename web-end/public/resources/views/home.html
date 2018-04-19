@@ -12,11 +12,11 @@
 		<div class="transactionButton">
         		<button type="button" data-toggle="modal" data-target="#createTransactionModal" class="btn btn-primary float-right"><span class="glyphicon glyphicon-plus"></span> Add Transaction</button>
 		</div>
-		<div ng-show="showProjection"> 
+		<!--<div ng-show="showProjection"> -->
 			{{projection.ProjectedTotal}}	
-		</div>
+		<!--</div>-->
 		<div class="form-group projections">
-			Project balance on <input type="date" class="form-control projectionInput"> 
+			Project balance on <input type="date" class="form-control projectionInput" ng-model="projectionDate"> 
 			<button type="button" class="btn btn-primary editSavings" ng-click="getProjection()"><span class="glyphicon glyphicon-signal"></span></button>
         	</div>
 

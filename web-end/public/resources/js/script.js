@@ -415,16 +415,20 @@ console.log(response.data)
 
 
 		$scope.getProjection = function(){
+
+		console.log("getting projection")
 		$scope.showProjection = true;
 		$http({
            		method: 'GET',
            		url: '/request/get/projection',
-           		data: {
-           			"Limit": 30
+           		params: {
+				"ProjectionDate": $scope.projectionDate
        			}
 
       		}).then(function(success) {
-      			$scope.projection = success.data.Projection;
+			console.log("got projection")
+      			$scope.projection = success.data;
+			console.log($scope.projection)
        		}, function(error) {
       			// log error
     		});
