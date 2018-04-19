@@ -7,20 +7,23 @@
 
 	<div class = "row">
 	<div class = "col-12">
+		<div class="dib">
 		<h1>Recent Activity</h1>
 		<h3>Total Balance: {{totalBalance | currency}}</h3>
-		<div  ng-show="projection">
-			<label class="projectionDisp"> {{projection.ProjectedBalance}} </label>
-		</div>
 
 		<div class="transactionButton">
         		<button type="button" data-toggle="modal" data-target="#createTransactionModal" class="btn btn-primary float-right"><span class="glyphicon glyphicon-plus"></span> Add Transaction</button>
 		</div>
-		
-		<div class="form-group projections">
-			Project balance on <input type="date" class="form-control projectionInput" ng-model="projectionDate"> 
-			<button type="button" class="btn btn-primary editSavings" ng-click="getProjection()"><span class="glyphicon glyphicon-signal"></span></button>
-        	</div>
+		</div>
+		<div class="projection-div">
+			<div ng-show="projection">
+				<h3 class="projectionDisp"> {{projection.ProjectedBalance | currency}} </h3>
+			</div>
+			<div class="form-group projections">
+				Project balance on <input type="date" class="form-control projectionInput" ng-model="projectionDate"> 
+				<button type="button" class="btn btn-primary editSavings" ng-click="getProjection()"><span class="glyphicon glyphicon-signal"></span></button>
+        		</div>
+		</div>
 	</div>
 	</div>
 
@@ -88,7 +91,7 @@
 
 
 	<div class="form-group">
-		Saving <input type="number" class="form-control editSavings"  placeholder="Amount"> For <input type="text" class="form-control editSavings"  placeholder="Amount"> By <input type="date" class="form-control editSavings"  placeholder="Amount"> 
+		Saving <input type="number" class="form-control editSavings"  placeholder="SavingsPlan.SavingsPlanName"> For <input type="text" class="form-control editSavings"  placeholder="SavingsPlan.Amount"> By <input type="date" class="form-control editSavings"  placeholder="SavingsPlan.Date"> 
 		<button type="button" class="btn btn-primary editSavings"><span class="glyphicon glyphicon-thumbs-up"></span></button>
         </div>
 

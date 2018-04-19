@@ -45,8 +45,15 @@ nav {
 }
 
 .projectionDisp{
-	width:100%;
+	text-align:right;
+}
+
+.projection-div {
+	display: inline-block;
 	float:right;
+	position: absolute;
+	bottom: 0;
+	right: 0;
 }
 
 .projections{
