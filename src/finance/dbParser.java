@@ -259,7 +259,7 @@ public class dbParser {
 		newTransaction.append("Category", t.getCategory());
 		if(t instanceof RecurringIncome) {
 			newTransaction.append("Recurring", true);
-			newTransaction.append("RecurringUntil", ((RecurringIncome) t).getEndDate().format());
+			//newTransaction.append("RecurringUntil", ((RecurringIncome) t).getEndDate().format());
 			if(((RecurringIncome) t).getPeriod().equals(Period.DAILY)) {
 				newTransaction.append("RecurringFrequency", 1);
 			}
@@ -272,7 +272,7 @@ public class dbParser {
 		}
 		else if(t instanceof RecurringExpense) {
 			newTransaction.append("Recurring", true);
-			newTransaction.append("RecurringUntil", ((RecurringExpense) t).getEndDate().format());
+			//newTransaction.append("RecurringUntil", ((RecurringExpense) t).getEndDate().format());
 			if(((RecurringExpense) t).getPeriod().equals(Period.DAILY)) {
 				newTransaction.append("RecurringFrequency", 1);
 			}
