@@ -18,6 +18,17 @@ public class Budget {
 		
 	}
 	
+	/*
+	 * @requires n.len() > 0, l > 0, d > 0, u != null 
+	 * @throws none 
+	 * @modifies none
+	 * @effects creates a budget object
+	 * @returns this
+	 * @param string n - name of budget
+	 * @param double l - limit of budget
+	 * @param int d - duration of the budget in days
+	 * @param User u - user making the budget
+	 */
 	public Budget(String n, double l, int d, User u) {
 		this.name = n;
 		this.limit = l;
@@ -25,6 +36,7 @@ public class Budget {
 		this.user = u;
 	}
 	
+	//getters
 	public double getLimit() { 
 		return limit; 
 	}

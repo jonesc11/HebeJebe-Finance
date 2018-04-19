@@ -79,10 +79,10 @@ $(document).ready (function (app) {
 		};
 
 		$scope.editTransaction = function () {
-		$http({
-			url: '/request/modify',
-			method: 'POST',
-			data: {
+			$http({
+				url: '/request/modify',
+				method: 'POST',
+				data: {
 					ResourceIdentifier: $rootScope.editingTrans.ResourceIdentifier,
 					Changes: [
 						{ Key: "AssociatedWith", Value: $rootScope.editingTrans.Account.AccountResourceIdentifier },
@@ -263,7 +263,7 @@ console.log(response.data)
 				$http({
 					method: 'GET',
 					url: '/request/get/accounts',
-					params: {
+				params: {
 						GetFrom: $scope.user.ResourceIdentifier
 					}
 				}).then (function (response) {
@@ -358,7 +358,6 @@ console.log(response.data)
 			});
 		});
 
-	
 		$scope.$on('getTransactions', function () {
 			$http({
 				url: '/request/get/transactions',
@@ -412,7 +411,6 @@ console.log(response.data)
        	}, function(error) {
       		// log error
     	});
-
 
 		$scope.getProjection = function(){
 

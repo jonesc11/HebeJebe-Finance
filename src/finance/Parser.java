@@ -806,6 +806,31 @@ public class Parser {
 			}
 		}
 	}
+	public static void modifySavingsPlan(String identifier, JSONArray changes) throws JSONException {
+		SavingsPlan savingsPlan = getSavingsPlan(identifier);
+		
+		for(int i = 0; i < changes.length(); i++) {
+			String key = changes.getJSONObject(i).getString("Key");
+			
+			if(key.equals("SavingsPlanName")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				savingsPlan.updateName(value);
+			} else if(key.equals("Amount")) {
+				double value = changes.getJSONObject(i).getDouble("Value");
+				savingsPlan.updateAmount(value);
+			} else if(key.equals("Balance")) {
+				double value = changes.getJSONObject(i).getDouble("Value");
+				savingsPlan.updateBalance(value);
+			} else if(key.equals("Date")) {
+				String value = changes.getJSONObject(i).getString("Value");
+				int year = Integer.parseInt(value.substring(0,4));
+				int month = Integer.parseInt(value.substring(5,7));
+				int day = Integer.parseInt(value.substring(8, 10));
+				Date d = DateFactory.getDate(day, month, year);
+				savingsPlan.updateDate(d);
+			}
+		}
+	}
 	
 	public static void modifySavingsPlan(String identifier, JSONArray changes) throws JSONException {
 		SavingsPlan savingsPlan = getSavingsPlan(identifier);

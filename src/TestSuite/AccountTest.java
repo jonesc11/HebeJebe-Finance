@@ -45,7 +45,7 @@ public class AccountTest {
 		String test = correct2.addSingleExpense(20, "turtle", "test", new Date(5, 4, 2018) );
 		
 		assertTrue(correct2.getBalance() == 9980);
-		assertEquals("t0",test);
+		assertNotNull(test);
 					
 	}
 	
@@ -80,8 +80,25 @@ public class AccountTest {
 	public void addTransferTest() {
 	
 		Account correct2 = new Account("Collin", "Checking", balance);
-		assertNotNull(correct2.addTransfer(new Transfer(20.0, "from grams for birthday", "gifts", new Date(3, 9, 2018), "from", "to", 9980, 520)));
+		correct2.addTransfer(new Transfer(20.0, "from grams for birthday", "gifts", new Date(3, 9, 2018), "from", "to", 9980, 520));
 							
+	}
+	
+	@Test
+	public void CheckRecurringTransactionsTest() {
+		Account correct2 = new Account("Collin", "Checking", balance);
+		String test = correct2.addRecurringExpense(20, "gas", "test", Period.WEEKLY, new Date(5, 4, 2018), new Date(5, 4, 2020) );
+		correct2.addRecurringIncome(20, "getting mail for grampa", "test", Period.WEEKLY, new Date(5, 4, 2018), new Date(5, 4, 2020) );
+		correct2.checkRecurringTransactions();
+				
+	}
+	
+	@Test
+	public void addTransfer2Test() {
+		Account correct2 = new Account("Collin", "Checking", balance);
+		String test = correct2.addRecurringExpense(20, "gas", "test", Period.WEEKLY, new Date(5, 4, 2018), new Date(5, 4, 2020) );
+		correct2.addRecurringIncome(20, "getting mail for grampa", "test", Period.WEEKLY, new Date(5, 4, 2018), new Date(5, 4, 2020) );
+		correct2.addTransfer(new Transfer(20, "from grams for birthday", "birthday", new Date(18, 4, 2018), "test", "test", 90, 90) );
 	}
 
 }
