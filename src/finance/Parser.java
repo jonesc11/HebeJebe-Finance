@@ -308,11 +308,13 @@ public class Parser {
 		String identifier = user.createBudget(description, limit, duration, d1, d2);
 		Budget budget = getBudget(identifier);
 		
-		response.put("ResourceIdentifier", budget.getResourceIdentifier());
-		response.put("UserResourceIdentifier", user.getResourceIdentifier());
-		response.put("Limit", budget.getLimit());
-		response.put("Description", budget.getDescription());
-		response.put("Duration", budget.getDuration());
+		if(!budget.equals(null)) {
+			response.put("ResourceIdentifier", budget.getResourceIdentifier());
+			response.put("UserResourceIdentifier", user.getResourceIdentifier());
+			response.put("Limit", budget.getLimit());
+			response.put("Description", budget.getDescription());
+			response.put("Duration", budget.getDuration());
+		}
 				
 		return response;
 	}
@@ -332,11 +334,13 @@ public class Parser {
 		String identifier = user.createSavingsPlan(name, amount, date);
 		SavingsPlan savingsPlan = getSavingsPlan(identifier);
 		
-		response.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
-		response.put("UserResourceIdentifier", user.getResourceIdentifier());
-		response.put("SavingsPlanName", savingsPlan.getName());
-		response.put("SavingsPlanAmount", savingsPlan.getAmount());
-		response.put("SavingsPlanDate", savingsPlan.getDate().format());
+		if(!savingsPlan.equals(null)) {
+			response.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
+			response.put("UserResourceIdentifier", user.getResourceIdentifier());
+			response.put("SavingsPlanName", savingsPlan.getName());
+			response.put("SavingsPlanAmount", savingsPlan.getAmount());
+			response.put("SavingsPlanDate", savingsPlan.getDate().format());
+		}
 				
 		return response;
 	}
@@ -666,14 +670,16 @@ public class Parser {
 		User user = getUser(action.getString("UserResourceIdentifier"));
 		Budget budget = user.getBudget();
 		
-		budgetObject.put("ResourceIdentifier", budget.getResourceIdentifier());
-		budgetObject.put("UserResourceIdentifier", user.getResourceIdentifier());
-		budgetObject.put("Limit", budget.getLimit());
-		budgetObject.put("Description", budget.getDescription());
-		budgetObject.put("Balance", budget.getBalance());
-		budgetObject.put("Duration", budget.getDuration());
-		budgetObject.put("StartDate", budget.getStartDate().format());
-		budgetObject.put("EndDate", budget.getEndDate().format());
+		if(!budget.equals(null)) {
+			budgetObject.put("ResourceIdentifier", budget.getResourceIdentifier());
+			budgetObject.put("UserResourceIdentifier", user.getResourceIdentifier());
+			budgetObject.put("Limit", budget.getLimit());
+			budgetObject.put("Description", budget.getDescription());
+			budgetObject.put("Balance", budget.getBalance());
+			budgetObject.put("Duration", budget.getDuration());
+			budgetObject.put("StartDate", budget.getStartDate().format());
+			budgetObject.put("EndDate", budget.getEndDate().format());
+		}
 		
 		response.put("Budget", budgetObject);
 		
@@ -687,12 +693,14 @@ public class Parser {
 		User user = getUser(action.getString("GetFrom"));
 		SavingsPlan savingsPlan = user.getSavingsPlan();
 		
-		savingsPlanObject.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
-		savingsPlanObject.put("UserResourceIdentifier", user.getResourceIdentifier());
-		savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
-		savingsPlanObject.put("Amount", savingsPlan.getAmount());
-		savingsPlanObject.put("Balance", savingsPlan.getBalance());
-		savingsPlanObject.put("Date", savingsPlan.getDate().format());
+		if(!savingsPlan.equals(null)) {
+			savingsPlanObject.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
+			savingsPlanObject.put("UserResourceIdentifier", user.getResourceIdentifier());
+			savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
+			savingsPlanObject.put("Amount", savingsPlan.getAmount());
+			savingsPlanObject.put("Balance", savingsPlan.getBalance());
+			savingsPlanObject.put("Date", savingsPlan.getDate().format());
+		}
 		
 		response.put("SavingsPlan", savingsPlanObject);
 		

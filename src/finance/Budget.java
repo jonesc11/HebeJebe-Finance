@@ -61,8 +61,8 @@ public class Budget {
 		return endDate;
 	}
 	
-	public void updateBalance(double a) {
-		balance += a;
+	public void updateBalance(double b) {
+		balance = b;
 	}
 	
 }

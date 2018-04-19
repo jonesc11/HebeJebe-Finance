@@ -52,6 +52,42 @@ public class dbParser {
 			User u = new User(email, password, firstName, lastName, accounts);
 			u.setResourceIdentifier(identifier);
 			
+			if(d.getBoolean("SavingsPlan", false)) {
+				String spName = d.getString("SavingsPlanName");
+				double spAmount = d.getDouble("SavingsPlanAmount");
+				double spBalance = d.getDouble("SavingsPlanBalance");
+				String dateString = d.getString("SavingsPlanDate");
+				int year = Integer.parseInt(dateString.substring(0,4));
+				int month = Integer.parseInt(dateString.substring(5,7));
+				int day = Integer.parseInt(dateString.substring(8, 10));
+				Date spDate = DateFactory.getDate(day, month, year);
+				
+				String spIdentifier = u.createSavingsPlan(spName, spAmount, spDate);
+				SavingsPlan savingsPlan = Parser.getSavingsPlan(spIdentifier);
+				savingsPlan.updateBalance(spBalance);
+			}
+			
+			if(d.getBoolean("Budget", false)) {
+				double bLimit = d.getDouble("BudgetLimit");
+				String bDescription = d.getString("BudgetDescription");
+				double bBalance = d.getDouble("BudgetBalance");
+				int bDuration = d.getInteger("BudgetDuration");
+				String startDateString = d.getString("BudgetStartDate");
+				int year = Integer.parseInt(startDateString.substring(0,4));
+				int month = Integer.parseInt(startDateString.substring(5,7));
+				int day = Integer.parseInt(startDateString.substring(8, 10));
+				Date bStartDate = DateFactory.getDate(day, month, year);
+				String endDateString = d.getString("BudgetEndDate");
+				year = Integer.parseInt(endDateString.substring(0,4));
+				month = Integer.parseInt(endDateString.substring(5,7));
+				day = Integer.parseInt(endDateString.substring(8, 10));
+				Date bEndDate = DateFactory.getDate(day, month, year);
+				
+				String bIdentifier = u.createBudget(bDescription, bLimit, bDuration, bStartDate, bEndDate);
+				Budget budget = Parser.getBudget(bIdentifier);
+				budget.updateBalance(bBalance);
+			}
+			
 			Parser.addUser(identifier, u);
 		}
 		
@@ -330,6 +366,26 @@ public class dbParser {
 		else {
 			return "";
 		}
+	}
+	
+	public static void insertSavingsPlan(String identifier, SavingsPlan savingsPlan) {
+		MongoCollection<Document> users = db.getCollection("users");
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlan", true));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlanName", savingsPlan.getName()));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlanAmount", savingsPlan.getAmount()));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlanBalance", savingsPlan.getBalance()));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("SavingsPlan", savingsPlan.getDate().format()));
+	}
+	
+	public static void insertBudget(String identifier, Budget budget) {
+		MongoCollection<Document> users = db.getCollection("users");
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("Budget", true));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("BudgetLimit", budget.getLimit()));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("BudgetDescription", budget.getDescription()));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("BudgetBalance", budget.getBalance()));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("BudgetDuration", budget.getDuration()));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("BudgetStartDate", budget.getStartDate().format()));
+		users.updateOne(Filters.eq("ResourceIdentifier", identifier), Updates.set("BudgetEndDate", budget.getEndDate().format()));
 	}
 	
 	public static void updateUser(String identifier, String key, String value) {
