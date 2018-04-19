@@ -187,11 +187,13 @@ public class Parser {
 				}
 			} else if(type.equals("Expense")) {
 				if(recurring) {
-					String endDateString = action.getString("RecurringUntil");
-					int endYear = Integer.parseInt(endDateString.substring(0,4));
-					int endMonth = Integer.parseInt(endDateString.substring(5,7));
-					int endDay = Integer.parseInt(endDateString.substring(8, 10));
-					endDate = DateFactory.getDate(endDay, endMonth, endYear);
+					if(action.isNull("RecurringUntil")) {
+						String endDateString = action.getString("RecurringUntil");
+						int endYear = Integer.parseInt(endDateString.substring(0,4));
+						int endMonth = Integer.parseInt(endDateString.substring(5,7));
+						int endDay = Integer.parseInt(endDateString.substring(8, 10));
+						endDate = DateFactory.getDate(endDay, endMonth, endYear);
+					}
 					Period period;
 					if(action.getInt("RecurringFrequency") == 30) {
 						period = Period.MONTHLY;
