@@ -261,6 +261,7 @@ function handleGetSavingsPlan (req, userRID) {
       GetFrom: req.query.GetFrom ? req.query.GetFrom : userRID
     }
   };
+console.log(data);
 
   return data;
 }

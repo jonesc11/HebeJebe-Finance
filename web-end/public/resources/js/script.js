@@ -381,6 +381,7 @@ console.log(response.data)
 			}
 		}).
 		then(function(success) {
+console.log (success.data);
 			$scope.SavingsPlan = success.data;
 			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount)
 		}, function(error) {
