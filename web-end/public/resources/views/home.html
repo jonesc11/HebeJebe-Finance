@@ -63,14 +63,14 @@
 	</div>
 	<div class="col-6">
 	<h3> Budgets: {{Budget.Description}} </h3>	
-	<h4 class="budget"> {{Budget.StartDate}} - {{Budget.EndDate}} </h4>
+	<h4 class="budget" ng-show="Budget!=undefined"> {{Budget.StartDate}} - {{Budget.EndDate}} </h4>
 	<div class="progress">
-  		<div class="progress-bar" role="progressbar" style="width:{{budgetPercent}}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+  		<div class="progress-bar" role="progressbar" ng-show="Budget!=undefined" style="width:{{budgetPercent}}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
 	</div>	
-	<div class="from-group budget" ng-show="Budget">
+	<div class="from-group budget" ng-show="Budget!=undefined">
 		<h4>{{Budget.Balance | currency }} / {{Budget.Limit | currency }}</h4>
 	</div>
-	<div class=form-group ng-hide="Budget">
+	<div class=form-group ng-show="Budget==undefined">
 		<input type="number" class="form-control savingsForm"  placeholder="Limit" ng-model="budgetLimit">
 		<input type="text" class="form-control savingsForm"  placeholder="Description" ng-model="budgetDescription">
 		<input type="number" class="form-control savingsForm"  placeholder="Days" ng-model="budgetDuration">
