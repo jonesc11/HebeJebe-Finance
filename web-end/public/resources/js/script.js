@@ -50,6 +50,7 @@ $(document).ready (function (app) {
 			});
         	};
 
+
 		$scope.createTransaction = function(){
 	    		$http({
 	  		method: 'POST',
@@ -333,6 +334,7 @@ console.log(response.data)
 			});
 		});
 
+	
 		$scope.$on('getTransactions', function () {
 			$http({
 				url: '/request/get/transactions',
@@ -346,6 +348,19 @@ console.log(response.data)
 			}, function (error) {
 				$scope.errorMessage = error.data.ErrorMessage;
 			});
+		});
+
+		$http({
+  			method: 'GET',
+  			url: '/request/get/savingsplan',
+  			data: {
+  				"Limit": 30,
+			}
+		}).
+		then(function(success) {
+			$scope.SavingsPlan = success.data.SavingsPlan;
+		}, function(error) {
+			// log error
 		});
 
 
@@ -374,6 +389,8 @@ console.log(response.data)
       		// log error
     	});
 
+
+		
 		$scope.getTotalBalance = function(){
 			if($scope.accounts == undefined){
 				return 0;
@@ -385,6 +402,11 @@ console.log(response.data)
 			}
 
 			return totalBalance;
+		};
+			
+		$scope.addMoney = function(){
+			$scope.SavingsPlan.Balance += moneyToAdd;
+			$scope.moneyToAddAcc.AccountBalance -= moneyToAdd;
 		};
 
 		$scope.totalBalance = $scope.getTotalBalance();

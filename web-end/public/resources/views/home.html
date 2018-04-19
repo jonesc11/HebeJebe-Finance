@@ -49,6 +49,39 @@
   		</tbody>
 		</table>    
 	</div>
+	<div class="col-6">
+	budgets go here
+	</div>
+	<div class="col-6">
+		
+	<h3>Savings Plan: {{  }}</h3>
+
+	<div class="progress progress-bar-vertical">
+    		<div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="height: 30%;">
+      			<span class="sr-only">30% Complete</span>
+    		</div>
+  	</div>
+
+	<div class="form-group">
+		<label>Account</label>
+		<br/>
+              	<select class="form-control mb-3 savingsForm" ng-model="moneyToAddAcc">
+                	<option ng-repeat="account in accounts | orderBy:'AccountName'" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
+              	</select>
+
+		<input type="number" class="form-control savingsForm"  placeholder="Amount" ng-model="moneyToAdd">
+		<button type="button" class="btn btn-primary float-right" ng-click="addMoney()">Add Money</button>
+        </div>
+
+
+	<div class="form-group">
+		Saving <input type="number" class="form-control editSavings"  placeholder="Amount"> For <input type="text" class="form-control editSavings"  placeholder="Amount"> By <input type="date" class="form-control editSavings"  placeholder="Amount"> 
+		<button type="button" class="btn btn-primary editSavings"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+        </div>
+
+
+	
+	</div>
 	</div>	<!-- end col div -->
 	</div> <!-- end row div -->
 	</div> <!-- end container div -->
