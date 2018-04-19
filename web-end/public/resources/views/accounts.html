@@ -82,11 +82,11 @@
             </thead>
             <tbody>
               <tr ng-show="!account.subbalances || account.subbalances.length == 0">
-                <td colspan="6" class="text-center">There are no subbalances to show. <a href="" data-toggle="modal" data-target="#viewSubbalanceModal">Create one here!</a></td>
+                <td colspan="6" class="text-center">There are no subbalances to show. <a href="" data-toggle="modal" data-target="#createSubbalanceModal">Create one here!</a></td>
               </tr>
               <tr ng-repeat="subbalance in account.subbalances | orderBy:'SubBalanceName'" ng-click="viewSubbalance()">
                 <td>{{subbalance.SubBalanceName}}</td>
-                <td>{{subbalance.Balance}}</td>
+                <td>{{subbalance.Balance | currency}}</td>
                 <td><span class="glyphicon glyphicon-pencil"></span></td>
                 <td><span class="glyphicon glyphicon-trash"></span></td>
               </tr>

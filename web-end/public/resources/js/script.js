@@ -251,6 +251,11 @@ $(document).ready (function (app) {
 			$('#deleteAccountModal').modal('show');
 		};
 
+		$scope.viewSubbalance = function () {
+			$('#viewSubbalanceModal').modal('show');
+			$rootScope.subbalance = this.subbalance;
+		}
+
 		$scope.user = {};
 		$scope.accountId = $routeParams.id;
 		$rootScope.accountResourceIdentifier = $routeParams.id;
@@ -261,7 +266,6 @@ $(document).ready (function (app) {
 				params: {}
 			}).then (function (response) {
 				$scope.user = response.data.User;
-console.log(response.data)
 				if ($routeParams.id)
 					$scope.noAccountSelected = false;
 				else
@@ -269,7 +273,7 @@ console.log(response.data)
 				$http({
 					method: 'GET',
 					url: '/request/get/accounts',
-				params: {
+					params: {
 						GetFrom: $scope.user.ResourceIdentifier
 					}
 				}).then (function (response) {
@@ -301,23 +305,26 @@ console.log(response.data)
 								GetFrom: $scope.accounts[i].ResourceIdentifier
 							}
 						}).then (function (response) {
-							$scope.accounts[retInd2].subbalances = response.data.Subbalances;
+							$scope.accounts[retInd2].subbalances = response.data.SubBalances;
 							if (!$scope.accounts[retInd2].subbalances)
 								return;
 							var retInd3 = 0;
+							var retInd4 = retInd2;
 							for (var j = 0; j < $scope.accounts[retInd2].subbalances.length; ++j) {
 								$http({
 									url: '/request/get/transactions',
 									method: 'GET',
 									params: {
-										GetFrom: $scope.accounts[retInd2].subbalances[retInd3].ResourceIdentifier,
+										GetFrom: $scope.accounts[retInd2].subbalances[j].ResourceIdentifier,
 										Limit: 200
 									}
 								}).then (function (response) {
-									$scope.accounts[retInd2].subbalances[retInd3].transactions = response.data.Transactions;
-									for (var k = 0; k < $scope.accounts[retInd1].transactions.length; ++k) {
-										$scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime = new Date ($scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime);
-										$scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTimeString = $scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime.getFullYear() + '-' + ($scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime.getMonth() + 1) + '-' + $scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime.getDate();
+									$scope.accounts[retInd4].subbalances[retInd3].transactions = response.data.Transactions;
+									for (var k = 0; k < $scope.accounts[retInd4].subbalances[retInd3].transactions.length; ++k) {
+										if (!$scope.accounts[retInd4].subbalances || !$scope.accounts[retInd4].subbalances[retInd3].transactions)
+											continue;
+										$scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTime = new Date ($scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTime);
+										$scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTimeString = $scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTime.getFullYear() + '-' + ($scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTime.getMonth() + 1) + '-' + $scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTime.getDate();
 									}
 									retInd3++;
 								});

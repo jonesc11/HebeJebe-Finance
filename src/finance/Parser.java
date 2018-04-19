@@ -55,7 +55,7 @@ public class Parser {
 	}
 	
 	public static SubBalance getSubBalance (String identifier) {
-		if (!identifier.substring(0, 1).equals("sb"))
+		if (!identifier.substring(0, 2).equals("sb"))
 			return null;
 		return (SubBalance) resources.get(identifier);
 	}
@@ -519,12 +519,12 @@ public class Parser {
 			Account account = Parser.getAccount(action.getString("GetFrom"));
 			List<String> subBalanceList = account.getSubBalanceResourceIdentifiers();
 			
-			for(int i = 0; i < limit; i++) {
+			for(int i = 0; i < limit && i < subBalanceList.size(); i++) {
 				SubBalance sb = (SubBalance)Parser.getResource(subBalanceList.get(i));
 				JSONObject sbObject = new JSONObject();
 				
 				sbObject.put("ResourceIdentifier", sb.getResourceIdentifier());
-				sbObject.put("AccountResourceIdentifier", sb.getParentIdentifier());
+				//sbObject.put("AccountResourceIdentifier", sb.getParentIdentifier());
 				sbObject.put("SubBalanceName", sb.getName());
 				sbObject.put("Balance", sb.getBalance());
 				sbObject.put("LatestTransactions", Parser.getTransactionsJSONArray(sb.getResourceIdentifier(), 25));
@@ -568,6 +568,8 @@ public class Parser {
 			allTransactions = Parser.getUser(getFrom).getTransactionHistory();
 		else if (getFrom.substring(0, 1).equals("a"))
 			allTransactions = Parser.getAccount(getFrom).getTransactionHistory();
+		else if (getFrom.substring(0, 2).equals("sb"))
+			allTransactions = Parser.getSubBalance(getFrom).getTransactionHistory();
 		
 		if (!action.isNull("Category"))
 			category = action.getString("Category");
@@ -676,7 +678,7 @@ public class Parser {
 		User user = getUser(action.getString("UserResourceIdentifier"));
 		Budget budget = user.getBudget();
 		
-		if(!budget.equals(null)) {
+		if(budget != null) {
 			budgetObject.put("ResourceIdentifier", budget.getResourceIdentifier());
 			budgetObject.put("UserResourceIdentifier", user.getResourceIdentifier());
 			budgetObject.put("Limit", budget.getLimit());
