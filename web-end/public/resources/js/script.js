@@ -65,6 +65,31 @@ $(document).ready (function (app) {
 
 
 		$scope.createTransaction = function(){
+			if (!$scope.TransactionType) {
+				alert ('Transaction type must be specified.');
+				return;
+			if (!$scope.Amount || $scope.Amount <=0) {
+				alert ('Amount must be greater than zero.');
+				return;
+			}
+			if (!$scope.Description || $scope.Description == '') {
+				alert ('Description must be specified.');
+				return;
+			}
+			if (!$scope.DateTime || $scope.DateTime == null) {
+				alert ('Date must be set.');
+				return;
+			}
+			if (!$scope.AssociatedWith || $scope.AssociatedWith == '') {
+				alert ('Transaction must belong to an account.');
+				return;
+			}
+			if ($scope.Recurring && !$scope.transactionRecurringRecurInterval) {
+				alert ('Recurring interval must be specified.');
+				return;
+			}
+			}
+
 	    		$http({
 	  		method: 'POST',
   			url: '/request/create/transaction',
