@@ -189,7 +189,7 @@ public class Parser {
 				}
 			} else if(type.equals("Expense")) {
 				if(recurring) {
-					if(action.isNull("RecurringUntil")) {
+					if(!action.isNull("RecurringUntil")) {
 						String endDateString = action.getString("RecurringUntil");
 						int endYear = Integer.parseInt(endDateString.substring(0,4));
 						int endMonth = Integer.parseInt(endDateString.substring(5,7));
