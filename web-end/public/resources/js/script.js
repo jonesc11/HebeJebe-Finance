@@ -388,8 +388,8 @@ console.log(response.data)
 		then(function(success) {
 			console.log ("savings plan:")
 			console.log(success.data);
-			$scope.SavingsPlan = success.data;
-			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount)
+			$scope.SavingsPlan = success.data.SavingsPlan;
+			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount) * 100;
 		}, function(error) {
 			// log error
 		});
@@ -478,7 +478,7 @@ console.log(response.data)
 		}
 
 		$scope.createOrModifySavings = function(){
-			if($scope.SavingsPlan == undefined){
+			if($scope.SavingsPlan == undefined || $scope.SavingsPlan.SavingsPlanName == undefined){
 				$scope.createSavings();
 			}else{
 
@@ -522,20 +522,28 @@ console.log(response.data)
 		$scope.addMoney = function(){
 			$http({
            			method: 'POST',
-           			url: '/request/addTo/savingsPlan',
+           			url: '/request/addto/savingsplan',
            			data: {
-					"Changes": [{
-							"Amount": $scope.moneyToAdd,
-							"Account": $scope.moneyToAddAcc
-						}]
+					"Amount": $scope.moneyToAdd,
+					"AccountResourceIdentifier": $scope.moneyToAddAcc
        				}
       			}).then(function(success) {
-
+				console.log("added money")
+				console.log(success.data)
+				$scope.SavingsPlan = success.data.SavingsPlan;
+				$scope.SavingsPlan.Balance = success.data.SavingsPlan.SavingsPlanBalance;
+				$scope.SavingsPlan.Amount = success.data.SavingsPlan.SavingsPlanAmount;
+				$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount) * 100;
+				$http({
+					url: '/request/get/transactions',
+					method: 'GET'
+				}).then (function (success) {
+					$scope.transactions = success.data.Transactions;
+				});
        			}, function(error) {
       			// log error
     			});
 
-			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount)
 		};
 
 		$scope.totalBalance = $scope.getTotalBalance();
