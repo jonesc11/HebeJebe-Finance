@@ -66,6 +66,12 @@ public class Parser {
 		return (SavingsPlan) resources.get(identifier);
 	}
 	
+	public static Budget getBudget (String identifier) {
+		if (!identifier.substring(0, 1).equals("b"))
+			return null;
+		return (Budget) resources.get(identifier);
+	}
+	
 	public static void addResource (String identifier, Object resource) {
 		resources.put(identifier, resource);
 	}
@@ -118,6 +124,8 @@ public class Parser {
 		} else if(actionType.equals("CreateTransaction")) {
 			User user = users.get(request.getString("AccountId"));
 			response = parseCreateTransaction (action, user);
+		} else if(actionType.equals("CreateBudget")) {
+			response = parseCreateBudget(action);
 		} else if(actionType.equals("CreateSavingsPlan")) {
 			response = parseCreateSavingsPlan(action);
 		} else if(actionType.equals("Login")) {
@@ -283,6 +291,29 @@ public class Parser {
 		response.put("FirstName", firstName);
 		response.put("LastName", lastName);
 		
+		return response;
+	}
+	
+	public static JSONObject parseCreateBudget(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		
+		User user = getUser(action.getString("UserResourceIdentifier"));
+		double limit = action.getDouble("Limit");
+		String description = action.getString("Description");
+		int duration = action.getInt("Duration");
+		LocalDateTime now = LocalDateTime.now();
+		Date d1 = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
+		Date d2 = DateFactory.getDate(now.getDayOfMonth() + duration, now.getMonthValue(), now.getYear());
+		
+		String identifier = user.createBudget(description, limit, duration, d1, d2);
+		Budget budget = getBudget(identifier);
+		
+		response.put("ResourceIdentifier", budget.getResourceIdentifier());
+		response.put("UserResourceIdentifier", user.getResourceIdentifier());
+		response.put("Limit", budget.getLimit());
+		response.put("Description", budget.getDescription());
+		response.put("Duration", budget.getDuration());
+				
 		return response;
 	}
 	
@@ -628,6 +659,27 @@ public class Parser {
 		return response;
 	}
 	
+	public static JSONObject parseGetBudget(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		JSONObject budgetObject = new JSONObject();
+		
+		User user = getUser(action.getString("UserResourceIdentifier"));
+		Budget budget = user.getBudget();
+		
+		budgetObject.put("ResourceIdentifier", budget.getResourceIdentifier());
+		budgetObject.put("UserResourceIdentifier", user.getResourceIdentifier());
+		budgetObject.put("Limit", budget.getLimit());
+		budgetObject.put("Description", budget.getDescription());
+		budgetObject.put("Balance", budget.getBalance());
+		budgetObject.put("Duration", budget.getDuration());
+		budgetObject.put("StartDate", budget.getStartDate().format());
+		budgetObject.put("EndDate", budget.getEndDate().format());
+		
+		response.put("Budget", budgetObject);
+		
+		return response;
+	}
+	
 	public static JSONObject parseGetSavingsPlan(JSONObject action) throws JSONException {
 		JSONObject response = new JSONObject();
 		JSONObject savingsPlanObject = new JSONObject();
@@ -637,7 +689,7 @@ public class Parser {
 		
 		savingsPlanObject.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
 		savingsPlanObject.put("UserResourceIdentifier", user.getResourceIdentifier());
-		savingsPlanObject.put("SavingsPlanname", savingsPlan.getName());
+		savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
 		savingsPlanObject.put("Amount", savingsPlan.getAmount());
 		savingsPlanObject.put("Balance", savingsPlan.getBalance());
 		savingsPlanObject.put("Date", savingsPlan.getDate().format());

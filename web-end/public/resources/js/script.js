@@ -20,6 +20,18 @@ $(document).ready (function (app) {
 	}]);
 
 	app.controller('ModalController', function ($rootScope, $scope, $http) {
+		$scope.deleteAccount = function () {
+ 			$http({
+				url: '/request/delete',
+				method: 'POST',
+				data: { ResourceIdentifier: $rootScope.deletingAcct.ResourceIdentifier }
+			}).then (function (success) {
+				$('#deleteAccountModal').modal('hide');
+			}, function (error) {
+
+			});
+		};
+
 		$scope.deleteTransaction = function () {
 			$http({
 				url: '/request/delete',
@@ -232,19 +244,12 @@ $(document).ready (function (app) {
 		$scope.editSubbalance = function () {
 			$rootScope.editingSub = this.subbalance;
 		};
-$rootScope.subbalance = {
-	SubBalanceName: 'Test Subbalance',
-	Balance: 14,
-	transactions: [{
-		TransactionType: 'Expense',
-		DateTime: new Date('2018-04-08'),
-		DateTimeString: '2018-04-08',
-		Amount: 4,
-		Description: 'Payment',
-		Category: 'Car',
-		SubBalance: { SubBalanceBalance: 14 }
-	}]
-};
+
+		$scope.deleteAccountLoad = function () {
+			$rootScope.deletingAcct = $scope.account;
+			$('#deleteAccountModal').modal('show');
+		};
+
 		$scope.user = {};
 		$scope.accountId = $routeParams.id;
 		$rootScope.accountResourceIdentifier = $routeParams.id;
