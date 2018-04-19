@@ -170,11 +170,6 @@ public class dbParser {
 			
 			if(type.equals("Income")) {
 				if(recurring) {
-					String endDateString = d.getString("RecurringUntil");
-					int endYear = Integer.parseInt(endDateString.substring(0,4));
-					int endMonth = Integer.parseInt(endDateString.substring(5,7));
-					int endDay = Integer.parseInt(endDateString.substring(8, 10));
-					Date endDate = DateFactory.getDate(endDay, endMonth, endYear);
 					int recurFrequency = d.getInteger("RecurringFrequency");
 					Period period;
 					if(recurFrequency == 30) {
@@ -184,6 +179,7 @@ public class dbParser {
 					} else {
 						period = Period.DAILY;
 					}
+					Date endDate = new Date(0, 0, 0);
 					t = new RecurringIncome(amount, name, category, period, date, endDate, pIdentifier);
 					t.setResourceIdentifier(identifier);
 				} else {
@@ -193,11 +189,7 @@ public class dbParser {
 				}
 			} else if(type.equals("Expense")) {
 				if(recurring) {
-					String endDateString = d.getString("RecurringUntil");
-					int endYear = Integer.parseInt(endDateString.substring(0,4));
-					int endMonth = Integer.parseInt(endDateString.substring(5,7));
-					int endDay = Integer.parseInt(endDateString.substring(8, 10));
-					Date endDate = DateFactory.getDate(endDay, endMonth, endYear);
+					Date endDate = DateFactory.getDate(0, 0, 0);
 					int recurFrequency = d.getInteger("RecurringFrequency");
 					Period period;
 					if(recurFrequency == 30) {
