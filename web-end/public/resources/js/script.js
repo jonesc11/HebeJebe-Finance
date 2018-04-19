@@ -46,6 +46,17 @@ $(document).ready (function (app) {
 
 		
        		$scope.createAccount = function () {
+			if($scope.createAccountBalance < 0){ 
+				alert("Account balance cannot be less than zero");
+				return;
+			}
+
+
+			if($scope.createAccountName == undefined || $scope.createAccountName == ""){
+				alert("You must enter an account name");
+				return;
+			}
+
            		$http ({
                		method: 'POST',
                		url: '/request/create/account',
@@ -116,6 +127,16 @@ $(document).ready (function (app) {
 		};
 
 		$scope.createSubbalance = function () {
+			if($scope.createSubbalanceName == undefined || $scope.createSubbalanceName == ""){
+				alert("You must enter a sub-balance name");
+				return;
+			}
+
+			if($scope.createSubbalanceBalance < 0){
+				alert("Sub-balances cannot be negative");
+				return;
+			}
+
 			$http({
 				url: '/request/create/subbalance',
 				method: 'POST',
@@ -459,6 +480,16 @@ $(document).ready (function (app) {
     	});
 		
 	$scope.createBudget = function(){
+		if($scope.budgetLimit < 0){
+			alert("Budget limits cannot be negative");
+			return;
+		}
+
+		if($scope.budgetDescription == undefined || $scope.budgetDescription == ""){
+			alert("You must enter a budget description");
+			return;
+		}
+
 		console.log("creating a budget");
 		$http ({
                		method: 'POST',
