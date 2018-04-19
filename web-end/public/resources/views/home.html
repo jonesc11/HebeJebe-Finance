@@ -9,17 +9,18 @@
 	<div class = "col-12">
 		<h1>Recent Activity</h1>
 		<h3>Total Balance: {{totalBalance | currency}}</h3>
+		<div  ng-show="projection">
+			<label class="projectionDisp"> {{projection.ProjectedBalance}} </label>
+		</div>
+
 		<div class="transactionButton">
         		<button type="button" data-toggle="modal" data-target="#createTransactionModal" class="btn btn-primary float-right"><span class="glyphicon glyphicon-plus"></span> Add Transaction</button>
 		</div>
-		<!--<div ng-show="showProjection"> -->
-			{{projection.ProjectedTotal}}	
-		<!--</div>-->
+		
 		<div class="form-group projections">
 			Project balance on <input type="date" class="form-control projectionInput" ng-model="projectionDate"> 
 			<button type="button" class="btn btn-primary editSavings" ng-click="getProjection()"><span class="glyphicon glyphicon-signal"></span></button>
         	</div>
-
 	</div>
 	</div>
 
@@ -69,7 +70,7 @@
 	<h3>Savings Plan: {{SavingsPlan.SavingsPlanName}}</h3>
 
 	<div class="progress progress-bar-vertical">
-    		<div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="height: 30%;">
+    		<div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="height: {{savingsPercent}}%;">
       			<span class="sr-only">30% Complete</span>
     		</div>
   	</div>

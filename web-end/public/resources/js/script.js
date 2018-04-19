@@ -381,7 +381,22 @@ console.log(response.data)
 			}
 		}).
 		then(function(success) {
-			$scope.SavingsPlan = success.data.SavingsPlan;
+			$scope.SavingsPlan = success.data;
+			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount)
+		}, function(error) {
+			// log error
+		});
+
+		$http({
+  			method: 'GET',
+  			url: '/request/get/budget',
+  			data: {
+  				"Limit": 30,
+			}
+		}).
+		then(function(success) {
+			$scope.Budget = success.data;
+			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount)
 		}, function(error) {
 			// log error
 		});
@@ -446,10 +461,10 @@ console.log(response.data)
 
 			return totalBalance;
 		};
+
 			
 		$scope.addMoney = function(){
-			$scope.SavingsPlan.Balance += moneyToAdd;
-			$scope.moneyToAddAcc.AccountBalance -= moneyToAdd;
+			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount)
 		};
 
 		$scope.totalBalance = $scope.getTotalBalance();

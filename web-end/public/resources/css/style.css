@@ -44,6 +44,10 @@ nav {
 	display: inline-block;
 }
 
+.projectionDisp{
+	width:100%;
+	float:right;
+}
 
 .projections{
 	float:right;
