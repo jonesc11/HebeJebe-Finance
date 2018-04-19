@@ -736,7 +736,7 @@ public class Parser {
 				transaction.updateAmount(value);
 			} else if(key.equals("SubBalanceBalance")) {
 				double value = changes.getJSONObject(i).getDouble("Value");
-				transaction.updateBalance(value);
+				//transaction.updateBalance(value);
 			} 
 		}
 	}
@@ -869,7 +869,7 @@ public class Parser {
 		nextUserRI = numUsers + 1;
 		
 		int numAccounts = 0, numSubBalances = 0, numTransactions = 0;
-		List<Object> resourceList = new ArrayList<Object>(resources.keySet());
+		List<Object> resourceList = new ArrayList<Object>(resources.values());
 		for(int i = 0; i < resourceList.size(); i++) {
 			if(resourceList.get(i) instanceof Account) {
 				numAccounts++;
