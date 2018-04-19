@@ -473,6 +473,13 @@ function handleCreateTransaction (req, userRID) {
   if (req.body.Recurring === true && (!req.body.RecurringFrequency || req.body.RecurringFrequency === null))
     return { ErrorMessage: "Recurring transactions must have specified Recurring Frequency periods." };
 
+  if (req.body.RecurringFrequency === 'Daily')
+    req.body.RecurringFrequency = 1;
+  if (req.body.RecurringFrequency === 'Weekly')
+    req.body.RecurringFrequency = 7;
+  if (req.body.RecurringFrequency === 'Monthly')
+    req.body.RecurringFrequency = 30;
+
   var data = {
     Key: accessKey,
     Secret: secretKey,

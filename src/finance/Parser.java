@@ -201,6 +201,8 @@ public class Parser {
 						period = Period.MONTHLY;
 					} else if(action.getInt("RecurringFrequency") == 365) {
 						period = Period.YEARLY;
+					} else if(action.getInt("RecurringFrequency") == 7) {
+						period = Period.WEEKLY;
 					} else {
 						period = Period.DAILY;
 					}
