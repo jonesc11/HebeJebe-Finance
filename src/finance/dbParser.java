@@ -189,7 +189,7 @@ public class dbParser {
 				}
 			} else if(type.equals("Expense")) {
 				if(recurring) {
-					Date endDate = DateFactory.getDate(0, 0, 0);
+					Date endDate = DateFactory.getDate(1, 1, 1);
 					int recurFrequency = d.getInteger("RecurringFrequency");
 					Period period;
 					if(recurFrequency == 30) {
