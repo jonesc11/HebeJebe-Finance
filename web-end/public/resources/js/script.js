@@ -76,26 +76,26 @@ $(document).ready (function (app) {
 
 
 		$scope.createTransaction = function(){
-			if (!$scope.TransactionType) {
+			if (!$scope.transactionType) {
 				alert ('Transaction type must be specified.');
 				return;
-			if (!$scope.Amount || $scope.Amount <=0) {
+			if (!$scope.amount || $scope.amount <= 0) {
 				alert ('Amount must be greater than zero.');
 				return;
 			}
-			if (!$scope.Description || $scope.Description == '') {
+			if (!$scope.transactionDescription  || $scope.transactionDescription == '') {
 				alert ('Description must be specified.');
 				return;
 			}
-			if (!$scope.DateTime || $scope.DateTime == null) {
+			if (!$scope.transactionDate || $scope.transactionDate == null) {
 				alert ('Date must be set.');
 				return;
 			}
-			if (!$scope.AssociatedWith || $scope.AssociatedWith == '') {
+			if (!$scope.transactionAccount || $scope.transactionAccount == '') {
 				alert ('Transaction must belong to an account.');
 				return;
 			}
-			if ($scope.Recurring && !$scope.transactionRecurringRecurInterval) {
+			if ($scope.recurring && !$scope.transactionRecurringRecurInterval) {
 				alert ('Recurring interval must be specified.');
 				return;
 			}
