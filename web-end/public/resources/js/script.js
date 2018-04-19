@@ -44,6 +44,7 @@ $(document).ready (function (app) {
 			});
 		};
 
+		
        		$scope.createAccount = function () {
            		$http ({
                		method: 'POST',
@@ -402,9 +403,9 @@ console.log(response.data)
 			}
 		}).
 		then(function(success) {
-			$scope.Budget = success.data;
+			$scope.Budget = success.data.Budget;
 			console.log($scope.Budget);
-			$scope.budgetPercent = ($scope.Budget.Balance / $scope.Budget.Amount)
+			$scope.budgetPercent = ($scope.Budget.Balance / $scope.Budget.Limit) * 100;
 		}, function(error) {
 			// log error
 		});
@@ -419,6 +420,21 @@ console.log(response.data)
 		}).
 		then(function(success) {
 			$scope.transactions = success.data.Transactions;
+				$http({
+  				method: 'GET',
+  				url: '/request/get/budget',
+  				data: {
+  					"Limit": 30,
+				}
+			}).
+			then(function(success) {
+				$scope.Budget = success.data.Budget;
+				console.log($scope.Budget);
+				$scope.budgetPercent = ($scope.Budget.Balance / $scope.Budget.Limit) * 100;
+			}, function(error) {
+			// log error
+			});
+
 		}, function(error) {
 			// log error
 		});
@@ -434,6 +450,26 @@ console.log(response.data)
        	}, function(error) {
       		// log error
     	});
+		
+	$scope.createBudget = function(){
+		console.log("creating a budget");
+		$http ({
+               		method: 'POST',
+               		url: '/request/create/budget',
+               		data: {
+					Limit: $scope.budgetLimit,
+					Description: $scope.budgetDescription,
+					Balance: 0,
+					Duration: $scope.budgetDuration
+				}
+			}).then (function (success) {
+				$scope.Budget = success.data.Budget;
+				console.log(success.data);
+			}).then (function (error) {
+			});
+
+		}
+
 
 		$scope.getProjection = function(){
 

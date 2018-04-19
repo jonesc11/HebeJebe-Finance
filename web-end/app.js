@@ -451,7 +451,8 @@ function handleCreateBudget (req, userRID) {
     Action: {
       Limit: req.body.Limit,
       Description: req.body.Description ? req.body.Description : '',
-      Duration: req.body.Duration
+      Duration: req.body.Duration,
+      UserResourceIdentifier: req.body.UserResourceIdentifier ? req.bodyUserResourceIdentifier : userRID
     }
   };
 
