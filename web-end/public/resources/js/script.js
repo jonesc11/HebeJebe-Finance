@@ -440,29 +440,29 @@ $(document).ready (function (app) {
 			}
 		}).
 		then(function(success) {
-			console.log ("savings plan:")
-			console.log(success.data);
 			$scope.SavingsPlan = success.data.SavingsPlan;
 			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount) * 100;
 		}, function(error) {
 			// log error
 		});
 
-		$http({
-  			method: 'GET',
-  			url: '/request/get/budget',
-  			data: {
-  				"Limit": 30,
-			}
-		}).
-		then(function(success) {
-			$scope.Budget = success.data.Budget;
-			console.log($scope.Budget);
-			$scope.budgetPercent = ($scope.Budget.Balance / $scope.Budget.Limit) * 100;
-		}, function(error) {
-			// log error
-		});
+		$scope.getBudgets = function () {
+			$http({
+  				method: 'GET',
+ 	 			url: '/request/get/budget',
+  				data: {
+  					"Limit": 30,
+				}
+			}).
+			then(function(success) {
+				$scope.Budget = success.data.Budget;
+				$scope.budgetPercent = ($scope.Budget.Balance / $scope.Budget.Limit) * 100;
+			}, function(error) {
+				// log error
+			});
+		};
 
+		$scope.getBudgets();
 
 		$http({
   			method: 'GET',
@@ -482,7 +482,6 @@ $(document).ready (function (app) {
 			}).
 			then(function(success) {
 				$scope.Budget = success.data.Budget;
-				console.log($scope.Budget);
 				$scope.budgetPercent = ($scope.Budget.Balance / $scope.Budget.Limit) * 100;
 			}, function(error) {
 			// log error
@@ -515,7 +514,6 @@ $(document).ready (function (app) {
 			return;
 		}
 
-		console.log("creating a budget");
 		$http ({
                		method: 'POST',
                		url: '/request/create/budget',
@@ -527,7 +525,7 @@ $(document).ready (function (app) {
 				}
 			}).then (function (success) {
 				$scope.Budget = success.data.Budget;
-				console.log(success.data);
+				$scope.getBudgets();
 			}).then (function (error) {
 			});
 
@@ -536,7 +534,6 @@ $(document).ready (function (app) {
 
 		$scope.getProjection = function(){
 
-		console.log("getting projection")
 		$scope.showProjection = true;
 		$http({
            		method: 'GET',
@@ -546,9 +543,7 @@ $(document).ready (function (app) {
        			}
 
       		}).then(function(success) {
-			console.log("got projection")
       			$scope.projection = success.data;
-			console.log($scope.projection)
        		}, function(error) {
       			// log error
     		});
@@ -569,7 +564,6 @@ $(document).ready (function (app) {
        				}
       			}).then(function(success) {
 				$scope.SavingsPlan = success.data;
-				console.log("created a savings plan")
        			}, function(error) {
       			// log error
     			});
@@ -621,7 +615,6 @@ $(document).ready (function (app) {
 			}
 			var totalBalance = 0;
 			for(var i=0; i< $scope.accounts.length; i++){
-				console.log("adding account balance");
 				totalBalance += $scope.accounts[i].LatestBalance;
 			}
 
@@ -638,8 +631,6 @@ $(document).ready (function (app) {
 					"AccountResourceIdentifier": $scope.moneyToAddAcc
        				}
       			}).then(function(success) {
-				console.log("added money")
-				console.log(success.data)
 				$scope.SavingsPlan = success.data.SavingsPlan;
 				$scope.SavingsPlan.Balance = success.data.SavingsPlan.SavingsPlanBalance;
 				$scope.SavingsPlan.Amount = success.data.SavingsPlan.SavingsPlanAmount;

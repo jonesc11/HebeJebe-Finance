@@ -268,7 +268,9 @@ public class dbParser {
 			if(((RecurringExpense) t).getPeriod().equals(Period.DAILY)) {
 				newTransaction.append("RecurringFrequency", 1);
 			}
-			else if(((RecurringExpense) t).getPeriod().equals(Period.MONTHLY)) {
+			else if(((RecurringExpense) t).getPeriod().equals(Period.WEEKLY)) {
+				newTransaction.append("RecurringFrequency", 7);
+			}else if(((RecurringExpense) t).getPeriod().equals(Period.MONTHLY)) {
 				newTransaction.append("RecurringFrequency", 30);
 			}
 			else if(((RecurringExpense) t).getPeriod().equals(Period.YEARLY)) {
