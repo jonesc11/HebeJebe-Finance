@@ -121,6 +121,14 @@ $(document).ready (function (app) {
 				}
 			}).
 			then(function(success) {
+				$scope.transactionAccount = undefined;
+				$scope.transactionDescription = undefined;
+				$scope.transactionCategory = undefined;
+				$scope.amount = undefined;
+				$scope.transactionType = undefined;
+				$scope.transactionDate = undefined;
+				$scope.recurring = undefined;
+				$scope.transactionRecurInterval = undefined;
 				$('#createTransactionModal').modal('toggle');
 				$rootScope.$broadcast ('getTransactions');
 			}, function(error) {
