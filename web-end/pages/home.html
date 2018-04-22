@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html ng-app="MyApp">
   <head>
-    <base href="/">
+    <base href="/" />
+    <meta charset="UTF-8" /> 
 
     <!-- Load CSS, including Bootstrap -->
     <link rel="stylesheet" href="/resources/css/bootstrap.min.css" />
@@ -38,7 +39,7 @@
 
   <div ng-view=""></div>
   <div ng-controller="ModalController">
-    <!-- Create Account Modal --!>
+    <!-- Create Account Modal -->
     <div class="modal fade" id="createAccountModal" tabindex="-1" role="dialog" aria-labelledby="createAccountLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -49,11 +50,11 @@
             </button>
           </div>
           <div class="modal-body">
-            <label for="create-account-name">Account Name</label>
+            <label>Account Name</label>
             <input class="form-control" type="text" name="create-account-name" ng-model="createAccountName" placeholder="Account Name" />
-            <label for="create-account-balance">Account Balance</label>
+            <label>Account Balance</label>
             <input class="form-control" type="text" name="create-account-balance" ng-model="createAccountBalance" placeholder="Account Balance" />
-            <label for="create-account-type">Account Type</label>
+            <label>Account Type</label>
             <select class="form-control custom-select custom-select-lg mb-3" ng-model="createAccountType" name="create-account-type">
               <option value="Savings">Savings</option>
               <option value="Checking">Checking</option>
@@ -67,12 +68,12 @@
         </div>
       </div>
     </div>
-    <!-- Delete Account Modal --!>
-    <div class="modal fade" id="deleteAccountModal" tabindex="-1" role="dialog" aria-labelledby="deleteAccountLabel" aria-hidden="true">
+    <!-- Delete Account Modal -->
+    <div class="modal fade" id="deleteAccountModal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-body">
-            <label> Are you sure you want to delete {{deletingAcct.Name}}?</label>
+            <label>Are you sure you want to delete {{deletingAcct.Name}}?</label>
             <div class="float-buttons-right">
               <button type="button" class="btn btn-primary" data-dismiss="modal">No</button>
               <button type="button" class="btn btn-primary" ng-click="deleteAccount()">Yes</button>
@@ -86,7 +87,7 @@
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="createTransactionModal">Create a Transaction</h5>
+            <h5 class="modal-title">Create a Transaction</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -99,30 +100,30 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="transactionName">Description</label>
-              <input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Description" ng-model="transactionDescription">
+              <label>Description</label>
+              <input type="text" class="form-control" placeholder="Description" ng-model="transactionDescription" />
             </div>
             <div class="form-group">
-              <label for="transactionCategory">Category</label>
-              <input type="text" class="form-control" id="name1" aria-describedby="transactionCategory" placeholder="Category" ng-model="transactionCategory">
+              <label>Category</label>
+              <input type="text" class="form-control" placeholder="Category" ng-model="transactionCategory" />
             </div>
             <div class="form-group">
-              <label for="exampleInputEmail1">Transaction Amount</label>
-              <input type="number" class="form-control" id="name1" aria-describedby="transactionAmount" placeholder="Amount" ng-model="amount">
+              <label>Transaction Amount</label>
+              <input type="number" class="form-control" id="name1" placeholder="Amount" ng-model="amount" />
             </div>
             <div class="form-group">
               <label> Transaction Type </label>
-              <select class="form-control custom-select custom-select-lg mb-3" ng-model=transactionType>
+              <select class="form-control custom-select custom-select-lg mb-3" ng-model="transactionType">
                 <option selected value="Expense">Expense</option>
                 <option value="Income">Income</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="example-date-input">Date</label>
-              <input class="form-control" type="date" id="example-date-input" ng-model=transactionDate>
+              <label>Date</label>
+              <input class="form-control" type="date" id="example-date-input" ng-model="transactionDate">
             </div>
             <div class="form-check">
-              <input type="checkbox" class="form-check-input" id="customCheck1"  ng-model="recurring">
+              <input type="checkbox" class="form-check-input" id="customCheck1"  ng-model="recurring" />
               <label class="custom-control-label" for="customCheck1">Recurring Transaction</label>
             </div>
             <div class="form-group" ng-show="recurring">
@@ -141,8 +142,8 @@
         </div>
       </div>
     </div>
-    <!-- Edit Transaction Modal --!>
-    <div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-labelledby="editTransctionLabel" aria-hidden="true">
+    <!-- Edit Transaction Modal -->
+    <div class="modal fade" id="editTransactionModal" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -154,21 +155,21 @@
           <div class="modal-body">
             <label>Account </label>
             <select class="form-control custom-select custom-select-lg mb-3" ng-model="editingTrans.Account.AccountResourceIdentifier" ng-options="account.ResourceIdentifier as (account.AccountName) for account in accounts | orderBy:'AccountName'"></select>
-            <label for="transactionName">Description</label>
-            <input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Description" ng-model="editingTrans.Description">
-            <label for="transactionCategory">Category</label>
-            <input type="text" class="form-control" id="name1" aria-describedby="transactionCategory" placeholder="Category" ng-model="editingTrans.Category">
-            <label for="exampleInputEmail1">Transaction Amount</label>
-            <input type="number" class="form-control" id="name1" aria-describedby="transactionAmount" placeholder="Amount" ng-model="editingTrans.Amount">
+            <label>Description</label>
+            <input type="text" class="form-control" placeholder="Description" ng-model="editingTrans.Description" />
+            <label>Category</label>
+            <input type="text" class="form-control" placeholder="Category" ng-model="editingTrans.Category" />
+            <label>Transaction Amount</label>
+            <input type="number" class="form-control" placeholder="Amount" ng-model="editingTrans.Amount" />
             <label> Transaction Type </label>
             <select class="form-control custom-select custom-select-lg mb-3" ng-model="editingTrans.TransactionType">
               <option selected value="Expense">Expense</option>
               <option value="Income">Income</option>
             </select>
-            <label for="example-date-input">Date</label>
-            <input class="form-control" type="date" id="example-date-input" ng-model="editingTrans.DateTime">
-            <input type="checkbox" class="form-check-input" id="customCheck1"  ng-model="editingTrans.Recurring">
-            <label class="custom-control-label" for="customCheck1">Recurring Transaction</label>
+            <label>Date</label>
+            <input class="form-control" type="date" ng-model="editingTrans.DateTime">
+            <input type="checkbox" class="form-check-input" ng-model="editingTrans.Recurring">
+            <label class="custom-control-label">Recurring Transaction</label>
             <select class="form-control custom-select custom-select-lg mb-3" ng-show="recurring" ng-model="editingTrans.RecurringFrequency">
               <option value="Daily">Daily</option>
               <option value="Weekly">Weekly</option>
@@ -182,7 +183,7 @@
         </div>
       </div>
     </div>
-    <!-- Delete Transaction Modal --!>
+    <!-- Delete Transaction Modal -->
     <div class="modal fade" id="deleteTransactionModal" tabindex="-1" role="dialog" aria-labelledby="deleteTransactionModal" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -284,7 +285,7 @@
             </table>
             <br/><br/>
             <div id="subbalance-edit-buttons">
-              <button type="button"ng-click="editSubbalanceLoad()" class="btn btn-primary">
+              <button type="button" ng-click="editSubbalanceLoad()" class="btn btn-primary">
                 <span class="glyphicon glyphicon-pencil"></span> Edit Subbalance
               </button>
               <button type="button" ng-click="deleteSubbalanceLoad()" class="btn btn-danger">
@@ -298,7 +299,7 @@
         </div>
       </div>
     </div>
-    <!-- Delete Subbalance Modal --!>
+    <!-- Delete Subbalance Modal -->
     <div class="modal fade" id="deleteSubbalanceModal" tabindex="-1" role="dialog" aria-labelledby="deleteSubbalanceModal" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -323,12 +324,12 @@
             </button>
           </div>
           <div class="modal-body">
-            <label for="create-budget-description">Description</label>
+            <label>Description</label>
             <input class="form-control" type="text" name="create-budget-name" ng-model="createBudgetDescription" placeholder="Budget Description" />
-            <label for="create-budget-balance">Budget Limit</label>
+            <label>Budget Limit</label>
             <input class="form-control" type="number" name="create-budget-limit" ng-model="createBudgetLimit" placeholder="Budget Limit" />
             <div class="inline1">
-              <label for="create-budget-date">Duration</label>
+              <label>Duration</label>
               <input class="form-control" type="number" name="create-budget-duration" ng-model="createBudgetDuration" placeholder="Budget Duration" /> 
             </div>
             <div class="inline2">
