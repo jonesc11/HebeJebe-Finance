@@ -45,7 +45,7 @@
 			<tr ng-show="!transactions || transactions.length == 0">
 				<td class="text-center" colspan="7">No transactions found. <a href="" data-toggle="modal" data-target="#createTransactionModal">Create one here!</a></td>
 			</tr>
-    			<tr ng-repeat="transaction in transactions | orderBy:'DateTime'">
+    			<tr ng-repeat="transaction in transactions | orderBy:'-DateTime'">
       				<td>{{transaction.DateTime}}</td>
  	                        <td>{{transaction.Description}}</td>
                                	<td class="color-amount-{{transaction.TransactionType}}">{{transaction.Amount | currency}}</td>
