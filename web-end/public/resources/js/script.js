@@ -39,6 +39,7 @@ $(document).ready (function (app) {
 				data: { ResourceIdentifier: $rootScope.deletingTrans.ResourceIdentifier }
 			}).then (function (success) {
 				$('#deleteTransactionModal').modal('toggle');
+				$scope.getTotalBalance();
 			}, function (error) {
 				// log error
 			});
@@ -640,6 +641,7 @@ $(document).ready (function (app) {
 					method: 'GET'
 				}).then (function (success) {
 					$scope.transactions = success.data.Transactions;
+					$scope.getTotalBalance();
 				});
        			}, function(error) {
       			// log error
@@ -668,6 +670,7 @@ $(document).ready (function (app) {
  	 				"RecurringFrequency": $scope.transactionRecurInterval,
 				}
 			}).then(function(success) {
+				$scope.getTotalBalance();
 			}, function(error) {
 				// log error
 			});
