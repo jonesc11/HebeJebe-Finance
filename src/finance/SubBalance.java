@@ -14,7 +14,7 @@ public class SubBalance implements IAccount {
 	
 	private String resourceIdentifier;
 	private String name;
-	private IAccount parent;
+	private String parentIdentifier;
 	private double balance;
 	private Map<String, Transaction> transactions;
 	private Map<String, Transaction> recurringTransactions;
@@ -29,10 +29,10 @@ public class SubBalance implements IAccount {
 	 * @param double b - balance of subbalance
 	 * @param IAccount p - parent account of the subbalance
 	 */
-	public SubBalance(String n, double b, IAccount p) {
+	public SubBalance(String n, double b, String parentRI) {
 		name = n;
 		balance = b;
-		parent = p;
+		parentIdentifier = parentRI;
 		transactions = new HashMap<String, Transaction>();
 		recurringTransactions = new HashMap<String, Transaction>();
 	}
@@ -48,10 +48,10 @@ public class SubBalance implements IAccount {
 	 * @param IAccount p - parent account of the subbalance
 	 * @param Map<String, Transaction> tr - a map of transaction object associated with the subbalance
 	 */
-	public SubBalance(String n, double b, IAccount p, Map<String, Transaction> tr) {
+	public SubBalance(String n, double b, String parentRI, Map<String, Transaction> tr) {
 		name = n;
 		balance = b;
-		parent = p;
+		parentIdentifier = parentRI;
 		transactions = tr;
 		recurringTransactions = new HashMap<String, Transaction>();
 	}
@@ -70,7 +70,7 @@ public class SubBalance implements IAccount {
 	}
 	
 	public String getParentIdentifier() {
-		return parent.getResourceIdentifier();
+		return parentIdentifier;
 	}
 	
 	/*
@@ -98,7 +98,8 @@ public class SubBalance implements IAccount {
 	}
 	
 	public void updateBalance(double b) {
-		this.parent.updateBalance(this.parent.getBalance() - (this.balance - b));
+		IAccount parent = (IAccount) Parser.getResource(parentIdentifier);
+		parent.updateBalance(parent.getBalance() - (this.balance - b));
 		this.balance = b;
 		dbParser.updateBalance(this.resourceIdentifier, this.balance);
 	}
