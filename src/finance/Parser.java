@@ -1105,7 +1105,10 @@ public class Parser {
 		nextSubBalanceRI = numSubBalances + 1;
 		nextTransactionRI = numTransactions + 1;
 		
+		System.out.println("User: " + nextUserRI);
 		System.out.println("Account: " + nextAccountRI);
+		System.out.println("SubBalance: " + nextSubBalanceRI);
+		System.out.println("Transaction: " + nextTransactionRI);
 	}
 	
 	private static String getSaltString() {
