@@ -115,7 +115,7 @@ public class Account implements IAccount {
 	}
 	
 	public String addSingleIncome(double a, String n, String c, Date d) {
-		SingleIncome newIncome = new SingleIncome(a, n, c, d, this.balance - a, this.resourceIdentifier);
+		SingleIncome newIncome = new SingleIncome(a, n, c, d, this.balance + a, this.resourceIdentifier);
 		balance += a;
 		
 		int ri = Parser.getNextTransactionRI();
@@ -209,8 +209,8 @@ public class Account implements IAccount {
 	
 	public double getProjection(Date d) {
 		double amount = 0;
-		for(int i = 0; i < transactions.size(); i++) {
-			Transaction t = transactions.get(i);
+		for(int i = 0; i < recurringTransactions.size(); i++) {
+			Transaction t = recurringTransactions.get(i);
 			if(t instanceof RecurringIncome) {
 				amount += ((RecurringIncome)t).amountByDate(d);
 				((RecurringIncome)t).updateLastUpdated(d);
@@ -225,8 +225,8 @@ public class Account implements IAccount {
 	
 	public double getTotalProjection(Date d) {
 		double amount = 0;
-		for(int i = 0; i < transactions.size(); i++) {
-			Transaction t = transactions.get(i);
+		for(int i = 0; i < recurringTransactions.size(); i++) {
+			Transaction t = recurringTransactions.get(i);
 			if(t instanceof RecurringIncome) {
 				amount += ((RecurringIncome)t).amountByDate(d);
 				((RecurringIncome)t).updateLastUpdated(d);
