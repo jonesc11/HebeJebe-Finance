@@ -4,14 +4,37 @@
 			<div class="alert alert-danger" ng-show="errorMessage">{{errorMessage}}</div>
 		</div>
 	</div>
+
 	<div class = "row">
-	<div class="col-8">
+	<div class = "col-12">
+		<div class="dib">
+		<h1>Recent Activity</h1>
+		<h3>Total Balance: {{totalBalance | currency}}</h3>
+
+		<div class="transactionButton">
+        		<button type="button" data-toggle="modal" data-target="#createTransactionModal" class="btn btn-primary float-right"><span class="glyphicon glyphicon-plus"></span> Add Transaction</button>
+		</div>
+		</div>
+		<div class="projection-div">
+			<div ng-show="projection">
+				<h3 class="projectionDisp"> {{projection.ProjectedBalance | currency}} </h3>
+			</div>
+			<div class="form-group projections">
+				Project balance on <input type="date" class="form-control projectionInput" ng-model="projectionDate"> 
+				<button type="button" class="btn btn-primary editSavings" ng-click="getProjection()"><span class="glyphicon glyphicon-signal"></span></button>
+        		</div>
+		</div>
+	</div>
+	</div>
+
+	<div class = "row">
+	<div class="col-12">
 		<table class="table">
   		<thead>
     			<tr>
       				<th scope="col">Date</th>
       				<th scope="col">Description</th>
-      				<th scope="col">Amount (colored)</th>
+      				<th scope="col">Amount </th>
       				<th scope="col">Account</th>
       				<th scope="col">Account Total</th>
 				<th scope="col"></th>
@@ -22,12 +45,12 @@
 			<tr ng-show="!transactions || transactions.length == 0">
 				<td class="text-center" colspan="7">No transactions found. <a href="" data-toggle="modal" data-target="#createTransactionModal">Create one here!</a></td>
 			</tr>
-    			<tr ng-repeat="transaction in transactions | orderBy:'DateTime'">
+    			<tr ng-repeat="transaction in transactions | orderBy:'-DateTime'">
       				<td>{{transaction.DateTime}}</td>
  	                        <td>{{transaction.Description}}</td>
-                                <td>{{transaction.Amount}}</td>
-      				<td>{{transaction.account.name}}</td>
-      				<td>{{transaction.account.total}}</td>
+                               	<td class="color-amount-{{transaction.TransactionType}}">{{transaction.Amount | currency}}</td>
+      				<td><a href="/#!/account/{{transaction.Account.AccountResourceIdentifier}}">{{transaction.Account.AccountName}}</a></td>
+      				<td>{{transaction.AccountBalanceAfter | currency}}</td>
 				<td data-toggle="modal" data-target="#editTransactionModal" ng-click="$scope.editingTrans = transaction"> 
 					<span class="glyphicon glyphicon-edit" aria-hidden="true"></span> 
 				</td>
@@ -38,59 +61,57 @@
   		</tbody>
 		</table>    
 	</div>
-	<div class="col-4 addTransaction" ng-controller="HomeCtrl">
-		<form id = "home">
-		<fieldset>
-		<h4> Create Transaction </h4>
-			<div class="form-group">
-				<label>Account </label>
-				<select class="form-control custom-select custom-select-lg mb-3" ng-model="transactionAccount">
-					<option ng-repeat="account in accounts | orderBy:'AccountName'" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
-				</select>
-			</div>
-			
-  			<div class="form-group">
-    				<label for="transactionName">Description</label>
-    				<input type="text" class="form-control" id="name1" aria-describedby="transactionName" placeholder="Description" ng-model="transactionDescription">
-  			</div>
-			
-			<div class="form-group">
-    				<label for="transactionCategory">Category</label>
-    				<input type="text" class="form-control" id="name1" aria-describedby="transactionCategory" placeholder="Category" ng-model="transactionCategory">
-  			</div>
+	<div class="col-6">
+	<h3> Budgets: {{Budget.Description}} </h3>	
+	<h4 class="budget" ng-hide="Budget==undefined || Budget.Description==undefined"> {{Budget.StartDate}} - {{Budget.EndDate}} </h4>
+	<div class="progress" ng-hide="Budget==undefined || Budget.Description==undefined" >
+  		<div class="progress-bar" role="progressbar" style="width:{{budgetPercent}}%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+	</div>	
+	<div class="from-group budget" ng-hide="Budget==undefined || Budget.Description == undefined">
+		<h4>{{Budget.Balance | currency }} / {{Budget.Limit | currency }}</h4>
+	</div>
+	<div class=form-group ng-show="Budget==undefined || Budget.Description==undefined">
+		<input type="number" class="form-control savingsForm"  placeholder="Limit" ng-model="budgetLimit">
+		<input type="text" class="form-control savingsForm"  placeholder="Description" ng-model="budgetDescription">
+		<input type="number" class="form-control savingsForm"  placeholder="Days" ng-model="budgetDuration">
+		<button type="button" class="btn btn-primary float-right" ng-click="createBudget()">Create Budget</button>
+	</div>
+	</div>
+	<div class="col-6">
+		
+	<h3>Savings Plan: {{SavingsPlan.SavingsPlanName}}</h3>
 
-  			<div class="form-group">
-				<label for="exampleInputEmail1">Transaction Amount</label>
-    				<input type="number" class="form-control" id="name1" aria-describedby="transactionAmount" placeholder="Amount" ng-model="amount">
-  			</div>
-			<div class="form-group">
-				<label> Transaction Type </label>
-				<select class="form-control custom-select custom-select-lg mb-3" ng-model=transactionType>
-  					<option selected value="Expense">Expense</option>
-  					<option value="Income">Income</option>
-				</select>
-			</div>
-			<div class="form-group">
-  				<label for="example-date-input">Date</label>
-    				<input class="form-control" type="date" id="example-date-input" ng-model=transactionDate>
-			</div>
-			 <div class="form-check">
-  				<input type="checkbox" class="form-check-input" id="customCheck1"  ng-model="recurring">
-  				<label class="custom-control-label" for="customCheck1">Recurring Transaction</label>
-			</div>
-			<div class="form-group" ng-show="recurring">
-				<label class="custom-control-label">Period</label>
-				<select class="form-control custom-select custom-select-lg mb-3" ng-model="transactionRecurInterval">
-					<option value="Daily">Daily</option>
-					<option value="Weekly">Weekly</option>
-					<option selected value="Monthly">Monthly</option>
-				</select>
-			</div>
+	<div class="progress progress-bar-vertical">
+    		<div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="height: {{savingsPercent}}%;">
+      			<span class="sr-only">30% Complete</span>
+    		</div>
+  	</div>
 
-  			<button type="submit" class="btn btn-primary" ng-click="createTransaction()">Submit</button>
+	<div class="form-group" ng-hide="SavingsPlan==undefined || SavingsPlan.SavingsPlanName == undefined">
+		<label>Account</label>
+		<br/>
+              	<select class="form-control mb-3 savingsForm" ng-model="moneyToAddAcc">
+                	<option ng-repeat="account in accounts | orderBy:'AccountName'" value="{{account.ResourceIdentifier}}">{{account.AccountName}}</option>
+              	</select>
 
-	</fieldset>
-	</form>
+		<input type="number" class="form-control savingsForm"  placeholder="Amount" ng-model="moneyToAdd">
+		<button type="button" class="btn btn-primary float-right" ng-click="addMoney()">Add Money</button>
+        </div>
+
+
+	<div class ="form-group" ng-hide="SavingsPlan">
+		<h4> Create a Savings Plan: </h4>
+
+	</div>
+
+	<div class="form-group">
+		Saving <input type="number" class="form-control editSavings" placeholder="SavingsPlan.SavingsPlanName" ng-model="newAmount"> For <input type="text" class="form-control editSavings"  placeholder="SavingsPlan.Amount" ng-model="newName"> By <input type="date" class="form-control editSavings" ng-model="newDate"> 
+		<button type="button" class="btn btn-primary editSavings" ng-click="createOrModifySavings()"><span class="glyphicon glyphicon-thumbs-up"></span></button>
+        </div>
+
+
+	
+	</div>
 	</div>	<!-- end col div -->
 	</div> <!-- end row div -->
 	</div> <!-- end container div -->

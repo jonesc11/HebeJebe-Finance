@@ -51,6 +51,16 @@ app.controller("SignupCtrl", function($scope, $http){
 			return;
 		}
 
+		if($scope.accountName == undefined || $scope.accountName == ""){
+			alert("You must enter an Account Name");
+			return;	
+		}
+
+		if($scope.accountAmnt < 0){
+			alert("Account Balances must be positive");
+			return;
+		}
+
 		$http({
 			method: 'POST',
 			url: '/signup',

@@ -7,7 +7,7 @@ import java.net.Socket;
 import org.json.JSONException;
 
 /*
-Server is used to receive messages from over processes
+Server is used to receive json objects from over processes aka the js 
  */
 
 public class Server {
@@ -33,6 +33,7 @@ public class Server {
         }
     }
 
+    //spawns a server for each instance that the website is called
     public class Handler extends Thread{
         private BufferedReader in;
         private PrintWriter out;
@@ -42,6 +43,7 @@ public class Server {
             this.socket = socket;
         }
 
+        //running the server object and opening listing ports
         public void run() {
             try {
         		String request;
@@ -52,6 +54,7 @@ public class Server {
                 out = new PrintWriter(socket.getOutputStream(), true);
                 
                 try {
+                	//parsing the messages from json
                 	response = Parser.processRequest (request);
                 	out.println(response);
                 } catch (JSONException e) {

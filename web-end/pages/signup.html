@@ -3,6 +3,7 @@
   <head>
 
     <base href="/">
+    <meta charset="UTF-8" /> 
 
     <!-- Load CSS, including Bootstrap -->
     <link rel="stylesheet" href="/resources/css/bootstrap.min.css" />
@@ -42,7 +43,7 @@
       <input type="password" name="cpass" placeholder="Confirm Password" ng-model="pwConf"/>
       <input type="button" name="next" class="next action-button" value="Next" ng-click="nextOne()"/>
     </fieldset>
-    <fieldset ng-show="page2">
+    <fieldset ng-show="page2" ng-cloak>
       <h2 class="fs-title">Account Info</h2>
       <h3 class="fs-subtitle">Connect a Bank Account</h3>
       <input type="text" name="accountName" placeholder="Account Name" ng-model="accountName"/>

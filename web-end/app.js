@@ -138,6 +138,10 @@ app.get ('/request/:reqType/:resType', function (req, res) {
     data = handleGetUser (req, userRID);
   else if (requestType === 'get' && resourceType === 'budget')
     data = handleGetBudgets (req, userRID);
+  else if (requestType === 'get' && resourceType === 'projection')
+    data = handleGetProjection (req, userRID);
+  else if (requestType === 'get' && resourceType === 'savingsplan')
+    data = handleGetSavingsPlan (req, userRID);
 
   if (data.ErrorMessage) {
     res.send (data);
@@ -165,6 +169,10 @@ app.post ('/request/:reqType/:resType', function (req, res) {
     data = handleCreateSubbalance (req, userRID);
   else if (requestType === 'create' && resourceType === 'budget')
     data = handleCreateBudget (req, userRID);
+  else if (requestType === 'create' && resourceType === 'savingsplan')
+    data = handleCreateSavingsPlan (req, userRID);
+  else if (requestType === 'addto' && resourceType === 'savingsplan')
+    data = handleAddToSavingsPlan (req, userRID);
 
   if (data.ErrorMessage) {
     res.send (data);
@@ -175,7 +183,7 @@ app.post ('/request/:reqType/:resType', function (req, res) {
 });
 
 app.post ('/request/modify', function (req, res) {
-  var userRID = "u0";//req.cookies.accountRI;
+  var userRID = req.session.user.rid;
   var data = handleModifyResource (req, userRID);
 
   if (data.ErrorMessage) {
@@ -187,7 +195,7 @@ app.post ('/request/modify', function (req, res) {
 });
 
 app.post ('/request/delete', function (req, res) {
-  var userRID = "u0";//req.cookies.accountRI;
+  var userRID = req.session.user.rid;
   data = handleDeleteResource (req, userRID);
 
   if (data.ErrorMessage) {
@@ -198,11 +206,97 @@ app.post ('/request/delete', function (req, res) {
   }
 });
 
+/* Handles GetProjection requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleGetProjection (req, userRID) {
+  if (!req.query.ProjectionDate || req.query.ProjectionDate === null)
+    return { ErrorMessage: "ProjectionDate must be defined." };
+  
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: "GetProjection",
+    Action: {
+      ProjectionDate: req.query.ProjectionDate,
+      GetFrom: req.query.GetFrom ? req.query.GetFrom : userRID
+    }
+  };
+
+  return data;
+}
+
+/* Handles AddToSavingsPlan requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleAddToSavingsPlan (req, userRID) {
+  if (!req.body.AccountResourceIdentifier || req.body.AccountResourceIdentifier === null)
+    return { ErrorMessage: "AccountResourceIdentifier must be specified." };
+  if (!req.body.Amount || req.body.Amount === null)
+    return { ErrorMessage: "Amount must be specified." };
+
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: 'AddToSavingsPlan',
+    Action: {
+      UserResourceIdentifier: req.body.UserResourceIdentifier ? req.body.UserResourceIdentifier : userRID,
+      AccountResourceIdentifier: req.body.AccountResourceIdentifier,
+      Amount: req.body.Amount
+    }
+  };
+
+  return data;
+}
+
+/* Handles GetSavingsPlan requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleGetSavingsPlan (req, userRID) {
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: 'GetSavingsPlan',
+    Action: {
+      GetFrom: req.query.GetFrom ? req.query.GetFrom : userRID
+    }
+  };
+
+  return data;
+}
+
+/* Handles CreateSavingsPlan requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
+function handleCreateSavingsPlan (req, userRID) {
+  if (!req.body.SavingsPlanName || req.body.SavingsPlanName === null)
+    return { ErrorMessage: "SavingsPlanName must be defined." };
+  if (!req.body.SavingsPlanAmount || req.body.SavingsPlanAmount === null)
+    return { ErrorMessage: "SavingsPlanAmount must be defined." };
+  if (!req.body.SavingsPlanDate || req.body.SavingsPlanDate === null)
+    return { ErrorMessage: "SavingsPlanDate must be defined." };
+
+  var data = {
+    Key: accessKey,
+    Secret: secretKey,
+    AccountId: userRID,
+    ActionType: 'CreateSavingsPlan',
+    Action: {
+      SavingsPlanName: req.body.SavingsPlanName,
+      UserResourceIdentifier: req.body.UserResourceIdentifier ? req.body.UserResourceIdentifier : userRID,
+      SavingsPlanAmount: req.body.SavingsPlanAmount,
+      SavingsPlanDate: req.body.SavingsPlanDate
+    }
+  }
+  return data;
+}
+
+/* Handles DeleteResource requests. Given input from AngularJS, convert it into valid input
+    for the Java server. */
 function handleDeleteResource (req, userRID) {
   if (req.body.ResourceIdentifier === undefined || req.body.ResourceIdentifier === null)
     return { ErrorMessage: "ResourceIdentifier must be defined." };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -218,7 +312,7 @@ function handleDeleteResource (req, userRID) {
 /* Handles GetTransaction requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetTransactions (req, userRID) {
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -242,14 +336,13 @@ function handleGetTransactions (req, userRID) {
 /* Handles GetBudgets requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetBudgets (req, userRID) {
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
-    ActionType: 'GetBudgets',
+    ActionType: 'GetBudget',
     Action: {
-      Limit: req.query.Limit ? req.query.Limit : 25,
-      ResourceIdentifier: req.query.ResourceIdentifier ? req.query.ResourceIdentifier : null
+      UserResourceIdentifier: req.query.ResourceIdentifier ? req.query.ResourceIdentifier : userRID
     }
   };
 
@@ -259,7 +352,7 @@ function handleGetBudgets (req, userRID) {
 /* Handles GetAccounts requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetAccounts (req, userRID) {
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -281,7 +374,7 @@ function handleGetAccounts (req, userRID) {
 /* Handles GetSubbalance requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetSubbalance (req, userRID) {
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -303,7 +396,7 @@ function handleGetSubbalance (req, userRID) {
 /* Handles GetUser requests. Given input from AngularJS, convert it into valid input
     for the Java server. */
 function handleGetUser (req, userRID) {
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -325,7 +418,7 @@ function handleCreateAccount (req, userRID) {
   if (!req.body.AccountType || req.body.AccountType === null)
     return { ErrorMessage: "Account type must be specified." };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -349,7 +442,7 @@ function handleCreateBudget (req, userRID) {
   if (!req.body.Duration || req.body.Duration == null)
     return { ErrorMessage: 'A budget duration must be applied.' };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -357,7 +450,8 @@ function handleCreateBudget (req, userRID) {
     Action: {
       Limit: req.body.Limit,
       Description: req.body.Description ? req.body.Description : '',
-      Duration: req.body.Duration
+      Duration: req.body.Duration,
+      UserResourceIdentifier: req.body.UserResourceIdentifier ? req.bodyUserResourceIdentifier : userRID
     }
   };
 
@@ -378,7 +472,14 @@ function handleCreateTransaction (req, userRID) {
   if (req.body.Recurring === true && (!req.body.RecurringFrequency || req.body.RecurringFrequency === null))
     return { ErrorMessage: "Recurring transactions must have specified Recurring Frequency periods." };
 
-  data = {
+  if (req.body.RecurringFrequency === 'Daily')
+    req.body.RecurringFrequency = 1;
+  if (req.body.RecurringFrequency === 'Weekly')
+    req.body.RecurringFrequency = 7;
+  if (req.body.RecurringFrequency === 'Monthly')
+    req.body.RecurringFrequency = 30;
+
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -413,7 +514,7 @@ function handleCreateUser (req, userRID) {
   if (!req.body.LastName || req.body.LastName === null)
     return { ErrorMessage: "Last name must be specified." };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -437,7 +538,7 @@ function handleCreateSubbalance (req, userRID) {
   if (!req.body.SubBalanceName || req.body.SubBalanceName === null)
     return { ErrorMessage: "Subbalance must have a name." };
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
@@ -465,11 +566,11 @@ function handleModifyResource (req, userRID) {
       return { ErrorMessage: "Changes is not present or incorrectly formatted." };
   }
 
-  data = {
+  var data = {
     Key: accessKey,
     Secret: secretKey,
     AccountId: userRID,
-    ActionType: "ModifyResource",
+    ActionType: "Modify",
     Action: {
       ResourceIdentifier: req.body.ResourceIdentifier,
       Changes: req.body.Changes

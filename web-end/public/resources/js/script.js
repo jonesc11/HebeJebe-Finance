@@ -20,6 +20,18 @@ $(document).ready (function (app) {
 	}]);
 
 	app.controller('ModalController', function ($rootScope, $scope, $http) {
+		$scope.deleteAccount = function () {
+ 			$http({
+				url: '/request/delete',
+				method: 'POST',
+				data: { ResourceIdentifier: $rootScope.deletingAcct.ResourceIdentifier }
+			}).then (function (success) {
+				$('#deleteAccountModal').modal('hide');
+			}, function (error) {
+
+			});
+		};
+
 		$scope.deleteTransaction = function () {
 			$http({
 				url: '/request/delete',
@@ -27,16 +39,29 @@ $(document).ready (function (app) {
 				data: { ResourceIdentifier: $rootScope.deletingTrans.ResourceIdentifier }
 			}).then (function (success) {
 				$('#deleteTransactionModal').modal('toggle');
+				$scope.getTotalBalance();
 			}, function (error) {
 				// log error
 			});
 		};
 
-       	$scope.createAccount = function () {
-           	$http ({
-               	method: 'POST',
-               	url: '/request/create/account',
-               	data: {
+		
+       		$scope.createAccount = function () {
+			if($scope.createAccountBalance < 0){ 
+				alert("Account balance cannot be less than zero");
+				return;
+			}
+
+
+			if($scope.createAccountName == undefined || $scope.createAccountName == ""){
+				alert("You must enter an account name");
+				return;
+			}
+
+           		$http ({
+               		method: 'POST',
+               		url: '/request/create/account',
+               		data: {
 					AccountName: $scope.createAccountName,
 					AccountBalance: $scope.createAccountBalance,
 					AccountType: $scope.createAccountType
@@ -48,13 +73,39 @@ $(document).ready (function (app) {
 				$("input[name=create-account-balance]").val("");
 			}).then (function (error) {
 			});
-        };
+        	};
+
 
 		$scope.createTransaction = function(){
-	    	$http({
-	  			method: 'POST',
-  				url: '/request/create/transaction',
-	  			data: {
+			if (!$scope.transactionType) {
+				alert ('Transaction type must be specified.');
+				return;
+			if (!$scope.amount || $scope.amount <= 0) {
+				alert ('Amount must be greater than zero.');
+				return;
+			}
+			if (!$scope.transactionDescription  || $scope.transactionDescription == '') {
+				alert ('Description must be specified.');
+				return;
+			}
+			if (!$scope.transactionDate || $scope.transactionDate == null) {
+				alert ('Date must be set.');
+				return;
+			}
+			if (!$scope.transactionAccount || $scope.transactionAccount == '') {
+				alert ('Transaction must belong to an account.');
+				return;
+			}
+			if ($scope.recurring && !$scope.transactionRecurringRecurInterval) {
+				alert ('Recurring interval must be specified.');
+				return;
+			}
+			}
+
+	    		$http({
+	  		method: 'POST',
+  			url: '/request/create/transaction',
+	  		data: {
   					"Limit": 30,
 					"TransactionType": $scope.transactionType, 
   					"Amount": $scope.amount,
@@ -70,6 +121,14 @@ $(document).ready (function (app) {
 				}
 			}).
 			then(function(success) {
+				$scope.transactionAccount = undefined;
+				$scope.transactionDescription = undefined;
+				$scope.transactionCategory = undefined;
+				$scope.amount = undefined;
+				$scope.transactionType = undefined;
+				$scope.transactionDate = undefined;
+				$scope.recurring = undefined;
+				$scope.transactionRecurInterval = undefined;
 				$('#createTransactionModal').modal('toggle');
 				$rootScope.$broadcast ('getTransactions');
 			}, function(error) {
@@ -102,6 +161,16 @@ $(document).ready (function (app) {
 		};
 
 		$scope.createSubbalance = function () {
+			if($scope.createSubbalanceName == undefined || $scope.createSubbalanceName == ""){
+				alert("You must enter a sub-balance name");
+				return;
+			}
+
+			if($scope.createSubbalanceBalance < 0){
+				alert("Sub-balances cannot be negative");
+				return;
+			}
+
 			$http({
 				url: '/request/create/subbalance',
 				method: 'POST',
@@ -118,8 +187,27 @@ $(document).ready (function (app) {
 		};
 
 		$scope.editSubbalanceLoad = function () {
-			$('#viewSubbalanceModal').modal('toggle');
-			$('#editSubbalanceModal').modal('toggle');
+			$('#viewSubbalanceModal').modal('hide');
+			$('#editSubbalanceModal').modal('show');
+		};
+
+		$scope.editSubbalance = function () {
+			$http({
+				url: '/request/modify',
+				method: 'POST',
+				data: {
+					ResourceIdentifier: $rootScope.subbalance.ResourceIdentifier,
+					Changes: [
+						{ Key: 'Balance', Value: $rootScope.subbalance.Balance },
+						{ Key: 'SubBalanceName', Value: $rootScope.subbalance.SubBalanceName }
+					]
+				}
+			}).then (function (success) {
+				$rootScope.$broadcast ('getSubbalances');
+				$('#editSubbalanceModal').modal('hide');
+			}, function (error) {
+				// log error
+			});
 		};
 
 		$scope.deleteSubbalance = function () {
@@ -129,10 +217,15 @@ $(document).ready (function (app) {
 				data: { ResourceIdentifier: $rootScope.subbalance }
 			}).then (function (success) {
 				$rootScope.$broadcast ('getSubbalances');
-				$('#viewSubbalanceModal').modal('toggle');
+				$('#deleteSubbalanceModal').modal('hide');
 			}, function (error) {
 				//log error
 			});
+		};
+
+		$scope.deleteSubbalanceLoad = function () {
+			$('#viewSubbalanceModal').modal('hide');
+			$('#deleteSubbalanceModal').modal('show');
 		};
 	});	
 
@@ -207,19 +300,17 @@ $(document).ready (function (app) {
 		$scope.editSubbalance = function () {
 			$rootScope.editingSub = this.subbalance;
 		};
-$rootScope.subbalance = {
-	SubBalanceName: 'Test Subbalance',
-	Balance: 14,
-	transactions: [{
-		TransactionType: 'Expense',
-		DateTime: new Date('2018-04-08'),
-		DateTimeString: '2018-04-08',
-		Amount: 4,
-		Description: 'Payment',
-		Category: 'Car',
-		SubBalance: { SubBalanceBalance: 14 }
-	}]
-};
+
+		$scope.deleteAccountLoad = function () {
+			$rootScope.deletingAcct = $scope.account;
+			$('#deleteAccountModal').modal('show');
+		};
+
+		$scope.viewSubbalance = function () {
+			$('#viewSubbalanceModal').modal('show');
+			$rootScope.subbalance = this.subbalance;
+		}
+
 		$scope.user = {};
 		$scope.accountId = $routeParams.id;
 		$rootScope.accountResourceIdentifier = $routeParams.id;
@@ -227,7 +318,7 @@ $rootScope.subbalance = {
 			$http({
 				method: 'GET',
 				url: '/request/get/user',
-				data: {}
+				params: {}
 			}).then (function (response) {
 				$scope.user = response.data.User;
 				if ($routeParams.id)
@@ -237,7 +328,7 @@ $rootScope.subbalance = {
 				$http({
 					method: 'GET',
 					url: '/request/get/accounts',
-					data: {
+					params: {
 						GetFrom: $scope.user.ResourceIdentifier
 					}
 				}).then (function (response) {
@@ -269,23 +360,26 @@ $rootScope.subbalance = {
 								GetFrom: $scope.accounts[i].ResourceIdentifier
 							}
 						}).then (function (response) {
-							$scope.accounts[retInd2].subbalances = response.data.Subbalances;
+							$scope.accounts[retInd2].subbalances = response.data.SubBalances;
 							if (!$scope.accounts[retInd2].subbalances)
 								return;
 							var retInd3 = 0;
+							var retInd4 = retInd2;
 							for (var j = 0; j < $scope.accounts[retInd2].subbalances.length; ++j) {
 								$http({
 									url: '/request/get/transactions',
 									method: 'GET',
 									params: {
-										GetFrom: $scope.accounts[retInd2].subbalances[retInd3].ResourceIdentifier,
+										GetFrom: $scope.accounts[retInd2].subbalances[j].ResourceIdentifier,
 										Limit: 200
 									}
 								}).then (function (response) {
-									$scope.accounts[retInd2].subbalances[retInd3].transactions = response.data.Transactions;
-									for (var k = 0; k < $scope.accounts[retInd1].transactions.length; ++k) {
-										$scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime = new Date ($scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime);
-										$scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTimeString = $scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime.getFullYear() + '-' + ($scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime.getMonth() + 1) + '-' + $scope.accounts[retInd2].subbalances[retInd3].transactions[k].DateTime.getDate();
+									$scope.accounts[retInd4].subbalances[retInd3].transactions = response.data.Transactions;
+									for (var k = 0; k < $scope.accounts[retInd4].subbalances[retInd3].transactions.length; ++k) {
+										if (!$scope.accounts[retInd4].subbalances || !$scope.accounts[retInd4].subbalances[retInd3].transactions)
+											continue;
+										$scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTime = new Date ($scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTime);
+										$scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTimeString = $scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTime.getFullYear() + '-' + ($scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTime.getMonth() + 1) + '-' + $scope.accounts[retInd4].subbalances[retInd3].transactions[k].DateTime.getDate();
 									}
 									retInd3++;
 								});
@@ -347,6 +441,37 @@ $rootScope.subbalance = {
 			});
 		});
 
+		$http({
+  			method: 'GET',
+  			url: '/request/get/savingsplan',
+  			params: {
+  				"Limit": 30,
+			}
+		}).
+		then(function(success) {
+			$scope.SavingsPlan = success.data.SavingsPlan;
+			$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount) * 100;
+		}, function(error) {
+			// log error
+		});
+
+		$scope.getBudgets = function () {
+			$http({
+  				method: 'GET',
+ 	 			url: '/request/get/budget',
+  				data: {
+  					"Limit": 30,
+				}
+			}).
+			then(function(success) {
+				$scope.Budget = success.data.Budget;
+				$scope.budgetPercent = ($scope.Budget.Balance / $scope.Budget.Limit) * 100;
+			}, function(error) {
+				// log error
+			});
+		};
+
+		$scope.getBudgets();
 
 		$http({
   			method: 'GET',
@@ -357,6 +482,20 @@ $rootScope.subbalance = {
 		}).
 		then(function(success) {
 			$scope.transactions = success.data.Transactions;
+				$http({
+  				method: 'GET',
+  				url: '/request/get/budget',
+  				data: {
+  					"Limit": 30,
+				}
+			}).
+			then(function(success) {
+				$scope.Budget = success.data.Budget;
+				$scope.budgetPercent = ($scope.Budget.Balance / $scope.Budget.Limit) * 100;
+			}, function(error) {
+			// log error
+			});
+
 		}, function(error) {
 			// log error
 		});
@@ -372,6 +511,153 @@ $rootScope.subbalance = {
        	}, function(error) {
       		// log error
     	});
+		
+	$scope.createBudget = function(){
+		if($scope.budgetLimit < 0){
+			alert("Budget limits cannot be negative");
+			return;
+		}
+
+		if($scope.budgetDescription == undefined || $scope.budgetDescription == ""){
+			alert("You must enter a budget description");
+			return;
+		}
+
+		$http ({
+               		method: 'POST',
+               		url: '/request/create/budget',
+               		data: {
+					Limit: $scope.budgetLimit,
+					Description: $scope.budgetDescription,
+					Balance: 0,
+					Duration: $scope.budgetDuration
+				}
+			}).then (function (success) {
+				$scope.Budget = success.data.Budget;
+				$scope.getBudgets();
+			}).then (function (error) {
+			});
+
+		}
+
+
+		$scope.getProjection = function(){
+
+		$scope.showProjection = true;
+		$http({
+           		method: 'GET',
+           		url: '/request/get/projection',
+           		params: {
+				"ProjectionDate": $scope.projectionDate
+       			}
+
+      		}).then(function(success) {
+      			$scope.projection = success.data;
+       		}, function(error) {
+      			// log error
+    		});
+
+
+		};
+
+
+		$scope.createSavings = function(){
+						
+			$http({
+           			method: 'POST',
+           			url: '/request/create/savingsplan',
+           			data: {
+					SavingsPlanName: $scope.newName,
+					SavingsPlanAmount: $scope.newAmount,
+					SavingsPlanDate: $scope.newDate
+       				}
+      			}).then(function(success) {
+				$scope.SavingsPlan = success.data;
+       			}, function(error) {
+      			// log error
+    			});
+
+
+		}
+
+		$scope.createOrModifySavings = function(){
+			if($scope.newName == "" || $scope.newName == undefined){
+				alert("You must enter a savings plan name");
+				return;
+			}
+
+			if($scope.newAmount < 0){
+				alert("Savings Plans amount cannot be negative");
+				return;
+			}
+
+			if($scope.SavingsPlan == undefined || $scope.SavingsPlan.SavingsPlanName == undefined){
+				$scope.createSavings();
+			}else{
+
+				$scope.modifySavings();
+			}
+
+		}
+
+		$scope.modifySavings = function(){
+			$http({
+           			method: 'POST',
+           			url: '/request/modify',
+           			data: {
+					"Changes": [{
+							"Date": $scope.newDate,
+							"Amount": $scope.newAmount,
+							"SavingsPlanName": $scope.newName
+						}]
+       				}
+      			}).then(function(success) {
+
+       			}, function(error) {
+      			// log error
+    			});
+		}
+		
+		$scope.getTotalBalance = function(){
+			if($scope.accounts == undefined){
+				return 0;
+			}
+			var totalBalance = 0;
+			for(var i=0; i< $scope.accounts.length; i++){
+				totalBalance += $scope.accounts[i].LatestBalance;
+			}
+
+			return totalBalance;
+		};
+
+			
+		$scope.addMoney = function(){
+			$http({
+           			method: 'POST',
+           			url: '/request/addto/savingsplan',
+           			data: {
+					"Amount": $scope.moneyToAdd,
+					"AccountResourceIdentifier": $scope.moneyToAddAcc
+       				}
+      			}).then(function(success) {
+				$scope.SavingsPlan = success.data.SavingsPlan;
+				$scope.SavingsPlan.Balance = success.data.SavingsPlan.SavingsPlanBalance;
+				$scope.SavingsPlan.Amount = success.data.SavingsPlan.SavingsPlanAmount;
+				$scope.savingsPercent = ($scope.SavingsPlan.Balance / $scope.SavingsPlan.Amount) * 100;
+				$http({
+					url: '/request/get/transactions',
+					method: 'GET'
+				}).then (function (success) {
+					$scope.transactions = success.data.Transactions;
+					$scope.getTotalBalance();
+				});
+       			}, function(error) {
+      			// log error
+    			});
+
+		};
+
+		$scope.totalBalance = $scope.getTotalBalance();
 
 		$scope.createTransaction = function(){
 	    	$http({
@@ -392,6 +678,7 @@ $rootScope.subbalance = {
  	 				"RecurringFrequency": $scope.transactionRecurInterval,
 				}
 			}).then(function(success) {
+				$scope.getTotalBalance();
 			}, function(error) {
 				// log error
 			});
