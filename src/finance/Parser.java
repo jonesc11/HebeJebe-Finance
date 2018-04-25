@@ -695,7 +695,7 @@ public class Parser {
 		User user = getUser(action.getString("UserResourceIdentifier"));
 		Budget budget = user.getBudget();
 		
-		if(!budget.equals(null)) {
+		if(!(budget == null)) {
 			budgetObject.put("ResourceIdentifier", budget.getResourceIdentifier());
 			budgetObject.put("UserResourceIdentifier", user.getResourceIdentifier());
 			budgetObject.put("Limit", budget.getLimit());
@@ -718,7 +718,7 @@ public class Parser {
 		User user = getUser(action.getString("GetFrom"));
 		SavingsPlan savingsPlan = user.getSavingsPlan();
 		
-		if(!savingsPlan.equals(null)) {
+		if(!(savingsPlan == null)) {
 			savingsPlanObject.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
 			savingsPlanObject.put("UserResourceIdentifier", user.getResourceIdentifier());
 			savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
