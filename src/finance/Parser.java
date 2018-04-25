@@ -538,7 +538,7 @@ public class Parser {
 			Account account = Parser.getAccount(action.getString("GetFrom"));
 			List<String> subBalanceList = account.getSubBalanceResourceIdentifiers();
 			
-			for(int i = 0; i < limit; i++) {
+			for(int i = 0; i < limit && i < subBalanceList.size(); i++) {
 				SubBalance sb = (SubBalance)Parser.getResource(subBalanceList.get(i));
 				JSONObject sbObject = new JSONObject();
 				
@@ -727,6 +727,7 @@ public class Parser {
 			savingsPlanObject.put("Date", savingsPlan.getDate().format());
 		}
 		
+		
 		response.put("SavingsPlan", savingsPlanObject);
 		
 		return response;
@@ -791,7 +792,9 @@ public class Parser {
 		Date d = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
 		
 		savingsPlan.updateBalance(savingsPlan.getBalance() + amount);
-		account.addSingleExpense(amount, "Savings Plan: " + savingsPlan.getName(), "Savings", d);
+		String transactionRI = account.addSingleExpense(amount, "Savings Plan: " + savingsPlan.getName(), "Savings", d);
+		Transaction t = (Transaction)resources.get(transactionRI);
+		dbParser.insertTransaction(t, user.getResourceIdentifier());
 		
 		savingsPlanObject.put("SavingsPlanResourceIdentifier", savingsPlan.getResourceIdentifier());
 		savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
