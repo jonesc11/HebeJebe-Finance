@@ -315,8 +315,20 @@ public class Parser {
 		String description = action.getString("Description");
 		int duration = action.getInt("Duration");
 		LocalDateTime now = LocalDateTime.now();
-		Date d1 = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
-		Date d2 = DateFactory.getDate(now.getDayOfMonth() + duration, now.getMonthValue(), now.getYear());
+		int day = now.getDayOfMonth(), month = now.getMonthValue(), year = now.getYear();
+		Date d1 = DateFactory.getDate(day, month, year);
+		Date d2 = null;
+		if((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) && (day + duration) > 31) {
+			d2 = DateFactory.getDate((day - 31) + duration, month + 1, year);
+		} else if ((month == 4 || month == 6 || month == 9 || month == 11) && (day + duration > 30)) {
+			d2 = DateFactory.getDate((day - 30) + duration, month + 1, year);
+		} else if ((month == 2 && year % 4 == 0 && !(year % 100 == 0 && year % 400 != 0)) && (day + duration) > 29) {
+			d2 = DateFactory.getDate((day - 29) + duration, month + 1, year);
+		} else if (month == 2 && (day + duration) > 28) {
+			d2 = DateFactory.getDate((day - 28) + duration, month + 1, year);
+		} else {
+			d2 = DateFactory.getDate(day + duration, month, year);
+		}
 		
 		String identifier = user.createBudget(description, limit, duration, d1, d2);
 		Budget budget = getBudget(identifier);
