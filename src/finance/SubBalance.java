@@ -5,6 +5,7 @@ import java.util.Map;
 import finance.FinanceUtilities.Period;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -270,6 +271,17 @@ public class SubBalance implements IAccount {
 			}
 		}
 		return balance + amount;
+	}
+	
+	public void delete() {
+		Iterator<Transaction> tIter = transactions.values().iterator();
+		while(tIter.hasNext()) {
+			Transaction t = tIter.next();
+			t.delete();
+		}
+		
+		Parser.removeResource(this.resourceIdentifier);
+		dbParser.deleteAccount(this.resourceIdentifier);
 	}
 
 }

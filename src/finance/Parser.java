@@ -22,7 +22,6 @@ public class Parser {
 	private static int nextAccountRI;
 	private static int nextSubBalanceRI;
 	private static int nextTransactionRI;
-	private static int nextSavingsPlanRI;
 	
 	//Helper function to make a JSONArray into a Java List object.
 	public static List<String> JSONArrayToList(JSONArray a) throws JSONException {
@@ -55,7 +54,7 @@ public class Parser {
 	}
 	
 	public static SubBalance getSubBalance (String identifier) {
-		if (!identifier.substring(0, 2).equals("sb"))
+		if (!identifier.substring(0, 1).equals("sb"))
 			return null;
 		return (SubBalance) resources.get(identifier);
 	}
@@ -74,6 +73,14 @@ public class Parser {
 	
 	public static void addResource (String identifier, Object resource) {
 		resources.put(identifier, resource);
+	}
+	
+	public static void removeUser(String identifier) {
+		users.remove(identifier);
+	}
+	
+	public static void removeResource(String identifier) {
+		resources.remove(identifier);
 	}
 	
 	/**
@@ -134,6 +141,8 @@ public class Parser {
 			response = parseAddToSavingsPlan (action);
 		} else if(actionType.equals("Login")) {
 			response = parseLogin (action);
+		} else if(actionType.equals("Delete")) {
+			response = parseDelete(action);
 		}
 					 
 		return response.toString();
@@ -168,7 +177,7 @@ public class Parser {
 		if(parentRI.charAt(0) == 'a') {
 			if(type.equals("Income")) {
 				if(recurring) {
-					if(!action.isNull("RecurringUntil")) {
+					if(action.isNull("RecurringUntil")) {
 						String endDateString = action.getString("RecurringUntil");
 						int endYear = Integer.parseInt(endDateString.substring(0,4));
 						int endMonth = Integer.parseInt(endDateString.substring(5,7));
@@ -189,20 +198,16 @@ public class Parser {
 				}
 			} else if(type.equals("Expense")) {
 				if(recurring) {
-					if(!action.isNull("RecurringUntil")) {
-						String endDateString = action.getString("RecurringUntil");
-						int endYear = Integer.parseInt(endDateString.substring(0,4));
-						int endMonth = Integer.parseInt(endDateString.substring(5,7));
-						int endDay = Integer.parseInt(endDateString.substring(8, 10));
-						endDate = DateFactory.getDate(endDay, endMonth, endYear);
-					}
+					String endDateString = action.getString("RecurringUntil");
+					int endYear = Integer.parseInt(endDateString.substring(0,4));
+					int endMonth = Integer.parseInt(endDateString.substring(5,7));
+					int endDay = Integer.parseInt(endDateString.substring(8, 10));
+					endDate = DateFactory.getDate(endDay, endMonth, endYear);
 					Period period;
 					if(action.getInt("RecurringFrequency") == 30) {
 						period = Period.MONTHLY;
 					} else if(action.getInt("RecurringFrequency") == 365) {
 						period = Period.YEARLY;
-					} else if(action.getInt("RecurringFrequency") == 7) {
-						period = Period.WEEKLY;
 					} else {
 						period = Period.DAILY;
 					}
@@ -229,8 +234,8 @@ public class Parser {
 		response.put("AssociatedWith", parentRI);
 		response.put("Recurring", recurring);
 		if(recurring) {
-			//response.put("RecurringUntil", endDate.format());
-			response.put("RecurringFrequency", action.getString("RecurringFrequency"));
+			response.put("RecurringUntil", endDate.format());
+			response.put("RecurringInterval", action.getString("RecurringInterval"));
 		}
 		
 		return response;
@@ -310,8 +315,20 @@ public class Parser {
 		String description = action.getString("Description");
 		int duration = action.getInt("Duration");
 		LocalDateTime now = LocalDateTime.now();
-		Date d1 = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
-		Date d2 = DateFactory.getDate(now.getDayOfMonth() + duration, now.getMonthValue(), now.getYear());
+		int day = now.getDayOfMonth(), month = now.getMonthValue(), year = now.getYear();
+		Date d1 = DateFactory.getDate(day, month, year);
+		Date d2 = null;
+		if((month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) && (day + duration) > 31) {
+			d2 = DateFactory.getDate((day - 31) + duration, month + 1, year);
+		} else if ((month == 4 || month == 6 || month == 9 || month == 11) && (day + duration > 30)) {
+			d2 = DateFactory.getDate((day - 30) + duration, month + 1, year);
+		} else if ((month == 2 && year % 4 == 0 && !(year % 100 == 0 && year % 400 != 0)) && (day + duration) > 29) {
+			d2 = DateFactory.getDate((day - 29) + duration, month + 1, year);
+		} else if (month == 2 && (day + duration) > 28) {
+			d2 = DateFactory.getDate((day - 28) + duration, month + 1, year);
+		} else {
+			d2 = DateFactory.getDate(day + duration, month, year);
+		}
 		
 		String identifier = user.createBudget(description, limit, duration, d1, d2);
 		Budget budget = getBudget(identifier);
@@ -391,7 +408,7 @@ public class Parser {
 			transaction.put("Category", t.getCategory());
 			if (allTransactions.get(i) instanceof RecurringIncome) {
 				transaction.put("Recurring", true);
-				//transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
+				transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
 				if(((RecurringIncome)t).getPeriod() == Period.DAILY) {
 					transaction.put("RecurringInterval", 1);
 				} else if(((RecurringIncome)t).getPeriod() == Period.WEEKLY) {
@@ -403,7 +420,7 @@ public class Parser {
 				}
 			} else if (t instanceof RecurringExpense) {
 				transaction.put("Recurring", true);
-				//transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
+				transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
 				if(((RecurringExpense)t).getPeriod() == Period.DAILY) {
 					transaction.put("RecurringInterval", 1);
 				} else if(((RecurringExpense)t).getPeriod() == Period.WEEKLY) {
@@ -521,12 +538,12 @@ public class Parser {
 			Account account = Parser.getAccount(action.getString("GetFrom"));
 			List<String> subBalanceList = account.getSubBalanceResourceIdentifiers();
 			
-			for(int i = 0; i < limit && i < subBalanceList.size(); i++) {
+			for(int i = 0; i < limit; i++) {
 				SubBalance sb = (SubBalance)Parser.getResource(subBalanceList.get(i));
 				JSONObject sbObject = new JSONObject();
 				
 				sbObject.put("ResourceIdentifier", sb.getResourceIdentifier());
-				//sbObject.put("AccountResourceIdentifier", sb.getParentIdentifier());
+				sbObject.put("AccountResourceIdentifier", sb.getParentIdentifier());
 				sbObject.put("SubBalanceName", sb.getName());
 				sbObject.put("Balance", sb.getBalance());
 				sbObject.put("LatestTransactions", Parser.getTransactionsJSONArray(sb.getResourceIdentifier(), 25));
@@ -570,8 +587,6 @@ public class Parser {
 			allTransactions = Parser.getUser(getFrom).getTransactionHistory();
 		else if (getFrom.substring(0, 1).equals("a"))
 			allTransactions = Parser.getAccount(getFrom).getTransactionHistory();
-		else if (getFrom.substring(0, 2).equals("sb"))
-			allTransactions = Parser.getSubBalance(getFrom).getTransactionHistory();
 		
 		if (!action.isNull("Category"))
 			category = action.getString("Category");
@@ -600,7 +615,7 @@ public class Parser {
 				transaction.put("Category", t.getCategory());
 				if (t instanceof RecurringIncome) {
 					transaction.put("Recurring", true);
-					//transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
+					transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
 					if(((RecurringIncome)t).getPeriod() == Period.DAILY)
 						transaction.put("RecurringInterval", 1);
 					else if(((RecurringIncome)t).getPeriod() == Period.MONTHLY)
@@ -620,7 +635,7 @@ public class Parser {
 				transaction.put("Category", t.getCategory());
 				if (t instanceof RecurringExpense) {
 					transaction.put("Recurring", true);
-					//transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
+					transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
 					if(((RecurringExpense)t).getPeriod() == Period.DAILY)
 						transaction.put("RecurringInterval", 1);
 					else if(((RecurringExpense)t).getPeriod() == Period.MONTHLY)
@@ -680,7 +695,7 @@ public class Parser {
 		User user = getUser(action.getString("UserResourceIdentifier"));
 		Budget budget = user.getBudget();
 		
-		if(budget != null) {
+		if(!budget.equals(null)) {
 			budgetObject.put("ResourceIdentifier", budget.getResourceIdentifier());
 			budgetObject.put("UserResourceIdentifier", user.getResourceIdentifier());
 			budgetObject.put("Limit", budget.getLimit());
@@ -703,7 +718,7 @@ public class Parser {
 		User user = getUser(action.getString("GetFrom"));
 		SavingsPlan savingsPlan = user.getSavingsPlan();
 		
-		if(savingsPlan != null) {
+		if(!savingsPlan.equals(null)) {
 			savingsPlanObject.put("ResourceIdentifier", savingsPlan.getResourceIdentifier());
 			savingsPlanObject.put("UserResourceIdentifier", user.getResourceIdentifier());
 			savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
@@ -776,7 +791,7 @@ public class Parser {
 		Date d = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
 		
 		savingsPlan.updateBalance(savingsPlan.getBalance() + amount);
-		account.addSingleExpense(amount, "Savings", "Savings", d);
+		account.addSingleExpense(amount, "Savings Plan: " + savingsPlan.getName(), "Savings", d);
 		
 		savingsPlanObject.put("SavingsPlanResourceIdentifier", savingsPlan.getResourceIdentifier());
 		savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
@@ -894,6 +909,7 @@ public class Parser {
 			}
 		}
 	}
+	
 	public static void modifySavingsPlan(String identifier, JSONArray changes) throws JSONException {
 		SavingsPlan savingsPlan = getSavingsPlan(identifier);
 		
@@ -920,30 +936,27 @@ public class Parser {
 		}
 	}
 	
-	public static void modifySavingsPlan(String identifier, JSONArray changes) throws JSONException {
-		SavingsPlan savingsPlan = getSavingsPlan(identifier);
+	public static JSONObject parseDelete(JSONObject action) throws JSONException {
+		JSONObject response = new JSONObject();
+		String resourceIdentifier = action.getString("ResourceIdentifier");
 		
-		for(int i = 0; i < changes.length(); i++) {
-			String key = changes.getJSONObject(i).getString("Key");
-			
-			if(key.equals("SavingsPlanName")) {
-				String value = changes.getJSONObject(i).getString("Value");
-				savingsPlan.updateName(value);
-			} else if(key.equals("Amount")) {
-				double value = changes.getJSONObject(i).getDouble("Value");
-				savingsPlan.updateAmount(value);
-			} else if(key.equals("Balance")) {
-				double value = changes.getJSONObject(i).getDouble("Value");
-				savingsPlan.updateBalance(value);
-			} else if(key.equals("Date")) {
-				String value = changes.getJSONObject(i).getString("Value");
-				int year = Integer.parseInt(value.substring(0,4));
-				int month = Integer.parseInt(value.substring(5,7));
-				int day = Integer.parseInt(value.substring(8, 10));
-				Date d = DateFactory.getDate(day, month, year);
-				savingsPlan.updateDate(d);
-			}
+		if(resourceIdentifier.substring(0, 1).equals("u")) {
+			getUser(resourceIdentifier).delete();
+		} else if(resourceIdentifier.substring(0, 1).equals("a")) {
+			getAccount(resourceIdentifier).delete();
+		} else if(resourceIdentifier.substring(0, 2).equals("sb")) {
+			getSubBalance(resourceIdentifier).delete();
+		} else if(resourceIdentifier.substring(0, 1).equals("t")) {
+			getTransaction(resourceIdentifier).delete();
+		} else if(resourceIdentifier.substring(0, 1).equals("sp")) {
+			getUser(resourceIdentifier.replaceAll("sb", "u")).deleteSavingsPlan();
+		} else if(resourceIdentifier.substring(0, 1).equals("b")) {
+			getUser(resourceIdentifier.replaceAll("b", "u")).deleteBudget();
 		}
+		
+		response.put("ResourceIdentifier", resourceIdentifier);
+		
+		return response;
 	}
 	
 	public static JSONArray getTransactionsJSONArray(String identifier, int limit) throws JSONException {
@@ -982,7 +995,7 @@ public class Parser {
 				transaction.put("Recurring", false);
 			} else if(t instanceof RecurringIncome) {
 				transaction.put("Recurring", true);
-				//transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
+				transaction.put("RecurringUntil", ((RecurringIncome)t).getEndDate().format());
 				if(((RecurringIncome)t).getPeriod() == Period.DAILY) {
 					transaction.put("RecurringInterval", 1);
 				} else if(((RecurringIncome)t).getPeriod() == Period.WEEKLY) {
@@ -994,7 +1007,7 @@ public class Parser {
 				}
 			} else if(t instanceof RecurringExpense) {
 				transaction.put("Recurring", true);
-				//transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
+				transaction.put("RecurringUntil", ((RecurringExpense)t).getEndDate().format());
 				if(((RecurringExpense)t).getPeriod() == Period.DAILY) {
 					transaction.put("RecurringInterval", 1);
 				} else if(((RecurringExpense)t).getPeriod() == Period.WEEKLY) {

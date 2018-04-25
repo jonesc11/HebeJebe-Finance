@@ -18,5 +18,6 @@ public interface IAccount {
 	public String addRecurringExpense(double a, String n, String c, Period p, Date d1, Date d2);
 	public void addTransfer(Transfer newTransfer);
 	public void checkRecurringTransactions();
+	public void delete();
 	
 }
