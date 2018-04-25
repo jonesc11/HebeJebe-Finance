@@ -98,7 +98,7 @@ public class Account implements IAccount {
 	}
 	
 	public String createSubBalance(String n, Double b) {
-		SubBalance sb = new SubBalance(n, b, this);
+		SubBalance sb = new SubBalance(n, b, this.resourceIdentifier);
 		this.balance -= b;
 		
 		int ri = Parser.getNextSubBalanceRI();

@@ -113,9 +113,6 @@ public class dbParser {
 			
 			Account a = new Account(name, type, balance, transactions, subBalances);
 			a.setResourceIdentifier(identifier);
-			
-			Parser.addResource(identifier, a);
-			accountsList.put(identifier, a);
 		}
 		
 		return accountsList;
@@ -136,7 +133,7 @@ public class dbParser {
 			
 			Map<String, Transaction> transactions = getTransactionsFromDB(identifier);
 			
-			SubBalance a = new SubBalance(name, balance, (IAccount)Parser.getResource(pIdentifier), transactions);
+			SubBalance a = new SubBalance(name, balance, pIdentifier, transactions);
 			a.setResourceIdentifier(identifier);
 			
 			Parser.addResource(identifier, a);
