@@ -779,7 +779,7 @@ public class Parser {
 		Date d = DateFactory.getDate(now.getDayOfMonth(), now.getMonthValue(), now.getYear());
 		
 		savingsPlan.updateBalance(savingsPlan.getBalance() + amount);
-		account.addSingleExpense(amount, "Savings", "Savings", d);
+		account.addSingleExpense(amount, "Savings Plan: " + savingsPlan.getName(), "Savings", d);
 		
 		savingsPlanObject.put("SavingsPlanResourceIdentifier", savingsPlan.getResourceIdentifier());
 		savingsPlanObject.put("SavingsPlanName", savingsPlan.getName());
