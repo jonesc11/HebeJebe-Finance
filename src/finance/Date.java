@@ -275,6 +275,8 @@ public class Date {
 				daysBetween += d.getDay();
 			}
 			
+			System.out.println("daysBetween: " + daysBetween);
+			
 			if(p == Period.DAILY) {
 				return daysBetween;
 			}
