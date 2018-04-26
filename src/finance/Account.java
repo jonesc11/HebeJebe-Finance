@@ -209,8 +209,10 @@ public class Account implements IAccount {
 	
 	public double getProjection(Date d) {
 		double amount = 0;
-		for(int i = 0; i < recurringTransactions.size(); i++) {
-			Transaction t = recurringTransactions.get(i);
+		Iterator<Transaction> iter = recurringTransactions.values().iterator();
+		
+		while(iter.hasNext()) {
+			Transaction t = iter.next();
 			if(t instanceof RecurringIncome) {
 				amount += ((RecurringIncome)t).amountByDate(d);
 				((RecurringIncome)t).updateLastUpdated(d);
@@ -220,13 +222,16 @@ public class Account implements IAccount {
 				((RecurringExpense)t).updateLastUpdated(d);
 			}
 		}
+		
 		return balance + amount;
 	}
 	
 	public double getTotalProjection(Date d) {
 		double amount = 0;
-		for(int i = 0; i < recurringTransactions.size(); i++) {
-			Transaction t = recurringTransactions.get(i);
+		Iterator<Transaction> iter = recurringTransactions.values().iterator();
+
+		while(iter.hasNext()) {
+			Transaction t = iter.next();
 			if(t instanceof RecurringIncome) {
 				amount += ((RecurringIncome)t).amountByDate(d);
 				((RecurringIncome)t).updateLastUpdated(d);
