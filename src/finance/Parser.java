@@ -239,7 +239,7 @@ public class Parser {
 			if(!action.isNull("RecurringUntil")) {
 				response.put("RecurringUntil", endDate.format());
 			}
-			response.put("RecurringInterval", action.getString("RecurringInterval"));
+			response.put("RecurringInterval", action.getString("RecurringFrequency"));
 		}
 		
 		return response;
