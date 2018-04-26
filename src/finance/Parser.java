@@ -236,7 +236,9 @@ public class Parser {
 		response.put("AssociatedWith", parentRI);
 		response.put("Recurring", recurring);
 		if(recurring) {
-			response.put("RecurringUntil", endDate.format());
+			if(!action.isNull("RecurringUntil")) {
+				response.put("RecurringUntil", endDate.format());
+			}
 			response.put("RecurringInterval", action.getString("RecurringInterval"));
 		}
 		
