@@ -113,6 +113,9 @@ public class dbParser {
 			
 			Account a = new Account(name, type, balance, transactions, subBalances);
 			a.setResourceIdentifier(identifier);
+			
+			Parser.addResource(identifier, a);
+			accountsList.put(identifier, a);
 		}
 		
 		return accountsList;
